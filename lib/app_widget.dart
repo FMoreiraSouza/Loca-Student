@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/auth/login_bloc.dart';
+import 'package:loca_student/bloc/auth/user_register_bloc.dart';
 import 'package:loca_student/bloc/root/splash_cubit.dart';
 import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
 import 'package:loca_student/data/repositories/auth_repository.dart';
@@ -23,6 +24,10 @@ class AppWidget extends StatelessWidget {
           BlocProvider(
             create: (context) =>
                 LoginBloc(authRepository: RepositoryProvider.of<AuthRepository>(context)),
+          ),
+          BlocProvider(
+            create: (context) =>
+                UserRegisterBloc(authRepository: RepositoryProvider.of<AuthRepository>(context)),
           ),
         ],
         child: MaterialApp(

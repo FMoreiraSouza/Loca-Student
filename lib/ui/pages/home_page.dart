@@ -11,6 +11,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(userType == UserType.estudante ? 'Home Estudante' : 'Home Proprietário'),
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         child: Text(

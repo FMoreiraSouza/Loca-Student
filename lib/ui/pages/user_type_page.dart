@@ -8,9 +8,7 @@ class UserTypePage extends StatelessWidget {
 
   void _goToLogin(BuildContext context, UserType type) {
     context.read<UserTypeCubit>().setUserType(type);
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage()));
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginPage()));
   }
 
   @override
