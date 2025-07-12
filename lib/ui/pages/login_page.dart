@@ -27,9 +27,11 @@ class LoginPage extends StatelessWidget {
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            Navigator.of(
-              context,
-            ).pushReplacement(MaterialPageRoute(builder: (context) => const HomePage()));
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => HomePage(userType: context.read<UserTypeCubit>().state),
+              ),
+            );
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
           }

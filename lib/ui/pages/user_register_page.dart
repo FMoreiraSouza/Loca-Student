@@ -45,9 +45,11 @@ class UserRegisterPage extends StatelessWidget {
       body: BlocConsumer<UserRegisterBloc, UserRegisterState>(
         listener: (context, state) {
           if (state is UserRegisterSuccess) {
-            Navigator.of(
-              context,
-            ).pushReplacement(MaterialPageRoute(builder: (context) => const HomePage()));
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => HomePage(userType: context.read<UserTypeCubit>().state),
+              ),
+            );
           } else if (state is UserRegisterFailure) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
           }
