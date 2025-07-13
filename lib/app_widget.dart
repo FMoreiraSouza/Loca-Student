@@ -6,6 +6,7 @@ import 'package:loca_student/bloc/root/splash_cubit.dart';
 import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
 import 'package:loca_student/data/repositories/auth_repository.dart';
 import 'package:loca_student/ui/pages/splash_page.dart';
+import 'package:loca_student/ui/theme/app_theme.dart'; // Importa o tema
 
 class AppWidget extends StatelessWidget {
   const AppWidget({super.key});
@@ -33,10 +34,7 @@ class AppWidget extends StatelessWidget {
         child: MaterialApp(
           title: 'User Type App',
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-            useMaterial3: true,
-          ),
+          theme: AppTheme.themeData, // Usa o ThemeData do arquivo app_theme.dart
           home: const SplashPage(),
         ),
       ),
