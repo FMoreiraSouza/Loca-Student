@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loca_student/bloc/auth/student_register_event.dart';
 import 'package:loca_student/bloc/auth/user_register_bloc.dart';
-import 'package:loca_student/bloc/auth/user_register_event.dart';
 import 'package:loca_student/bloc/auth/user_register_state.dart';
 
 class StudentForm extends StatefulWidget {
@@ -21,7 +21,6 @@ class _StudentFormState extends State<StudentForm> {
   String? sex;
   final universityController = TextEditingController();
   final emailController = TextEditingController();
-  final vacanciesController = TextEditingController();
   final passwordController = TextEditingController();
 
   final nameFocus = FocusNode();
@@ -30,7 +29,6 @@ class _StudentFormState extends State<StudentForm> {
   final originFocus = FocusNode();
   final universityFocus = FocusNode();
   final emailFocus = FocusNode();
-  final vacanciesFocus = FocusNode();
   final passwordFocus = FocusNode();
 
   @override
@@ -41,7 +39,6 @@ class _StudentFormState extends State<StudentForm> {
     originController.dispose();
     universityController.dispose();
     emailController.dispose();
-    vacanciesController.dispose();
     passwordController.dispose();
     nameFocus.dispose();
     ageFocus.dispose();
@@ -49,7 +46,6 @@ class _StudentFormState extends State<StudentForm> {
     originFocus.dispose();
     universityFocus.dispose();
     emailFocus.dispose();
-    vacanciesFocus.dispose();
     passwordFocus.dispose();
     super.dispose();
   }
@@ -74,16 +70,15 @@ class _StudentFormState extends State<StudentForm> {
   void _submitForm(BuildContext context) {
     if (_validateFields(context)) {
       context.read<UserRegisterBloc>().add(
-        UserRegisterSubmitted(
+        StudentRegisterSubmitted(
           name: nameController.text.trim(),
           age: int.tryParse(ageController.text.trim()) ?? 0,
           degree: degreeController.text.trim(),
           origin: originController.text.trim(),
-          sex: sex,
+          sex: sex ?? "",
           university: universityController.text.trim(),
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
-          context: context,
         ),
       );
     }
@@ -161,17 +156,6 @@ class _StudentFormState extends State<StudentForm> {
           focusNode: emailFocus,
           decoration: const InputDecoration(labelText: 'Email'),
           keyboardType: TextInputType.emailAddress,
-          textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(vacanciesFocus);
-          },
-        ),
-        SizedBox(height: 8),
-        TextField(
-          controller: vacanciesController,
-          focusNode: vacanciesFocus,
-          decoration: const InputDecoration(labelText: 'Vagas'),
-          keyboardType: TextInputType.number,
           textInputAction: TextInputAction.next,
           onEditingComplete: () {
             FocusScope.of(context).requestFocus(passwordFocus);

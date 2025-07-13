@@ -26,35 +26,58 @@ class AuthRepository {
     String? origin,
     String? sex,
     String? university,
-    String? propertyType,
     double? value,
     String? address,
+    String? city,
+    String? state,
+    double? latitude,
+    double? longitude,
     required String email,
     required String password,
     required UserType? userType,
   }) async {
     try {
+      // 1. Cria usuário base
       final user = ParseUser(email, password, email)
-        ..set('name', name)
         ..set('userType', userType.toString().split('.').last);
-      if (userType == UserType.estudante) {
-        if (age != null) user.set('age', age);
-        if (degree != null) user.set('degree', degree);
-        if (origin != null) user.set('origin', origin);
-        if (sex != null) user.set('sex', sex);
-        if (university != null) user.set('university', university);
-      } else if (userType == UserType.proprietario) {
-        if (propertyType != null) user.set('propertyType', propertyType);
-        if (value != null) user.set('value', value);
-        if (address != null) user.set('address', address);
-      }
 
       final response = await user.signUp();
-      if (response.success && response.result != null) {
-        return LoginResult(success: true);
-      } else {
+      if (!response.success || response.result == null) {
         return LoginResult(success: false, message: response.error?.message ?? 'Erro ao cadastrar');
       }
+
+      // 2. Cria objeto adicional com dados do tipo
+      final createdUser = response.result as ParseUser;
+
+      ParseObject additionalData;
+
+      if (userType == UserType.estudante) {
+        additionalData = ParseObject('Student')
+          ..set('name', name)
+          ..set('age', age)
+          ..set('degree', degree)
+          ..set('origin', origin)
+          ..set('sex', sex)
+          ..set('university', university)
+          ..set('user', createdUser);
+      } else {
+        additionalData = ParseObject('Owner')
+          ..set('name', name)
+          ..set('value', value)
+          ..set('address', address)
+          ..set('city', city)
+          ..set('state', state)
+          ..set('latitude', latitude)
+          ..set('longitude', longitude)
+          ..set('user', createdUser);
+      }
+
+      final extraResponse = await additionalData.save();
+      if (!extraResponse.success) {
+        return LoginResult(success: false, message: 'Erro ao salvar dados adicionais');
+      }
+
+      return LoginResult(success: true);
     } catch (e) {
       return LoginResult(success: false, message: 'Erro: $e');
     }

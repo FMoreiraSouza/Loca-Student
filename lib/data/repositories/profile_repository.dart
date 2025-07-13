@@ -1,42 +1,66 @@
 ﻿import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class ProfileRepository {
-  /// Retorna o usuário logado atual como ParseUser ou null se não estiver logado
   Future<ParseUser?> getCurrentUser() async {
     final user = await ParseUser.currentUser() as ParseUser?;
     if (user == null) return null;
-
     try {
       await user.fetch();
       return user;
     } catch (e) {
-      // Se der erro ao atualizar, retorna null ou o usuário sem atualizar
       return null;
     }
   }
 
-  /// Retorna um Map com os dados principais do usuário para exibir no perfil
   Future<Map<String, dynamic>?> getUserProfileData() async {
     final user = await getCurrentUser();
     if (user == null) return null;
 
-    // Campos básicos (você pode adicionar os que quiser)
-    return {
+    final userType = user.get<String>('userType') ?? '';
+
+    // Dados básicos comuns
+    final profileMap = <String, dynamic>{
       'email': user.emailAddress ?? '',
       'name': user.get<String>('name') ?? '',
-      'userType': user.get<String>('userType') ?? '',
-      'age': user.get<int>('age'),
-      'degree': user.get<String>('degree'),
-      'origin': user.get<String>('origin'),
-      'sex': user.get<String>('sex'),
-      'university': user.get<String>('university'),
-      'propertyType': user.get<String>('propertyType'),
-      'value': user.get<double>('value'),
-      'address': user.get<String>('address'),
+      'userType': userType,
     };
+
+    // Agora busca dados adicionais conforme tipo
+    if (userType == 'estudante') {
+      final query = QueryBuilder<ParseObject>(ParseObject('Student'))..whereEqualTo('user', user);
+      final response = await query.query();
+
+      if (response.success && response.results != null && response.results!.isNotEmpty) {
+        final estudante = response.results!.first;
+        profileMap.addAll({
+          'age': estudante.get<int>('age'),
+          'degree': estudante.get<String>('degree'),
+          'origin': estudante.get<String>('origin'),
+          'sex': estudante.get<String>('sex'),
+          'university': estudante.get<String>('university'),
+        });
+      }
+    } else if (userType == 'proprietario') {
+      final query = QueryBuilder<ParseObject>(ParseObject('Owner'))..whereEqualTo('user', user);
+      final response = await query.query();
+
+      if (response.success && response.results != null && response.results!.isNotEmpty) {
+        final proprietario = response.results!.first;
+        profileMap.addAll({
+          'propertyType': proprietario.get<String>('propertyType'), // só se existir esse campo
+          'value': proprietario.get<double>('value'),
+          'address': proprietario.get<String>('address'),
+          'city': proprietario.get<String>('city'),
+          'state': proprietario.get<String>('state'),
+          'latitude': proprietario.get<double>('latitude'),
+          'longitude': proprietario.get<double>('longitude'),
+        });
+      }
+    }
+
+    return profileMap;
   }
 
-  /// Método para logout (opcional)
   Future<void> logout() async {
     final user = await ParseUser.currentUser() as ParseUser?;
     await user?.logout();

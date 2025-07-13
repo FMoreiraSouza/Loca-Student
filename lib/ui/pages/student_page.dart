@@ -17,7 +17,7 @@ class _StudentPageState extends State<StudentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Olá, Estudante 👋')),
+      appBar: AppBar(title: const Text('Olá, Estudante 👋'), automaticallyImplyLeading: false),
       body: IndexedStack(
         index: _currentIndex,
         children: [
@@ -26,8 +26,8 @@ class _StudentPageState extends State<StudentPage> {
             create: (_) => StudentHomeCubit()..loadAlojamentos(),
             child: const StudentHomeBody(),
           ),
-          const Center(child: Text('Favoritos')),
-          const Center(child: Text('Mensagens')),
+          const Center(child: Text('Notificações')),
+          const Center(child: Text('Minhas reservas')),
           const ProfilePage(),
         ],
       ),
@@ -38,9 +38,9 @@ class _StudentPageState extends State<StudentPage> {
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favoritos'),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Mensagens'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Repúblicas'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Notificações'),
+          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Minhas reservas'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),
