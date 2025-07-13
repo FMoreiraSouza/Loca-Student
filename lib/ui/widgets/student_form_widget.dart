@@ -92,7 +92,7 @@ class _StudentFormState extends State<StudentForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         TextField(
           controller: nameController,
@@ -103,6 +103,7 @@ class _StudentFormState extends State<StudentForm> {
             FocusScope.of(context).requestFocus(ageFocus);
           },
         ),
+        SizedBox(height: 8),
         TextField(
           controller: ageController,
           focusNode: ageFocus,
@@ -113,6 +114,7 @@ class _StudentFormState extends State<StudentForm> {
             FocusScope.of(context).requestFocus(degreeFocus);
           },
         ),
+        SizedBox(height: 8),
         TextField(
           controller: degreeController,
           focusNode: degreeFocus,
@@ -122,6 +124,7 @@ class _StudentFormState extends State<StudentForm> {
             FocusScope.of(context).requestFocus(originFocus);
           },
         ),
+        SizedBox(height: 8),
         TextField(
           controller: originController,
           focusNode: originFocus,
@@ -131,6 +134,7 @@ class _StudentFormState extends State<StudentForm> {
             FocusScope.of(context).requestFocus(universityFocus);
           },
         ),
+        SizedBox(height: 8),
         DropdownButtonFormField<String>(
           decoration: const InputDecoration(labelText: 'Sexo'),
           value: sex,
@@ -141,6 +145,7 @@ class _StudentFormState extends State<StudentForm> {
           ].map((sex) => DropdownMenuItem(value: sex, child: Text(sex))).toList(),
           onChanged: (value) => setState(() => sex = value),
         ),
+        SizedBox(height: 8),
         TextField(
           controller: universityController,
           focusNode: universityFocus,
@@ -150,6 +155,7 @@ class _StudentFormState extends State<StudentForm> {
             FocusScope.of(context).requestFocus(emailFocus);
           },
         ),
+        SizedBox(height: 8),
         TextField(
           controller: emailController,
           focusNode: emailFocus,
@@ -160,6 +166,7 @@ class _StudentFormState extends State<StudentForm> {
             FocusScope.of(context).requestFocus(vacanciesFocus);
           },
         ),
+        SizedBox(height: 8),
         TextField(
           controller: vacanciesController,
           focusNode: vacanciesFocus,
@@ -170,6 +177,7 @@ class _StudentFormState extends State<StudentForm> {
             FocusScope.of(context).requestFocus(passwordFocus);
           },
         ),
+        SizedBox(height: 8),
         TextField(
           controller: passwordController,
           focusNode: passwordFocus,

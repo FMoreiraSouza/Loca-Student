@@ -83,7 +83,7 @@ class _OwnerFormState extends State<OwnerForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         TextField(
           controller: nameController,
@@ -94,15 +94,7 @@ class _OwnerFormState extends State<OwnerForm> {
             FocusScope.of(context).requestFocus(typeFocus);
           },
         ),
-        TextField(
-          controller: typeController,
-          focusNode: typeFocus,
-          decoration: const InputDecoration(labelText: 'Tipo de imóvel'),
-          textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(valueFocus);
-          },
-        ),
+        SizedBox(height: 8),
         TextField(
           controller: valueController,
           focusNode: valueFocus,
@@ -113,6 +105,7 @@ class _OwnerFormState extends State<OwnerForm> {
             FocusScope.of(context).requestFocus(addressFocus);
           },
         ),
+        SizedBox(height: 8),
         TextField(
           controller: addressController,
           focusNode: addressFocus,
@@ -122,6 +115,7 @@ class _OwnerFormState extends State<OwnerForm> {
             FocusScope.of(context).requestFocus(emailFocus);
           },
         ),
+        SizedBox(height: 8),
         TextField(
           controller: emailController,
           focusNode: emailFocus,
@@ -132,6 +126,7 @@ class _OwnerFormState extends State<OwnerForm> {
             FocusScope.of(context).requestFocus(vacanciesFocus);
           },
         ),
+        SizedBox(height: 8),
         TextField(
           controller: vacanciesController,
           focusNode: vacanciesFocus,
@@ -142,6 +137,7 @@ class _OwnerFormState extends State<OwnerForm> {
             FocusScope.of(context).requestFocus(passwordFocus);
           },
         ),
+        SizedBox(height: 8),
         TextField(
           controller: passwordController,
           focusNode: passwordFocus,

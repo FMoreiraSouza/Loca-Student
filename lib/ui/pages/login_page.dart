@@ -7,23 +7,47 @@ import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
 import 'package:loca_student/ui/pages/user_register_page.dart';
 import 'package:loca_student/ui/pages/home_page.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final emailFocus = FocusNode();
+  final passwordFocus = FocusNode();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    emailFocus.dispose();
+    passwordFocus.dispose();
+    super.dispose();
+  }
+
+  void _submitLogin(BuildContext context) {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Preencha todos os campos')));
+      return;
+    }
+    context.read<LoginBloc>().add(
+      LoginSubmitted(email: email, password: password, context: context),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final userType = context.watch<UserTypeCubit>().state;
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-
-    // Criar FocusNodes para os TextFields
-    final emailFocus = FocusNode();
-    final passwordFocus = FocusNode();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(userType == UserType.estudante ? 'Login Estudante' : 'Login Proprietário'),
-      ),
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
@@ -37,80 +61,64 @@ class LoginPage extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    userType == UserType.estudante
-                        ? 'Formulário para estudantes'
-                        : 'Formulário para proprietários',
-                    style: const TextStyle(fontSize: 18),
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_circle_left, size: 50),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  tooltip: 'Voltar',
+                ),
+                userType == UserType.estudante
+                    ? Image.asset('content/student.png', height: 200)
+                    : Image.asset('content/republic.png', height: 200),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: emailController,
+                  focusNode: emailFocus,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.email, color: Color(0xFF4B4B4B)),
                   ),
-                  const SizedBox(height: 24),
-                  TextField(
-                    controller: emailController,
-                    focusNode: emailFocus,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    onEditingComplete: () {
-                      FocusScope.of(context).requestFocus(passwordFocus);
-                    },
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: () {
+                    FocusScope.of(context).requestFocus(passwordFocus);
+                  },
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: passwordController,
+                  focusNode: passwordFocus,
+                  decoration: const InputDecoration(
+                    labelText: 'Senha',
+                    prefixIcon: Icon(Icons.lock, color: Color(0xFF4B4B4B)),
                   ),
-                  TextField(
-                    controller: passwordController,
-                    focusNode: passwordFocus,
-                    decoration: const InputDecoration(labelText: 'Senha'),
-                    obscureText: true,
-                    textInputAction: TextInputAction.done,
-                    onEditingComplete: () {
-                      // Opcional: Pode chamar a ação de login ao pressionar "Concluído"
-                      final email = emailController.text.trim();
-                      final password = passwordController.text.trim();
-                      if (email.isEmpty || password.isEmpty) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(const SnackBar(content: Text('Preencha todos os campos')));
-                        return;
-                      }
-                      context.read<LoginBloc>().add(
-                        LoginSubmitted(email: email, password: password, context: context),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  state is LoginLoading
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                          onPressed: () {
-                            final email = emailController.text.trim();
-                            final password = passwordController.text.trim();
-                            if (email.isEmpty || password.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Preencha todos os campos')),
-                              );
-                              return;
-                            }
-                            context.read<LoginBloc>().add(
-                              LoginSubmitted(email: email, password: password, context: context),
-                            );
-                          },
-                          child: const Text('Entrar'),
-                        ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(
-                        context,
-                      ).push(MaterialPageRoute(builder: (context) => const UserRegisterPage()));
-                    },
-                    child: const Text('Não tem conta? Cadastre-se'),
-                  ),
-                ],
-              ),
+                  obscureText: true,
+                  textInputAction: TextInputAction.done,
+                  onEditingComplete: () => _submitLogin(context),
+                ),
+                const SizedBox(height: 16),
+                state is LoginLoading
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton(
+                        onPressed: () => _submitLogin(context),
+                        child: const Text('Entrar'),
+                      ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(builder: (context) => const UserRegisterPage()));
+                  },
+                  child: const Text('Não tem conta? Cadastre-se'),
+                ),
+              ],
             ),
           );
         },
