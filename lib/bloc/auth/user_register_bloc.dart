@@ -13,13 +13,13 @@ class UserRegisterBloc extends Bloc<UserRegisterEvent, UserRegisterState> {
       emit(UserRegisterLoading());
 
       final result = await authRepository.register(
-        name: event.name,
+        username: event.name,
         age: event.age,
         degree: event.degree,
         origin: event.origin,
         sex: event.sex,
         university: event.university,
-        email: event.email,
+        emailAddress: event.email,
         password: event.password,
         userType: UserType.estudante,
       );
@@ -35,14 +35,14 @@ class UserRegisterBloc extends Bloc<UserRegisterEvent, UserRegisterState> {
       emit(UserRegisterLoading());
 
       final result = await authRepository.register(
-        name: event.name,
+        username: event.name,
         value: event.value,
         address: event.address,
         city: event.city,
         state: event.state,
         latitude: event.latitude,
         longitude: event.longitude,
-        email: event.email,
+        emailAddress: event.email,
         password: event.password,
         userType: UserType.proprietario,
       );

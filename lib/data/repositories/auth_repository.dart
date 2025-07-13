@@ -20,7 +20,10 @@ class AuthRepository {
   }
 
   Future<LoginResult> register({
-    required String name,
+    required String username,
+    required String emailAddress,
+    required String password,
+    required UserType? userType,
     int? age,
     String? degree,
     String? origin,
@@ -32,13 +35,10 @@ class AuthRepository {
     String? state,
     double? latitude,
     double? longitude,
-    required String email,
-    required String password,
-    required UserType? userType,
   }) async {
     try {
       // 1. Cria usuário base
-      final user = ParseUser(email, password, email)
+      final user = ParseUser(username, password, emailAddress)
         ..set('userType', userType.toString().split('.').last);
 
       final response = await user.signUp();
@@ -53,7 +53,6 @@ class AuthRepository {
 
       if (userType == UserType.estudante) {
         additionalData = ParseObject('Student')
-          ..set('name', name)
           ..set('age', age)
           ..set('degree', degree)
           ..set('origin', origin)
@@ -62,7 +61,6 @@ class AuthRepository {
           ..set('user', createdUser);
       } else {
         additionalData = ParseObject('Owner')
-          ..set('name', name)
           ..set('value', value)
           ..set('address', address)
           ..set('city', city)

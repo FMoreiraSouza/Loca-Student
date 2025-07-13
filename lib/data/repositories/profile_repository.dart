@@ -21,7 +21,7 @@ class ProfileRepository {
     // Dados básicos comuns
     final profileMap = <String, dynamic>{
       'email': user.emailAddress ?? '',
-      'name': user.get<String>('name') ?? '',
+      'name': user.username ?? '',
       'userType': userType,
     };
 
@@ -47,13 +47,12 @@ class ProfileRepository {
       if (response.success && response.results != null && response.results!.isNotEmpty) {
         final proprietario = response.results!.first;
         profileMap.addAll({
-          'propertyType': proprietario.get<String>('propertyType'), // só se existir esse campo
-          'value': proprietario.get<double>('value'),
+          'value': (proprietario.get<num>('value'))?.toDouble(),
           'address': proprietario.get<String>('address'),
           'city': proprietario.get<String>('city'),
           'state': proprietario.get<String>('state'),
-          'latitude': proprietario.get<double>('latitude'),
-          'longitude': proprietario.get<double>('longitude'),
+          'latitude': (proprietario.get<num>('latitude'))?.toDouble(),
+          'longitude': (proprietario.get<num>('longitude'))?.toDouble(),
         });
       }
     }

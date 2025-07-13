@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:loca_student/ui/pages/profie_page.dart';
+import 'package:loca_student/ui/pages/profile_page.dart';
 
 class OwnerPage extends StatefulWidget {
   const OwnerPage({super.key});

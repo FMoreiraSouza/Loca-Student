@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/home/student/student_home_cubit.dart';
-import 'package:loca_student/ui/pages/profie_page.dart';
+import 'package:loca_student/ui/pages/profile_page.dart';
 import 'package:loca_student/ui/pages/student_body.dart';
 
 class StudentPage extends StatefulWidget {
