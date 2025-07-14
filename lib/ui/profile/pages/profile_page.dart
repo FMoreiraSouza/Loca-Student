@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/profile/profile_cubit.dart';
 import 'package:loca_student/bloc/profile/profile_state.dart';
 import 'package:loca_student/data/repositories/profile_repository.dart';
-import 'package:loca_student/ui/pages/user_type_page.dart';
-import 'package:loca_student/ui/widgets/owner_profile_widget.dart';
-import 'package:loca_student/ui/widgets/student_profile_widget.dart';
+import 'package:loca_student/ui/user_type/pages/user_type_page.dart';
+import 'package:loca_student/ui/profile/widgets/republic_profile_widget.dart';
+import 'package:loca_student/ui/profile/widgets/student_profile_widget.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -63,7 +63,7 @@ class ProfilePage extends StatelessWidget {
             if (userType == 'estudante')
               StudentProfileWidget(data: data)
             else if (userType == 'proprietario')
-              OwnerProfileWidget(data: data),
+              RepublicProfileWidget(data: data),
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () => context.read<ProfileCubit>().logout(),

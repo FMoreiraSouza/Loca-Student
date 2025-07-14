@@ -1,16 +1,16 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loca_student/bloc/home/owner/owner_home_cubit.dart';
-import 'package:loca_student/bloc/home/owner/owner_home_state.dart';
+import 'package:loca_student/bloc/home/republic/republic_home_cubit.dart';
+import 'package:loca_student/bloc/home/republic/republic_home_state.dart';
 
-class OwnerHomeBody extends StatefulWidget {
-  const OwnerHomeBody({super.key});
+class RepublicHomeWidget extends StatefulWidget {
+  const RepublicHomeWidget({super.key});
 
   @override
-  State<OwnerHomeBody> createState() => _OwnerHomeBodyState();
+  State<RepublicHomeWidget> createState() => _RepublicHomeWidgetState();
 }
 
-class _OwnerHomeBodyState extends State<OwnerHomeBody> {
+class _RepublicHomeWidgetState extends State<RepublicHomeWidget> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -20,7 +20,7 @@ class _OwnerHomeBodyState extends State<OwnerHomeBody> {
   }
 
   void _onSearchChanged() {
-    context.read<OwnerHomeCubit>().filterRepublics(_searchController.text);
+    context.read<RepublicHomeCubit>().filterRepublics(_searchController.text);
   }
 
   @override
@@ -46,21 +46,21 @@ class _OwnerHomeBodyState extends State<OwnerHomeBody> {
           ),
         ),
         Expanded(
-          child: BlocBuilder<OwnerHomeCubit, OwnerState>(
+          child: BlocBuilder<RepublicHomeCubit, RepublicState>(
             builder: (context, state) {
-              if (state is OwnerLoading) {
+              if (state is RepublicLoading) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              if (state is OwnerError) {
+              if (state is RepublicError) {
                 return Center(child: Text(state.message));
               }
 
-              if (state is OwnerLoaded && state.republics.isEmpty) {
+              if (state is RepublicLoaded && state.republics.isEmpty) {
                 return const Center(child: Text('Nenhum alojamento encontrado'));
               }
 
-              if (state is! OwnerLoaded) {
+              if (state is! RepublicLoaded) {
                 return const Center(child: Text('Nenhum dado carregado'));
               }
 

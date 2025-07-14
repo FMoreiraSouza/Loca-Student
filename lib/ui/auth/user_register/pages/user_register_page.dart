@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/auth/user_register_bloc.dart';
 import 'package:loca_student/bloc/auth/user_register_state.dart';
 import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
-import 'package:loca_student/ui/widgets/owner_form_widget.dart';
-import 'package:loca_student/ui/widgets/student_form_widget.dart';
+import 'package:loca_student/ui/auth/user_register/widgets/republic_form_widget.dart';
+import 'package:loca_student/ui/auth/user_register/widgets/student_form_widget.dart';
 
 class UserRegisterPage extends StatelessWidget {
   const UserRegisterPage({super.key});
@@ -15,9 +15,7 @@ class UserRegisterPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          userType == UserType.estudante ? 'Cadastro Estudante' : 'Cadastro Proprietário',
-        ),
+        title: Text(userType == UserType.student ? 'Cadastro Estudante' : 'Cadastro Proprietário'),
       ),
       body: BlocConsumer<UserRegisterBloc, UserRegisterState>(
         listener: (context, state) {
@@ -34,15 +32,15 @@ class UserRegisterPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  userType == UserType.estudante
+                  userType == UserType.student
                       ? 'Preencha os dados para estudante'
                       : 'Preencha os dados para proprietário',
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 24),
-                userType == UserType.estudante
+                userType == UserType.student
                     ? StudentForm(state: state)
-                    : OwnerForm(state: state),
+                    : RepublicForm(state: state),
               ],
             ),
           );

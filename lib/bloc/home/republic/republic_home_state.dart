@@ -1,25 +1,25 @@
 ﻿import 'package:equatable/equatable.dart';
-import 'package:loca_student/data/models/university.dart';
+import 'package:loca_student/data/models/university_model.dart';
 
-abstract class OwnerState extends Equatable {
-  const OwnerState();
+abstract class RepublicState extends Equatable {
+  const RepublicState();
 
   @override
   List<Object?> get props => [];
 }
 
-class OwnerInitial extends OwnerState {}
+class RepublicInitial extends RepublicState {}
 
-class OwnerLoading extends OwnerState {}
+class RepublicLoading extends RepublicState {}
 
-class OwnerLoaded extends OwnerState {
+class RepublicLoaded extends RepublicState {
   final String address;
   final double latitude;
   final double longitude;
-  final List<University> nearbyUniversities;
+  final List<UniversityModel> nearbyUniversities;
   final List<Map<String, dynamic>> republics;
 
-  const OwnerLoaded({
+  const RepublicLoaded({
     required this.address,
     required this.latitude,
     required this.longitude,
@@ -30,14 +30,14 @@ class OwnerLoaded extends OwnerState {
   @override
   List<Object?> get props => [address, latitude, longitude, nearbyUniversities, republics];
 
-  OwnerLoaded copyWith({
+  RepublicLoaded copyWith({
     String? address,
     double? latitude,
     double? longitude,
-    List<University>? nearbyUniversities,
+    List<UniversityModel>? nearbyUniversities,
     List<Map<String, dynamic>>? Republics,
   }) {
-    return OwnerLoaded(
+    return RepublicLoaded(
       address: address ?? this.address,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
@@ -47,10 +47,10 @@ class OwnerLoaded extends OwnerState {
   }
 }
 
-class OwnerError extends OwnerState {
+class RepublicError extends RepublicState {
   final String message;
 
-  const OwnerError({required this.message});
+  const RepublicError({required this.message});
 
   @override
   List<Object> get props => [message];

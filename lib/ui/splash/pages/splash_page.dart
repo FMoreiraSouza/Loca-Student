@@ -2,8 +2,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/root/splash_cubit.dart';
 import 'package:loca_student/data/services/shared_preferences_service.dart';
-import 'package:loca_student/ui/pages/home_page.dart';
-import 'package:loca_student/ui/pages/user_type_page.dart';
+import 'package:loca_student/ui/home/pages/home_page.dart';
+import 'package:loca_student/ui/user_type/pages/user_type_page.dart';
 import 'package:loca_student/utils/convert_data.dart';
 
 class SplashPage extends StatelessWidget {

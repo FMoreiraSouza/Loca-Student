@@ -37,7 +37,7 @@ class AuthRepository {
   }) async {
     try {
       final user = ParseUser(username, password, emailAddress)
-        ..set('userType', UserType.estudante.toString().split('.').last);
+        ..set('userType', UserType.student.toString().split('.').last);
 
       final response = await user.signUp();
       if (!response.success || response.result == null) {
@@ -57,13 +57,13 @@ class AuthRepository {
         return LoginResult(success: false, message: 'Erro ao salvar dados do estudante');
       }
 
-      return LoginResult(success: true, userType: UserType.estudante.toString().split('.').last);
+      return LoginResult(success: true, userType: UserType.student.toString().split('.').last);
     } catch (e) {
       return LoginResult(success: false, message: 'Erro: $e');
     }
   }
 
-  Future<LoginResult> registerOwner({
+  Future<LoginResult> registerRepublic({
     required String username,
     required String emailAddress,
     required String password,
@@ -78,7 +78,13 @@ class AuthRepository {
   }) async {
     try {
       final user = ParseUser(username, password, emailAddress)
-        ..set('userType', UserType.proprietario.toString().split('.').last);
+        ..set('userType', UserType.republic.toString().split('.').last);
+
+      // Configurar ACL para leitura e escrita públicas
+      final acl = ParseACL();
+      acl.setPublicReadAccess(allowed: true); // Permite leitura pública
+      acl.setPublicWriteAccess(allowed: true); // Permite escrita pública
+      user.setACL(acl);
 
       final response = await user.signUp();
       if (!response.success || response.result == null) {
@@ -86,7 +92,7 @@ class AuthRepository {
       }
 
       final createdUser = response.result as ParseUser;
-      final owner = ParseObject('Owner')
+      final republic = ParseObject('Republic')
         ..set('value', value)
         ..set('address', address)
         ..set('city', city)
@@ -97,12 +103,12 @@ class AuthRepository {
         ..set('phone', phone)
         ..set('user', createdUser);
 
-      final extraResponse = await owner.save();
+      final extraResponse = await republic.save();
       if (!extraResponse.success) {
         return LoginResult(success: false, message: 'Erro ao salvar dados do proprietário');
       }
 
-      return LoginResult(success: true, userType: UserType.proprietario.toString().split('.').last);
+      return LoginResult(success: true, userType: UserType.republic.toString().split('.').last);
     } catch (e) {
       return LoginResult(success: false, message: 'Erro: $e');
     }

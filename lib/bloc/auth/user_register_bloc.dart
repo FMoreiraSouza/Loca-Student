@@ -1,5 +1,5 @@
 ﻿import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loca_student/bloc/auth/owner_register_event.dart';
+import 'package:loca_student/bloc/auth/republic_register_event.dart';
 import 'package:loca_student/bloc/auth/student_register_event.dart';
 import 'package:loca_student/bloc/auth/user_register_event.dart';
 import 'package:loca_student/bloc/auth/user_register_state.dart';
@@ -29,10 +29,10 @@ class UserRegisterBloc extends Bloc<UserRegisterEvent, UserRegisterState> {
       }
     });
 
-    on<OwnerRegisterSubmitted>((event, emit) async {
+    on<RepublicRegisterSubmitted>((event, emit) async {
       emit(UserRegisterLoading());
 
-      final result = await authRepository.registerOwner(
+      final result = await authRepository.registerRepublic(
         username: event.name,
         value: event.value,
         address: event.address,

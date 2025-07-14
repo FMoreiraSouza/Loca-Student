@@ -41,7 +41,7 @@ class ProfileRepository {
         });
       }
     } else if (userType == 'proprietario') {
-      final query = QueryBuilder<ParseObject>(ParseObject('Owner'))..whereEqualTo('user', user);
+      final query = QueryBuilder<ParseObject>(ParseObject('Republic'))..whereEqualTo('user', user);
       final response = await query.query();
 
       if (response.success && response.results != null && response.results!.isNotEmpty) {

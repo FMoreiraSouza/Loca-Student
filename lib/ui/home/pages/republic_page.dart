@@ -1,14 +1,14 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:loca_student/ui/pages/profile_page.dart';
+import 'package:loca_student/ui/profile/pages/profile_page.dart';
 
-class OwnerPage extends StatefulWidget {
-  const OwnerPage({super.key});
+class RepublicPage extends StatefulWidget {
+  const RepublicPage({super.key});
 
   @override
-  State<OwnerPage> createState() => _OwnerPageState();
+  State<RepublicPage> createState() => _RepublicPageState();
 }
 
-class _OwnerPageState extends State<OwnerPage> {
+class _RepublicPageState extends State<RepublicPage> {
   int _currentIndex = 0;
 
   @override

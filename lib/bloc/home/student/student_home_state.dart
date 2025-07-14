@@ -1,5 +1,5 @@
 ﻿import 'package:equatable/equatable.dart';
-import 'package:loca_student/data/models/republic.dart';
+import 'package:loca_student/data/models/republic_model.dart';
 
 class StudentHomeState extends Equatable {
   final bool isLoading;

@@ -2,10 +2,10 @@
 import 'package:loca_student/utils/calculate_coordinates.dart';
 import 'package:loca_student/utils/mock_universities.dart';
 
-class OwnerProfileWidget extends StatelessWidget {
+class RepublicProfileWidget extends StatelessWidget {
   final Map<String, dynamic> data;
 
-  const OwnerProfileWidget({super.key, required this.data});
+  const RepublicProfileWidget({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {

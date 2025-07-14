@@ -18,9 +18,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         UserType? userType;
 
         if (userTypeStr == 'estudante') {
-          userType = UserType.estudante;
+          userType = UserType.student;
         } else if (userTypeStr == 'proprietario') {
-          userType = UserType.proprietario;
+          userType = UserType.republic;
         }
 
         if (userType != null) {

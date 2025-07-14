@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
-import 'package:loca_student/ui/pages/owner_page.dart';
-import 'package:loca_student/ui/pages/student_page.dart';
+import 'package:loca_student/ui/home/pages/republic_page.dart';
+import 'package:loca_student/ui/home/pages/student_page.dart';
 
 class HomePage extends StatelessWidget {
   final UserType? userType;
@@ -12,12 +12,14 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Redireciona logo após o primeiro frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (userType == UserType.estudante) {
+      if (userType == UserType.student) {
         Navigator.of(
           context,
         ).pushReplacement(MaterialPageRoute(builder: (_) => const StudentPage()));
-      } else if (userType == UserType.proprietario) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const OwnerPage()));
+      } else if (userType == UserType.republic) {
+        Navigator.of(
+          context,
+        ).pushReplacement(MaterialPageRoute(builder: (_) => const RepublicPage()));
       } else {
         // Caso indefinido (fallback)
         ScaffoldMessenger.of(

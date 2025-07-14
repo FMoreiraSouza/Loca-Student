@@ -1,6 +1,6 @@
 ﻿import 'package:loca_student/bloc/auth/user_register_event.dart';
 
-class OwnerRegisterSubmitted extends UserRegisterEvent {
+class RepublicRegisterSubmitted extends UserRegisterEvent {
   final String name;
   final double value;
   final String address;
@@ -13,7 +13,7 @@ class OwnerRegisterSubmitted extends UserRegisterEvent {
   final int vacancies;
   final String phone;
 
-  OwnerRegisterSubmitted({
+  RepublicRegisterSubmitted({
     required this.name,
     required this.value,
     required this.address,

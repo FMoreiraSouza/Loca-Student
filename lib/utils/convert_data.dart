@@ -5,9 +5,9 @@ UserType? stringToUserType(String? userTypeString) {
   if (userTypeString == null) return null;
   switch (userTypeString) {
     case 'estudante':
-      return UserType.estudante;
+      return UserType.student;
     case 'proprietario':
-      return UserType.proprietario;
+      return UserType.republic;
     default:
       return null;
   }

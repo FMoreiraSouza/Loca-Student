@@ -4,8 +4,8 @@ import 'package:loca_student/bloc/auth/login_bloc.dart';
 import 'package:loca_student/bloc/auth/login_event.dart';
 import 'package:loca_student/bloc/auth/login_state.dart';
 import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
-import 'package:loca_student/ui/pages/user_register_page.dart';
-import 'package:loca_student/ui/pages/home_page.dart';
+import 'package:loca_student/ui/auth/user_register/pages/user_register_page.dart';
+import 'package:loca_student/ui/home/pages/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                         },
                         tooltip: 'Voltar',
                       ),
-                      userType == UserType.estudante
+                      userType == UserType.student
                           ? Image.asset('content/student.png', height: 200)
                           : Image.asset('content/republic.png', height: 200),
                       const SizedBox(height: 24),

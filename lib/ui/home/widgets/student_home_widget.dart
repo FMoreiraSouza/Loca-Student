@@ -2,18 +2,18 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/home/student/student_home_cubit.dart';
 import 'package:loca_student/bloc/home/student/student_home_state.dart';
-import 'package:loca_student/data/models/republic.dart';
+import 'package:loca_student/data/models/republic_model.dart';
 import 'package:loca_student/utils/calculate_coordinates.dart';
 import 'package:loca_student/utils/mock_universities.dart';
 
-class StudentHomeBody extends StatefulWidget {
-  const StudentHomeBody({super.key});
+class StudentHomeWidget extends StatefulWidget {
+  const StudentHomeWidget({super.key});
 
   @override
-  State<StudentHomeBody> createState() => _StudentHomeBodyState();
+  State<StudentHomeWidget> createState() => _StudentHomeWidgetState();
 }
 
-class _StudentHomeBodyState extends State<StudentHomeBody> {
+class _StudentHomeWidgetState extends State<StudentHomeWidget> {
   final TextEditingController _searchController = TextEditingController();
 
   void _showRepublicDetailsDialog(RepublicModel rep) {
@@ -35,7 +35,9 @@ class _StudentHomeBodyState extends State<StudentHomeBody> {
                 Text('Endereço: ${rep.address}'),
                 Text('Valor: R\$${rep.value.toStringAsFixed(2)}/mês'),
                 const SizedBox(height: 8),
-                const Text('Telefone: (11) 99999-9999'),
+                Text('Vagas disponíveis: ${rep.vacancies}'),
+                const SizedBox(height: 8),
+                Text('Telefone: ${rep.phone}'),
                 const SizedBox(height: 8),
                 if (distanceMessages.isNotEmpty)
                   ...distanceMessages.map(
@@ -49,10 +51,38 @@ class _StudentHomeBodyState extends State<StudentHomeBody> {
           ),
           actions: [
             TextButton(onPressed: () => Navigator.pop(context), child: const Text('Fechar')),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(context); // Fecha o diálogo
+                await _reserveSpot(rep);
+              },
+              child: const Text('Fazer Reserva'),
+            ),
           ],
         );
       },
     );
+  }
+
+  Future<void> _reserveSpot(RepublicModel rep) async {
+    final cubit = context.read<StudentHomeCubit>();
+
+    try {
+      await cubit.reserveSpot(rep);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Reserva realizada com sucesso')));
+
+        // Atualiza a lista após reserva
+        cubit.searchRepublicsByCity(rep.city);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao reservar: $e')));
+      }
+    }
   }
 
   @override
@@ -121,11 +151,9 @@ class _StudentHomeBodyState extends State<StudentHomeBody> {
                     child: ListTile(
                       leading: const Icon(Icons.home),
                       title: Text(rep.username),
-                      subtitle: Text('${rep.address} • \$${rep.value.toStringAsFixed(2)}/mês'),
-                      trailing: const Icon(Icons.chevron_right), // ação de escolher
-                      onTap: () {
-                        _showRepublicDetailsDialog(rep);
-                      },
+                      subtitle: Text('${rep.address} • R\$${rep.value.toStringAsFixed(2)}/mês'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => _showRepublicDetailsDialog(rep),
                     ),
                   );
                 },

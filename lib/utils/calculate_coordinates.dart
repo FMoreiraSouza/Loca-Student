@@ -1,12 +1,11 @@
 ﻿import 'dart:math';
-
-import 'package:loca_student/data/models/university.dart';
+import 'package:loca_student/data/models/university_model.dart';
 
 List<String> getNearbyUniversitiesDistanceMessages({
   required double latitude,
   required double longitude,
-  required List<University> universities,
-  double maxDistanceKm = 20.0,
+  required List<UniversityModel> universities,
+  double maxDistanceKm = 40.0,
 }) {
   final nearby = universities
       .map((university) {
@@ -24,7 +23,7 @@ List<String> getNearbyUniversitiesDistanceMessages({
   nearby.sort((a, b) => (a['distance'] as double).compareTo(b['distance'] as double));
 
   return nearby.map((entry) {
-    final university = entry['university'] as University;
+    final university = entry['university'] as UniversityModel;
     final distance = (entry['distance'] as double).toStringAsFixed(2);
     return 'A $distance km da universidade ${university.name}';
   }).toList();

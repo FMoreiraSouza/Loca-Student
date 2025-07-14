@@ -3,20 +3,20 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
-import 'package:loca_student/bloc/auth/owner_register_event.dart';
+import 'package:loca_student/bloc/auth/republic_register_event.dart';
 import 'package:loca_student/bloc/auth/user_register_bloc.dart';
 import 'package:loca_student/bloc/auth/user_register_state.dart';
 
-class OwnerForm extends StatefulWidget {
+class RepublicForm extends StatefulWidget {
   final UserRegisterState state;
 
-  const OwnerForm({super.key, required this.state});
+  const RepublicForm({super.key, required this.state});
 
   @override
-  _OwnerFormState createState() => _OwnerFormState();
+  _RepublicFormState createState() => _RepublicFormState();
 }
 
-class _OwnerFormState extends State<OwnerForm> {
+class _RepublicFormState extends State<RepublicForm> {
   final nameController = TextEditingController();
   final valueController = TextEditingController();
   final addressController = TextEditingController();
@@ -122,7 +122,7 @@ class _OwnerFormState extends State<OwnerForm> {
       }
 
       context.read<UserRegisterBloc>().add(
-        OwnerRegisterSubmitted(
+        RepublicRegisterSubmitted(
           name: nameController.text.trim(),
           value: double.tryParse(valueController.text.trim()) ?? 0.0,
           address: addressController.text.trim(),

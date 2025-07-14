@@ -1,8 +1,10 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/home/student/student_home_cubit.dart';
-import 'package:loca_student/ui/pages/profile_page.dart';
-import 'package:loca_student/ui/pages/student_body.dart';
+import 'package:loca_student/data/repositories/home_repository.dart';
+import 'package:loca_student/ui/home/reservation-list.dart/pages/student_reservation_list_page.dart';
+import 'package:loca_student/ui/profile/pages/profile_page.dart';
+import 'package:loca_student/ui/home/widgets/student_home_widget.dart';
 
 class StudentPage extends StatefulWidget {
   const StudentPage({super.key});
@@ -21,9 +23,11 @@ class _StudentPageState extends State<StudentPage> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          // Cubit sem load automático
-          BlocProvider(create: (_) => StudentHomeCubit(), child: const StudentHomeBody()),
-          const Center(child: Text('Minhas reservas')),
+          BlocProvider(
+            create: (_) => StudentHomeCubit(HomeRepository()),
+            child: const StudentHomeWidget(),
+          ),
+          const StudentReservationListPage(), // <- Aqui está a tela anexada corretamente
           const Center(child: Text('Notificações')),
           const ProfilePage(),
         ],
