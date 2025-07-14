@@ -1,4 +1,4 @@
-﻿abstract class UserRegisterEvent {}
+﻿import 'package:loca_student/bloc/auth/user_register_event.dart';
 
 class StudentRegisterSubmitted extends UserRegisterEvent {
   final String name;
@@ -6,7 +6,6 @@ class StudentRegisterSubmitted extends UserRegisterEvent {
   final String degree;
   final String origin;
   final String sex;
-  final String university;
   final String email;
   final String password;
 
@@ -16,7 +15,6 @@ class StudentRegisterSubmitted extends UserRegisterEvent {
     required this.degree,
     required this.origin,
     required this.sex,
-    required this.university,
     required this.email,
     required this.password,
   });

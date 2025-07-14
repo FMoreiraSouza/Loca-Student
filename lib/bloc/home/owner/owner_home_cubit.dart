@@ -9,7 +9,7 @@ class OwnerHomeCubit extends Cubit<OwnerState> {
     if (state is! OwnerLoaded) return;
 
     final currentState = state as OwnerLoaded;
-    final filtered = currentState.Republics.where((alojamento) {
+    final filtered = currentState.republics.where((alojamento) {
       final name = alojamento['name']?.toString().toLowerCase() ?? '';
       final address = alojamento['address']?.toString().toLowerCase() ?? '';
       final city = alojamento['city']?.toString().toLowerCase() ?? '';

@@ -1,20 +1,21 @@
 ﻿import 'package:equatable/equatable.dart';
+import 'package:loca_student/data/models/republic.dart';
 
 class StudentHomeState extends Equatable {
   final bool isLoading;
-  final List<dynamic> Republics; // Trocar por seu modelo real futuramente
   final String? error;
+  final List<RepublicModel> republics;
 
-  const StudentHomeState({this.isLoading = false, this.Republics = const [], this.error});
+  const StudentHomeState({this.isLoading = false, this.error, this.republics = const []});
 
-  StudentHomeState copyWith({bool? isLoading, List<dynamic>? Republics, String? error}) {
+  StudentHomeState copyWith({bool? isLoading, String? error, List<RepublicModel>? republics}) {
     return StudentHomeState(
       isLoading: isLoading ?? this.isLoading,
-      Republics: Republics ?? this.Republics,
       error: error,
+      republics: republics ?? this.republics,
     );
   }
 
   @override
-  List<Object?> get props => [isLoading, Republics, error];
+  List<Object?> get props => [isLoading, error, republics];
 }

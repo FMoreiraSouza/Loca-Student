@@ -1,4 +1,5 @@
-﻿import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
+﻿import 'package:loca_student/data/models/republic.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 import 'student_home_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,54 +10,46 @@ class StudentHomeCubit extends Cubit<StudentHomeState> {
     emit(state.copyWith(isLoading: true, error: null));
 
     try {
-      final query = QueryBuilder<ParseObject>(ParseObject('Owner'))..whereEqualTo('city', cidade);
+      final query = QueryBuilder<ParseObject>(ParseObject('Owner'))
+        ..whereEqualTo('city', cidade)
+        ..includeObject(['user']); // Garante acesso ao user.username
 
       final response = await query.query();
 
       if (response.success && response.results != null) {
-        final republics = response.results!
-            .map((e) => e.get<String>('address') ?? 'Sem endereço')
-            .toList();
+        final republics = response.results!.map((e) {
+          final user = e['user'] as ParseObject?;
+          final username = user?['username'] as String? ?? 'Desconhecido';
+          final address = e['address'] as String? ?? 'Sem endereço';
+          final value = (e['value'] as num?)?.toDouble() ?? 0.0;
+          final latitude = (e['latitude'] as num?)?.toDouble() ?? 0.0;
+          final longitude = (e['longitude'] as num?)?.toDouble() ?? 0.0;
 
-        emit(state.copyWith(isLoading: false, Republics: republics));
+          return RepublicModel(
+            username: username,
+            value: value,
+            address: address,
+            latitude: latitude,
+            longitude: longitude,
+          );
+        }).toList();
+
+        emit(state.copyWith(isLoading: false, republics: republics));
       } else {
         emit(
           state.copyWith(
             isLoading: false,
-            Republics: [],
-            error: response.error?.message ?? 'Erro desconhecido ao buscar Republics',
+            republics: [],
+            error: response.error?.message ?? 'Erro desconhecido ao buscar repúblicas.',
           ),
         );
       }
     } catch (e) {
-      emit(state.copyWith(isLoading: false, error: 'Erro ao carregar Republics: $e'));
-    }
-  }
-
-  // Se quiser manter um carregamento inicial
-  Future<void> loadRepublics() async {
-    emit(state.copyWith(isLoading: true, error: null));
-
-    try {
-      final query = QueryBuilder<ParseObject>(ParseObject('Owner'));
-
-      final response = await query.query();
-
-      if (response.success && response.results != null) {
-        final Republics = response.results!
-            .map((e) => e.get<String>('address') ?? 'Sem endereço')
-            .toList();
-
-        emit(state.copyWith(isLoading: false, Republics: Republics));
-      } else {
-        emit(state.copyWith(isLoading: false, error: 'Nenhum alojamento encontrado'));
-      }
-    } catch (e) {
-      emit(state.copyWith(isLoading: false, error: 'Erro ao carregar Republics'));
+      emit(state.copyWith(isLoading: false, error: 'Erro ao buscar repúblicas: $e'));
     }
   }
 
   void clearRepublics() {
-    emit(state.copyWith(Republics: [], error: null, isLoading: false));
+    emit(state.copyWith(republics: [], error: null, isLoading: false));
   }
 }

@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:loca_student/data/models/university.dart';
 import 'package:loca_student/utils/calculate_coordinates.dart';
 import 'package:loca_student/utils/mock_universities.dart';
 
@@ -16,28 +15,11 @@ class OwnerProfileWidget extends StatelessWidget {
     List<String> distanceMessages = [];
 
     if (latitude != null && longitude != null) {
-      final nearby = mockUniversities
-          .map((university) {
-            final distance = calculateDistanceKm(
-              latitude,
-              longitude,
-              university.latitude,
-              university.longitude,
-            );
-            return {'university': university, 'distance': distance};
-          })
-          .where((entry) => (entry['distance'] as double) <= 20.0)
-          .toList();
-
-      if (nearby.isNotEmpty) {
-        nearby.sort((a, b) => (a['distance'] as double).compareTo(b['distance'] as double));
-
-        for (final entry in nearby) {
-          final university = entry['university'] as University;
-          final distance = (entry['distance'] as double).toStringAsFixed(2);
-          distanceMessages.add('A $distance km da universidade ${university.name}');
-        }
-      }
+      distanceMessages = getNearbyUniversitiesDistanceMessages(
+        latitude: latitude,
+        longitude: longitude,
+        universities: mockUniversities,
+      );
     }
 
     return Column(

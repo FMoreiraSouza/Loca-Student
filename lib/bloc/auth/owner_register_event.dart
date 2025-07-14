@@ -1,4 +1,4 @@
-﻿import 'package:loca_student/bloc/auth/student_register_event.dart';
+﻿import 'package:loca_student/bloc/auth/user_register_event.dart';
 
 class OwnerRegisterSubmitted extends UserRegisterEvent {
   final String name;
@@ -10,6 +10,8 @@ class OwnerRegisterSubmitted extends UserRegisterEvent {
   final double longitude;
   final String email;
   final String password;
+  final int vacancies;
+  final String phone;
 
   OwnerRegisterSubmitted({
     required this.name,
@@ -21,5 +23,7 @@ class OwnerRegisterSubmitted extends UserRegisterEvent {
     required this.longitude,
     required this.email,
     required this.password,
+    required this.vacancies,
+    required this.phone,
   });
 }

@@ -9,7 +9,6 @@ class AuthRepository {
 
       if (response.success && response.result != null) {
         final currentUser = response.result as ParseUser;
-
         final userType = currentUser.get<String>('userType');
         if (userType == null || userType.isEmpty) {
           return LoginResult(success: false, message: 'Tipo de usuário não encontrado');
@@ -27,27 +26,18 @@ class AuthRepository {
     }
   }
 
-  Future<LoginResult> register({
+  Future<LoginResult> registerStudent({
     required String username,
     required String emailAddress,
     required String password,
-    required UserType? userType,
-    int? age,
-    String? degree,
-    String? origin,
-    String? sex,
-    String? university,
-    double? value,
-    String? address,
-    String? city,
-    String? state,
-    double? latitude,
-    double? longitude,
+    required int age,
+    required String degree,
+    required String origin,
+    required String sex,
   }) async {
     try {
-      // Cria usuário base
       final user = ParseUser(username, password, emailAddress)
-        ..set('userType', userType.toString().split('.').last);
+        ..set('userType', UserType.estudante.toString().split('.').last);
 
       final response = await user.signUp();
       if (!response.success || response.result == null) {
@@ -55,33 +45,64 @@ class AuthRepository {
       }
 
       final createdUser = response.result as ParseUser;
-      ParseObject additionalData;
+      final student = ParseObject('Student')
+        ..set('age', age)
+        ..set('degree', degree)
+        ..set('origin', origin)
+        ..set('sex', sex)
+        ..set('user', createdUser);
 
-      if (userType == UserType.estudante) {
-        additionalData = ParseObject('Student')
-          ..set('age', age)
-          ..set('degree', degree)
-          ..set('origin', origin)
-          ..set('sex', sex)
-          ..set('university', university)
-          ..set('user', createdUser);
-      } else {
-        additionalData = ParseObject('Owner')
-          ..set('value', value)
-          ..set('address', address)
-          ..set('city', city)
-          ..set('state', state)
-          ..set('latitude', latitude)
-          ..set('longitude', longitude)
-          ..set('user', createdUser);
-      }
-
-      final extraResponse = await additionalData.save();
+      final extraResponse = await student.save();
       if (!extraResponse.success) {
-        return LoginResult(success: false, message: 'Erro ao salvar dados adicionais');
+        return LoginResult(success: false, message: 'Erro ao salvar dados do estudante');
       }
 
-      return LoginResult(success: true, userType: userType.toString().split('.').last);
+      return LoginResult(success: true, userType: UserType.estudante.toString().split('.').last);
+    } catch (e) {
+      return LoginResult(success: false, message: 'Erro: $e');
+    }
+  }
+
+  Future<LoginResult> registerOwner({
+    required String username,
+    required String emailAddress,
+    required String password,
+    required double value,
+    required String address,
+    required String city,
+    required String state,
+    required double latitude,
+    required double longitude,
+    required int vacancies,
+    required String phone,
+  }) async {
+    try {
+      final user = ParseUser(username, password, emailAddress)
+        ..set('userType', UserType.proprietario.toString().split('.').last);
+
+      final response = await user.signUp();
+      if (!response.success || response.result == null) {
+        return LoginResult(success: false, message: response.error?.message ?? 'Erro ao cadastrar');
+      }
+
+      final createdUser = response.result as ParseUser;
+      final owner = ParseObject('Owner')
+        ..set('value', value)
+        ..set('address', address)
+        ..set('city', city)
+        ..set('state', state)
+        ..set('latitude', latitude)
+        ..set('longitude', longitude)
+        ..set('vacancies', vacancies)
+        ..set('phone', phone)
+        ..set('user', createdUser);
+
+      final extraResponse = await owner.save();
+      if (!extraResponse.success) {
+        return LoginResult(success: false, message: 'Erro ao salvar dados do proprietário');
+      }
+
+      return LoginResult(success: true, userType: UserType.proprietario.toString().split('.').last);
     } catch (e) {
       return LoginResult(success: false, message: 'Erro: $e');
     }

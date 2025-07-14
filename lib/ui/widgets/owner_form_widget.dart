@@ -25,6 +25,7 @@ class _OwnerFormState extends State<OwnerForm> {
   final emailController = TextEditingController();
   final vacanciesController = TextEditingController();
   final passwordController = TextEditingController();
+  final phoneController = TextEditingController();
 
   final nameFocus = FocusNode();
   final valueFocus = FocusNode();
@@ -34,6 +35,7 @@ class _OwnerFormState extends State<OwnerForm> {
   final emailFocus = FocusNode();
   final vacanciesFocus = FocusNode();
   final passwordFocus = FocusNode();
+  final phoneFocus = FocusNode();
 
   @override
   void dispose() {
@@ -45,6 +47,8 @@ class _OwnerFormState extends State<OwnerForm> {
     emailController.dispose();
     vacanciesController.dispose();
     passwordController.dispose();
+    phoneController.dispose();
+
     nameFocus.dispose();
     valueFocus.dispose();
     addressFocus.dispose();
@@ -53,6 +57,8 @@ class _OwnerFormState extends State<OwnerForm> {
     emailFocus.dispose();
     vacanciesFocus.dispose();
     passwordFocus.dispose();
+    phoneFocus.dispose();
+
     super.dispose();
   }
 
@@ -63,7 +69,9 @@ class _OwnerFormState extends State<OwnerForm> {
         valueController.text.trim().isEmpty ||
         addressController.text.trim().isEmpty ||
         cityController.text.trim().isEmpty ||
-        stateController.text.trim().isEmpty) {
+        stateController.text.trim().isEmpty ||
+        vacanciesController.text.trim().isEmpty ||
+        phoneController.text.trim().isEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Preencha todos os campos para proprietário')));
@@ -72,23 +80,17 @@ class _OwnerFormState extends State<OwnerForm> {
     return true;
   }
 
-  // Função para consultar a bounding box da cidade usando Nominatim
   Future<Map<String, double>?> _getCityCoordinates(String city) async {
     try {
-      const userAgent = 'LocaStudent/1.0 (fmoreirasouza701@gmail.com)'; // Substitua pelo seu e-mail
-      final query = city;
+      const userAgent = 'LocaStudent/1.0 (fmoreirasouza701@gmail.com)';
       final url =
-          'https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(query)}&format=json&limit=1&addressdetails=1&featuretype=city';
+          'https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(city)}&format=json&limit=1&addressdetails=1&featuretype=city';
       final response = await http.get(Uri.parse(url), headers: {'User-Agent': userAgent});
 
-      if (response.statusCode != 200) {
-        return null;
-      }
+      if (response.statusCode != 200) return null;
 
       final data = jsonDecode(response.body) as List<dynamic>;
-      if (data.isEmpty) {
-        return null;
-      }
+      if (data.isEmpty) return null;
 
       final result = data[0];
       final boundingBox = result['boundingbox'] as List<dynamic>;
@@ -97,24 +99,19 @@ class _OwnerFormState extends State<OwnerForm> {
       final minLon = double.parse(boundingBox[2] as String);
       final maxLon = double.parse(boundingBox[3] as String);
 
-      // Gera coordenadas aleatórias dentro da bounding box
       final random = Random();
       final latitude = minLat + (maxLat - minLat) * random.nextDouble();
       final longitude = minLon + (maxLon - minLon) * random.nextDouble();
 
       return {'latitude': latitude, 'longitude': longitude};
     } catch (e) {
-      print('Erro ao consultar Nominatim: $e');
       return null;
     }
   }
 
   void _submitForm(BuildContext context) async {
     if (_validateFields(context)) {
-      // Obtém coordenadas aleatórias com base na cidade e estado
       final coords = await _getCityCoordinates(cityController.text.trim());
-
-      // Verifica se o widget ainda está montado antes de usar o context
       if (!mounted) return;
 
       if (coords == null) {
@@ -135,6 +132,8 @@ class _OwnerFormState extends State<OwnerForm> {
           longitude: coords['longitude']!,
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
+          vacancies: int.tryParse(vacanciesController.text.trim()) ?? 0,
+          phone: phoneController.text.trim(),
         ),
       );
     }
@@ -150,9 +149,7 @@ class _OwnerFormState extends State<OwnerForm> {
           focusNode: nameFocus,
           decoration: const InputDecoration(labelText: 'Nome'),
           textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(valueFocus);
-          },
+          onEditingComplete: () => FocusScope.of(context).requestFocus(valueFocus),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -161,9 +158,7 @@ class _OwnerFormState extends State<OwnerForm> {
           decoration: const InputDecoration(labelText: 'Valor (R\$)'),
           keyboardType: TextInputType.number,
           textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(addressFocus);
-          },
+          onEditingComplete: () => FocusScope.of(context).requestFocus(addressFocus),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -171,9 +166,7 @@ class _OwnerFormState extends State<OwnerForm> {
           focusNode: addressFocus,
           decoration: const InputDecoration(labelText: 'Endereço'),
           textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(cityFocus);
-          },
+          onEditingComplete: () => FocusScope.of(context).requestFocus(cityFocus),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -181,9 +174,7 @@ class _OwnerFormState extends State<OwnerForm> {
           focusNode: cityFocus,
           decoration: const InputDecoration(labelText: 'Cidade'),
           textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(stateFocus);
-          },
+          onEditingComplete: () => FocusScope.of(context).requestFocus(stateFocus),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -191,9 +182,7 @@ class _OwnerFormState extends State<OwnerForm> {
           focusNode: stateFocus,
           decoration: const InputDecoration(labelText: 'Estado'),
           textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(emailFocus);
-          },
+          onEditingComplete: () => FocusScope.of(context).requestFocus(emailFocus),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -202,9 +191,7 @@ class _OwnerFormState extends State<OwnerForm> {
           decoration: const InputDecoration(labelText: 'Email'),
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(vacanciesFocus);
-          },
+          onEditingComplete: () => FocusScope.of(context).requestFocus(vacanciesFocus),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -213,9 +200,16 @@ class _OwnerFormState extends State<OwnerForm> {
           decoration: const InputDecoration(labelText: 'Vagas'),
           keyboardType: TextInputType.number,
           textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(passwordFocus);
-          },
+          onEditingComplete: () => FocusScope.of(context).requestFocus(phoneFocus),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: phoneController,
+          focusNode: phoneFocus,
+          decoration: const InputDecoration(labelText: 'Telefone'),
+          keyboardType: TextInputType.phone,
+          textInputAction: TextInputAction.next,
+          onEditingComplete: () => FocusScope.of(context).requestFocus(passwordFocus),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -224,10 +218,7 @@ class _OwnerFormState extends State<OwnerForm> {
           decoration: const InputDecoration(labelText: 'Senha'),
           obscureText: true,
           textInputAction: TextInputAction.done,
-          onEditingComplete: () {
-            // Fechar o teclado
-            FocusScope.of(context).unfocus();
-          },
+          onEditingComplete: () => FocusScope.of(context).unfocus(),
         ),
         const SizedBox(height: 24),
         widget.state is UserRegisterLoading

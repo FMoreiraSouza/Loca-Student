@@ -56,7 +56,7 @@ class _OwnerHomeBodyState extends State<OwnerHomeBody> {
                 return Center(child: Text(state.message));
               }
 
-              if (state is OwnerLoaded && state.Republics.isEmpty) {
+              if (state is OwnerLoaded && state.republics.isEmpty) {
                 return const Center(child: Text('Nenhum alojamento encontrado'));
               }
 
@@ -64,11 +64,11 @@ class _OwnerHomeBodyState extends State<OwnerHomeBody> {
                 return const Center(child: Text('Nenhum dado carregado'));
               }
 
-              final Republics = state.Republics;
+              final republics = state.republics;
               return ListView.builder(
-                itemCount: Republics.length,
+                itemCount: republics.length,
                 itemBuilder: (context, index) {
-                  final alojamento = Republics[index];
+                  final alojamento = republics[index];
                   final nearbyUniversities = alojamento['nearbyUniversities'] as List<dynamic>?;
                   final distance = nearbyUniversities != null && nearbyUniversities.isNotEmpty
                       ? '${(nearbyUniversities[0]['distanceKm'] as double?)?.toStringAsFixed(2) ?? 'N/A'} km'

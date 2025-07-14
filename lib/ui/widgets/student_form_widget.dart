@@ -19,7 +19,6 @@ class _StudentFormState extends State<StudentForm> {
   final degreeController = TextEditingController();
   final originController = TextEditingController();
   String? sex;
-  final universityController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -27,7 +26,6 @@ class _StudentFormState extends State<StudentForm> {
   final ageFocus = FocusNode();
   final degreeFocus = FocusNode();
   final originFocus = FocusNode();
-  final universityFocus = FocusNode();
   final emailFocus = FocusNode();
   final passwordFocus = FocusNode();
 
@@ -37,14 +35,12 @@ class _StudentFormState extends State<StudentForm> {
     ageController.dispose();
     degreeController.dispose();
     originController.dispose();
-    universityController.dispose();
     emailController.dispose();
     passwordController.dispose();
     nameFocus.dispose();
     ageFocus.dispose();
     degreeFocus.dispose();
     originFocus.dispose();
-    universityFocus.dispose();
     emailFocus.dispose();
     passwordFocus.dispose();
     super.dispose();
@@ -57,8 +53,7 @@ class _StudentFormState extends State<StudentForm> {
         ageController.text.trim().isEmpty ||
         degreeController.text.trim().isEmpty ||
         originController.text.trim().isEmpty ||
-        sex == null ||
-        universityController.text.trim().isEmpty) {
+        sex == null) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Preencha todos os campos para estudante')));
@@ -76,7 +71,6 @@ class _StudentFormState extends State<StudentForm> {
           degree: degreeController.text.trim(),
           origin: originController.text.trim(),
           sex: sex ?? "",
-          university: universityController.text.trim(),
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         ),
@@ -137,16 +131,7 @@ class _StudentFormState extends State<StudentForm> {
           onChanged: (value) => setState(() => sex = value),
         ),
         SizedBox(height: 8),
-        TextField(
-          controller: universityController,
-          focusNode: universityFocus,
-          decoration: const InputDecoration(labelText: 'Universidade'),
-          textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(emailFocus);
-          },
-        ),
-        SizedBox(height: 8),
+
         TextField(
           controller: emailController,
           focusNode: emailFocus,

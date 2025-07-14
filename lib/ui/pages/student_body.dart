@@ -2,6 +2,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/home/student/student_home_cubit.dart';
 import 'package:loca_student/bloc/home/student/student_home_state.dart';
+import 'package:loca_student/data/models/republic.dart';
+import 'package:loca_student/utils/calculate_coordinates.dart';
+import 'package:loca_student/utils/mock_universities.dart';
 
 class StudentHomeBody extends StatefulWidget {
   const StudentHomeBody({super.key});
@@ -12,6 +15,45 @@ class StudentHomeBody extends StatefulWidget {
 
 class _StudentHomeBodyState extends State<StudentHomeBody> {
   final TextEditingController _searchController = TextEditingController();
+
+  void _showRepublicDetailsDialog(RepublicModel rep) {
+    final distanceMessages = getNearbyUniversitiesDistanceMessages(
+      latitude: rep.latitude,
+      longitude: rep.longitude,
+      universities: mockUniversities,
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(rep.username),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Endereço: ${rep.address}'),
+                Text('Valor: R\$${rep.value.toStringAsFixed(2)}/mês'),
+                const SizedBox(height: 8),
+                const Text('Telefone: (11) 99999-9999'),
+                const SizedBox(height: 8),
+                if (distanceMessages.isNotEmpty)
+                  ...distanceMessages.map(
+                    (msg) => Text(
+                      msg,
+                      style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Fechar')),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -31,10 +73,10 @@ class _StudentHomeBodyState extends State<StudentHomeBody> {
     super.dispose();
   }
 
-  void _onSearchSubmitted(String texto) {
-    final cidade = texto.trim();
-    if (cidade.isNotEmpty) {
-      context.read<StudentHomeCubit>().searchRepublicsByCity(cidade);
+  void _onSearchSubmitted(String text) {
+    final city = text.trim();
+    if (city.isNotEmpty) {
+      context.read<StudentHomeCubit>().searchRepublicsByCity(city);
     }
   }
 
@@ -66,22 +108,23 @@ class _StudentHomeBodyState extends State<StudentHomeBody> {
                 return Center(child: Text(state.error!));
               }
 
-              if (state.Republics.isEmpty) {
+              if (state.republics.isEmpty) {
                 return const Center(child: Text('Nenhum alojamento encontrado'));
               }
 
               return ListView.builder(
-                itemCount: state.Republics.length,
+                itemCount: state.republics.length,
                 itemBuilder: (context, index) {
-                  final item = state.Republics[index];
+                  final rep = state.republics[index];
                   return Card(
                     margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: ListTile(
-                      title: Text(item),
-                      subtitle: const Text('R\$500/mês • 1km da universidade'),
-                      trailing: const Icon(Icons.chevron_right),
+                      leading: const Icon(Icons.home),
+                      title: Text(rep.username),
+                      subtitle: Text('${rep.address} • \$${rep.value.toStringAsFixed(2)}/mês'),
+                      trailing: const Icon(Icons.chevron_right), // ação de escolher
                       onTap: () {
-                        // abrir detalhes
+                        _showRepublicDetailsDialog(rep);
                       },
                     ),
                   );

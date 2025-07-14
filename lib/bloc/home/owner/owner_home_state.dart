@@ -17,18 +17,18 @@ class OwnerLoaded extends OwnerState {
   final double latitude;
   final double longitude;
   final List<University> nearbyUniversities;
-  final List<Map<String, dynamic>> Republics;
+  final List<Map<String, dynamic>> republics;
 
   const OwnerLoaded({
     required this.address,
     required this.latitude,
     required this.longitude,
     required this.nearbyUniversities,
-    this.Republics = const [],
+    this.republics = const [],
   });
 
   @override
-  List<Object?> get props => [address, latitude, longitude, nearbyUniversities, Republics];
+  List<Object?> get props => [address, latitude, longitude, nearbyUniversities, republics];
 
   OwnerLoaded copyWith({
     String? address,
@@ -42,7 +42,7 @@ class OwnerLoaded extends OwnerState {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       nearbyUniversities: nearbyUniversities ?? this.nearbyUniversities,
-      Republics: Republics ?? this.Republics,
+      republics: Republics ?? republics,
     );
   }
 }
