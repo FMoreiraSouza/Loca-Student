@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/profile/profile_cubit.dart';
 import 'package:loca_student/bloc/profile/profile_state.dart';
 import 'package:loca_student/data/repositories/profile_repository.dart';
+import 'package:loca_student/ui/pages/user_type_page.dart';
 import 'package:loca_student/ui/widgets/owner_profile_widget.dart';
 import 'package:loca_student/ui/widgets/student_profile_widget.dart';
 
@@ -17,8 +18,10 @@ class ProfilePage extends StatelessWidget {
         body: BlocConsumer<ProfileCubit, ProfileState>(
           listener: (context, state) {
             if (state.status == ProfileStatus.initial) {
-              // Após logout, redireciona para a LoginPage e remove todas as rotas anteriores
-              Navigator.of(context).pop();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const UserTypePage()),
+                (route) => false,
+              );
             }
           },
           builder: (context, state) {

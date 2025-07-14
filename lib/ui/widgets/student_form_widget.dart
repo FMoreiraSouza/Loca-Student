@@ -124,10 +124,6 @@ class _StudentFormState extends State<StudentForm> {
           controller: originController,
           focusNode: originFocus,
           decoration: const InputDecoration(labelText: 'De onde vem'),
-          textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(universityFocus);
-          },
         ),
         SizedBox(height: 8),
         DropdownButtonFormField<String>(
@@ -168,7 +164,10 @@ class _StudentFormState extends State<StudentForm> {
           decoration: const InputDecoration(labelText: 'Senha'),
           obscureText: true,
           textInputAction: TextInputAction.done,
-          onEditingComplete: () => _submitForm(context),
+          onEditingComplete: () {
+            // Fechar o teclado
+            FocusScope.of(context).unfocus();
+          },
         ),
         const SizedBox(height: 24),
         widget.state is UserRegisterLoading

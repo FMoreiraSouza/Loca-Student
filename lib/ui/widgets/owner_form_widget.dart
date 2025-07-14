@@ -224,7 +224,10 @@ class _OwnerFormState extends State<OwnerForm> {
           decoration: const InputDecoration(labelText: 'Senha'),
           obscureText: true,
           textInputAction: TextInputAction.done,
-          onEditingComplete: () => _submitForm(context),
+          onEditingComplete: () {
+            // Fechar o teclado
+            FocusScope.of(context).unfocus();
+          },
         ),
         const SizedBox(height: 24),
         widget.state is UserRegisterLoading

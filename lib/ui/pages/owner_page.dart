@@ -19,8 +19,8 @@ class _OwnerPageState extends State<OwnerPage> {
         index: _currentIndex,
         children: [
           const Center(child: Text('Reservas')),
-          const Center(child: Text('Notificações')),
           const Center(child: Text('Inquilinos')),
+          const Center(child: Text('Notificações')),
           const ProfilePage(),
         ],
       ),
@@ -31,9 +31,9 @@ class _OwnerPageState extends State<OwnerPage> {
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Reservas'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Notificações'),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Inquilinos'),
+          BottomNavigationBarItem(icon: Icon(Icons.home_work), label: 'Reservas'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Inquilinos'),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notificações'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),

@@ -21,13 +21,10 @@ class _StudentPageState extends State<StudentPage> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          // Só provê o Cubit na aba de Início
-          BlocProvider(
-            create: (_) => StudentHomeCubit()..loadAlojamentos(),
-            child: const StudentHomeBody(),
-          ),
-          const Center(child: Text('Notificações')),
+          // Cubit sem load automático
+          BlocProvider(create: (_) => StudentHomeCubit(), child: const StudentHomeBody()),
           const Center(child: Text('Minhas reservas')),
+          const Center(child: Text('Notificações')),
           const ProfilePage(),
         ],
       ),
@@ -38,9 +35,9 @@ class _StudentPageState extends State<StudentPage> {
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Repúblicas'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Notificações'),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Minhas reservas'),
+          BottomNavigationBarItem(icon: Icon(Icons.home_work), label: 'Repúblicas'),
+          BottomNavigationBarItem(icon: Icon(Icons.add_home_work), label: 'Minhas reservas'),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notificações'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),

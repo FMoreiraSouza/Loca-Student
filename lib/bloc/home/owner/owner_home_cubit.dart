@@ -5,11 +5,11 @@ import 'package:loca_student/bloc/home/owner/owner_home_state.dart';
 class OwnerHomeCubit extends Cubit<OwnerState> {
   OwnerHomeCubit() : super(OwnerInitial());
 
-  void filterAlojamentos(String query) {
+  void filterRepublics(String query) {
     if (state is! OwnerLoaded) return;
 
     final currentState = state as OwnerLoaded;
-    final filtered = currentState.alojamentos.where((alojamento) {
+    final filtered = currentState.Republics.where((alojamento) {
       final name = alojamento['name']?.toString().toLowerCase() ?? '';
       final address = alojamento['address']?.toString().toLowerCase() ?? '';
       final city = alojamento['city']?.toString().toLowerCase() ?? '';
@@ -21,6 +21,6 @@ class OwnerHomeCubit extends Cubit<OwnerState> {
           state.contains(searchQuery);
     }).toList();
 
-    emit(currentState.copyWith(alojamentos: filtered));
+    emit(currentState.copyWith(Republics: filtered));
   }
 }

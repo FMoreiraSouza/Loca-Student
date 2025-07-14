@@ -118,8 +118,12 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         obscureText: true,
                         textInputAction: TextInputAction.done,
-                        onEditingComplete: () => _submitLogin(context),
+                        onEditingComplete: () {
+                          // Fechar o teclado
+                          FocusScope.of(context).unfocus();
+                        },
                       ),
+
                       const SizedBox(height: 16),
                       state is LoginLoading
                           ? const CircularProgressIndicator()

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/auth/user_register_bloc.dart';
 import 'package:loca_student/bloc/auth/user_register_state.dart';
 import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
-import 'package:loca_student/ui/pages/home_page.dart';
 import 'package:loca_student/ui/widgets/owner_form_widget.dart';
 import 'package:loca_student/ui/widgets/student_form_widget.dart';
 
@@ -23,11 +22,7 @@ class UserRegisterPage extends StatelessWidget {
       body: BlocConsumer<UserRegisterBloc, UserRegisterState>(
         listener: (context, state) {
           if (state is UserRegisterSuccess) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => HomePage(userType: context.read<UserTypeCubit>().state),
-              ),
-            );
+            Navigator.of(context).pop();
           } else if (state is UserRegisterFailure) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
           }

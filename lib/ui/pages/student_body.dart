@@ -14,20 +14,28 @@ class _StudentHomeBodyState extends State<StudentHomeBody> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+
+    _searchController.addListener(() {
+      final texto = _searchController.text.trim();
+      if (texto.isEmpty) {
+        context.read<StudentHomeCubit>().clearRepublics();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
 
-  void _onSearchChanged() {
-    // Aqui você pode disparar evento no Cubit para filtrar alojamentos
-    // Exemplo: context.read<StudentHomeCubit>().filterAlojamentos(_searchController.text);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController.addListener(_onSearchChanged);
+  void _onSearchSubmitted(String texto) {
+    final cidade = texto.trim();
+    if (cidade.isNotEmpty) {
+      context.read<StudentHomeCubit>().searchRepublicsByCity(cidade);
+    }
   }
 
   @override
@@ -38,6 +46,7 @@ class _StudentHomeBodyState extends State<StudentHomeBody> {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: TextField(
             controller: _searchController,
+            onSubmitted: _onSearchSubmitted,
             decoration: InputDecoration(
               hintText: 'Onde você procura?',
               prefixIcon: const Icon(Icons.search),
@@ -57,14 +66,14 @@ class _StudentHomeBodyState extends State<StudentHomeBody> {
                 return Center(child: Text(state.error!));
               }
 
-              if (state.alojamentos.isEmpty) {
+              if (state.Republics.isEmpty) {
                 return const Center(child: Text('Nenhum alojamento encontrado'));
               }
 
               return ListView.builder(
-                itemCount: state.alojamentos.length,
+                itemCount: state.Republics.length,
                 itemBuilder: (context, index) {
-                  final item = state.alojamentos[index];
+                  final item = state.Republics[index];
                   return Card(
                     margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: ListTile(

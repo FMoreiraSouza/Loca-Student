@@ -2,19 +2,19 @@
 
 class StudentHomeState extends Equatable {
   final bool isLoading;
-  final List<String> alojamentos; // Trocar por seu modelo real futuramente
+  final List<dynamic> Republics; // Trocar por seu modelo real futuramente
   final String? error;
 
-  const StudentHomeState({this.isLoading = false, this.alojamentos = const [], this.error});
+  const StudentHomeState({this.isLoading = false, this.Republics = const [], this.error});
 
-  StudentHomeState copyWith({bool? isLoading, List<String>? alojamentos, String? error}) {
+  StudentHomeState copyWith({bool? isLoading, List<dynamic>? Republics, String? error}) {
     return StudentHomeState(
       isLoading: isLoading ?? this.isLoading,
-      alojamentos: alojamentos ?? this.alojamentos,
+      Republics: Republics ?? this.Republics,
       error: error,
     );
   }
 
   @override
-  List<Object?> get props => [isLoading, alojamentos, error];
+  List<Object?> get props => [isLoading, Republics, error];
 }

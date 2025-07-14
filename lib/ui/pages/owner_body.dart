@@ -20,7 +20,7 @@ class _OwnerHomeBodyState extends State<OwnerHomeBody> {
   }
 
   void _onSearchChanged() {
-    context.read<OwnerHomeCubit>().filterAlojamentos(_searchController.text);
+    context.read<OwnerHomeCubit>().filterRepublics(_searchController.text);
   }
 
   @override
@@ -38,7 +38,7 @@ class _OwnerHomeBodyState extends State<OwnerHomeBody> {
           child: TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Pesquisar seus alojamentos',
+              hintText: 'Pesquisar seus Republics',
               prefixIcon: const Icon(Icons.search),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
@@ -56,7 +56,7 @@ class _OwnerHomeBodyState extends State<OwnerHomeBody> {
                 return Center(child: Text(state.message));
               }
 
-              if (state is OwnerLoaded && state.alojamentos.isEmpty) {
+              if (state is OwnerLoaded && state.Republics.isEmpty) {
                 return const Center(child: Text('Nenhum alojamento encontrado'));
               }
 
@@ -64,11 +64,11 @@ class _OwnerHomeBodyState extends State<OwnerHomeBody> {
                 return const Center(child: Text('Nenhum dado carregado'));
               }
 
-              final alojamentos = state.alojamentos;
+              final Republics = state.Republics;
               return ListView.builder(
-                itemCount: alojamentos.length,
+                itemCount: Republics.length,
                 itemBuilder: (context, index) {
-                  final alojamento = alojamentos[index];
+                  final alojamento = Republics[index];
                   final nearbyUniversities = alojamento['nearbyUniversities'] as List<dynamic>?;
                   final distance = nearbyUniversities != null && nearbyUniversities.isNotEmpty
                       ? '${(nearbyUniversities[0]['distanceKm'] as double?)?.toStringAsFixed(2) ?? 'N/A'} km'
