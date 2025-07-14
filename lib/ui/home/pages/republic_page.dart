@@ -1,5 +1,8 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:loca_student/ui/home/reservation-list.dart/widgets/republic_reservation_list_widget.dart';
 import 'package:loca_student/ui/profile/pages/profile_page.dart';
+import 'package:loca_student/ui/about/pages/about_page.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class RepublicPage extends StatefulWidget {
   const RepublicPage({super.key});
@@ -10,31 +13,63 @@ class RepublicPage extends StatefulWidget {
 
 class _RepublicPageState extends State<RepublicPage> {
   int _currentIndex = 0;
+  ParseObject? _currentUser;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUser();
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final user = await ParseUser.currentUser() as ParseObject?;
+    setState(() {
+      _currentUser = user;
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading || _currentUser == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Olá, Proprietário 👋'), automaticallyImplyLeading: false),
+      appBar: AppBar(
+        title: const Text('Olá, Proprietário 👋'),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: 'Sobre',
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutPage()));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.person),
+            tooltip: 'Perfil',
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage()));
+            },
+          ),
+        ],
+      ),
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          const Center(child: Text('Reservas')),
+          InterestStudentsWidget(currentUser: _currentUser!),
           const Center(child: Text('Inquilinos')),
-          const Center(child: Text('Notificações')),
-          const ProfilePage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_work), label: 'Reservas'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Inquilinos'),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notificações'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),
     );

@@ -23,6 +23,8 @@ class _StudentHomeWidgetState extends State<StudentHomeWidget> {
       universities: mockUniversities,
     );
 
+    final hasNoVacancies = rep.vacancies == 0;
+
     showDialog(
       context: context,
       builder: (context) {
@@ -35,7 +37,13 @@ class _StudentHomeWidgetState extends State<StudentHomeWidget> {
                 Text('Endereço: ${rep.address}'),
                 Text('Valor: R\$${rep.value.toStringAsFixed(2)}/mês'),
                 const SizedBox(height: 8),
-                Text('Vagas disponíveis: ${rep.vacancies}'),
+                if (hasNoVacancies)
+                  const Text(
+                    'Não há mais vagas nessa república',
+                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  )
+                else
+                  Text('Vagas disponíveis: ${rep.vacancies}'),
                 const SizedBox(height: 8),
                 Text('Telefone: ${rep.phone}'),
                 const SizedBox(height: 8),
@@ -51,13 +59,15 @@ class _StudentHomeWidgetState extends State<StudentHomeWidget> {
           ),
           actions: [
             TextButton(onPressed: () => Navigator.pop(context), child: const Text('Fechar')),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.pop(context); // Fecha o diálogo
-                await _reserveSpot(rep);
-              },
-              child: const Text('Fazer Reserva'),
-            ),
+            // Só mostra o botão de reserva se ainda houver vagas
+            if (!hasNoVacancies)
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context); // Fecha o diálogo
+                  await _reserveSpot(rep);
+                },
+                child: const Text('Fazer Reserva'),
+              ),
           ],
         );
       },
@@ -74,13 +84,20 @@ class _StudentHomeWidgetState extends State<StudentHomeWidget> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Reserva realizada com sucesso')));
-
-        // Atualiza a lista após reserva
-        cubit.searchRepublicsByCity(rep.city);
+        cubit.searchRepublicsByCity(rep.city); // Atualiza a lista
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao reservar: $e')));
+        final errorMsg = e.toString();
+        final isDuplicate = errorMsg.contains('já fez uma reserva');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isDuplicate ? 'Você já fez essa reserva!' : 'Erro ao reservar: $errorMsg',
+            ),
+          ),
+        );
       }
     }
   }

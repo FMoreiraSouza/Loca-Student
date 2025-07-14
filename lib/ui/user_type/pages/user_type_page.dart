@@ -19,13 +19,49 @@ class UserTypePage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Você é', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 32),
+              // LOGO / TÍTULO APP COM BORDA
+              Container(
+                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.only(bottom: 32),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Column(
+                  children: [
+                    Text(
+                      'Loca Student',
+                      style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Morar bem é estudar melhor!',
+                      style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+                    ),
+                  ],
+                ),
+              ),
+
+              // TÍTULO SECUNDÁRIO
+              const Text(
+                'Você é',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // BOTÕES
               ElevatedButton(
                 onPressed: () => _goToLogin(context, UserType.student),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(200, 50),
                   textStyle: const TextStyle(fontSize: 18),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 4,
                 ),
                 child: const Text('Estudante'),
               ),
@@ -35,6 +71,8 @@ class UserTypePage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(200, 50),
                   textStyle: const TextStyle(fontSize: 18),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 4,
                 ),
                 child: const Text('República'),
               ),

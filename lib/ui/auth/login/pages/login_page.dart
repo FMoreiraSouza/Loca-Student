@@ -92,8 +92,8 @@ class _LoginPageState extends State<LoginPage> {
                         tooltip: 'Voltar',
                       ),
                       userType == UserType.student
-                          ? Image.asset('content/student.png', height: 200)
-                          : Image.asset('content/republic.png', height: 200),
+                          ? Image.asset('content/student.png', height: 200, color: Colors.white)
+                          : Image.asset('content/republic.png', height: 200, color: Colors.white),
                       const SizedBox(height: 24),
                       TextField(
                         controller: emailController,

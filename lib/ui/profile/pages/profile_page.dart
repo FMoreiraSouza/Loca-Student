@@ -15,6 +15,7 @@ class ProfilePage extends StatelessWidget {
     return BlocProvider(
       create: (_) => ProfileCubit(profileRepository: ProfileRepository())..loadProfile(),
       child: Scaffold(
+        appBar: AppBar(title: const Text('Perfil')),
         body: BlocConsumer<ProfileCubit, ProfileState>(
           listener: (context, state) {
             if (state.status == ProfileStatus.initial) {
@@ -31,7 +32,7 @@ class ProfilePage extends StatelessWidget {
                 _buildProfileContent(context, state),
                 if (isLoading)
                   Container(
-                    color: Colors.white,
+                    color: Colors.black,
                     child: const Center(child: CircularProgressIndicator()),
                   ),
               ],
