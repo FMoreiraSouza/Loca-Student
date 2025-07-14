@@ -1,26 +1,13 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/root/splash_cubit.dart';
-import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
 import 'package:loca_student/data/services/shared_preferences_service.dart';
 import 'package:loca_student/ui/pages/home_page.dart';
 import 'package:loca_student/ui/pages/user_type_page.dart';
+import 'package:loca_student/utils/convert_data.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
-
-  // Função auxiliar para converter String? em UserType?
-  UserType? _stringToUserType(String? userTypeString) {
-    if (userTypeString == null) return null;
-    switch (userTypeString) {
-      case 'estudante':
-        return UserType.estudante;
-      case 'proprietario':
-        return UserType.proprietario;
-      default:
-        return null;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +20,7 @@ class SplashPage extends StatelessWidget {
         }
 
         // Converte o resultado do SharedPreferences para UserType?
-        final userType = _stringToUserType(snapshot.data);
+        final userType = stringToUserType(snapshot.data);
 
         return BlocListener<SplashCubit, SplashState>(
           listener: (context, state) {

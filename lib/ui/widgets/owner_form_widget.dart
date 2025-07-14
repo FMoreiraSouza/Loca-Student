@@ -73,10 +73,10 @@ class _OwnerFormState extends State<OwnerForm> {
   }
 
   // Função para consultar a bounding box da cidade usando Nominatim
-  Future<Map<String, double>?> _getCityCoordinates(String city, String state) async {
+  Future<Map<String, double>?> _getCityCoordinates(String city) async {
     try {
-      const userAgent = 'LocaStudent/1.0 (seu.email@exemplo.com)'; // Substitua pelo seu e-mail
-      final query = '$city, $state';
+      const userAgent = 'LocaStudent/1.0 (fmoreirasouza701@gmail.com)'; // Substitua pelo seu e-mail
+      final query = city;
       final url =
           'https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(query)}&format=json&limit=1&addressdetails=1&featuretype=city';
       final response = await http.get(Uri.parse(url), headers: {'User-Agent': userAgent});
@@ -112,10 +112,7 @@ class _OwnerFormState extends State<OwnerForm> {
   void _submitForm(BuildContext context) async {
     if (_validateFields(context)) {
       // Obtém coordenadas aleatórias com base na cidade e estado
-      final coords = await _getCityCoordinates(
-        cityController.text.trim(),
-        stateController.text.trim(),
-      );
+      final coords = await _getCityCoordinates(cityController.text.trim());
 
       // Verifica se o widget ainda está montado antes de usar o context
       if (!mounted) return;

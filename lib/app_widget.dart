@@ -2,9 +2,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/auth/login_bloc.dart';
 import 'package:loca_student/bloc/auth/user_register_bloc.dart';
+import 'package:loca_student/bloc/home/owner/owner_home_cubit.dart';
+import 'package:loca_student/bloc/home/student/student_home_cubit.dart';
+import 'package:loca_student/bloc/profile/profile_cubit.dart';
 import 'package:loca_student/bloc/root/splash_cubit.dart';
 import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
 import 'package:loca_student/data/repositories/auth_repository.dart';
+import 'package:loca_student/data/repositories/profile_repository.dart';
 import 'package:loca_student/ui/pages/splash_page.dart';
 import 'package:loca_student/ui/theme/app_theme.dart'; // Importa o tema
 
@@ -29,6 +33,12 @@ class AppWidget extends StatelessWidget {
           BlocProvider(
             create: (context) =>
                 UserRegisterBloc(authRepository: RepositoryProvider.of<AuthRepository>(context)),
+          ),
+          BlocProvider(create: (context) => OwnerHomeCubit()),
+          BlocProvider(create: (context) => StudentHomeCubit()),
+          BlocProvider(
+            create: (context) =>
+                ProfileCubit(profileRepository: RepositoryProvider.of<ProfileRepository>(context)),
           ),
         ],
         child: MaterialApp(

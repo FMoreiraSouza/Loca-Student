@@ -51,74 +51,95 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => HomePage(userType: context.read<UserTypeCubit>().state),
-              ),
-            );
-          } else if (state is LoginFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+            final selectedType = context.read<UserTypeCubit>().state;
+            final userTypeFromBackend = state.userType;
+
+            // Verifica se o tipo selecionado pelo usuário é o mesmo do backend
+            if (selectedType != userTypeFromBackend) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Esse usuário não corresponde ao tipo em questão')),
+              );
+              return;
+            }
+
+            // Se estiver tudo certo, navega para a HomePage
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => HomePage(userType: state.userType)));
           }
         },
+
         builder: (context, state) {
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_circle_left, size: 50),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  tooltip: 'Voltar',
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight:
+                      MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).viewPadding.top -
+                      MediaQuery.of(context).viewInsets.bottom,
                 ),
-                userType == UserType.estudante
-                    ? Image.asset('content/student.png', height: 200)
-                    : Image.asset('content/republic.png', height: 200),
-                const SizedBox(height: 24),
-                TextField(
-                  controller: emailController,
-                  focusNode: emailFocus,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email, color: Color(0xFF4B4B4B)),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  onEditingComplete: () {
-                    FocusScope.of(context).requestFocus(passwordFocus);
-                  },
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: passwordController,
-                  focusNode: passwordFocus,
-                  decoration: const InputDecoration(
-                    labelText: 'Senha',
-                    prefixIcon: Icon(Icons.lock, color: Color(0xFF4B4B4B)),
-                  ),
-                  obscureText: true,
-                  textInputAction: TextInputAction.done,
-                  onEditingComplete: () => _submitLogin(context),
-                ),
-                const SizedBox(height: 16),
-                state is LoginLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                        onPressed: () => _submitLogin(context),
-                        child: const Text('Entrar'),
+                child: IntrinsicHeight(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_circle_left, size: 50),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        tooltip: 'Voltar',
                       ),
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(
-                      context,
-                    ).push(MaterialPageRoute(builder: (context) => const UserRegisterPage()));
-                  },
-                  child: const Text('Não tem conta? Cadastre-se'),
+                      userType == UserType.estudante
+                          ? Image.asset('content/student.png', height: 200)
+                          : Image.asset('content/republic.png', height: 200),
+                      const SizedBox(height: 24),
+                      TextField(
+                        controller: emailController,
+                        focusNode: emailFocus,
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                          prefixIcon: Icon(Icons.email, color: Color(0xFF4B4B4B)),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        onEditingComplete: () {
+                          FocusScope.of(context).requestFocus(passwordFocus);
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: passwordController,
+                        focusNode: passwordFocus,
+                        decoration: const InputDecoration(
+                          labelText: 'Senha',
+                          prefixIcon: Icon(Icons.lock, color: Color(0xFF4B4B4B)),
+                        ),
+                        obscureText: true,
+                        textInputAction: TextInputAction.done,
+                        onEditingComplete: () => _submitLogin(context),
+                      ),
+                      const SizedBox(height: 16),
+                      state is LoginLoading
+                          ? const CircularProgressIndicator()
+                          : ElevatedButton(
+                              onPressed: () => _submitLogin(context),
+                              child: const Text('Entrar'),
+                            ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(
+                            context,
+                          ).push(MaterialPageRoute(builder: (context) => const UserRegisterPage()));
+                        },
+                        child: const Text('Não tem conta? Cadastre-se'),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
+              ),
             ),
           );
         },

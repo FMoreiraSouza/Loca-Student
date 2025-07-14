@@ -1,5 +1,6 @@
 ﻿import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/auth/login_event.dart';
+import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
 import 'package:loca_student/data/repositories/auth_repository.dart';
 import 'login_state.dart';
 
@@ -13,7 +14,20 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       final result = await authRepository.login(event.email, event.password);
 
       if (result.success) {
-        emit(LoginSuccess());
+        final userTypeStr = result.userType?.toLowerCase();
+        UserType? userType;
+
+        if (userTypeStr == 'estudante') {
+          userType = UserType.estudante;
+        } else if (userTypeStr == 'proprietario') {
+          userType = UserType.proprietario;
+        }
+
+        if (userType != null) {
+          emit(LoginSuccess(userType));
+        } else {
+          emit(LoginFailure('Tipo de usuário inválido.'));
+        }
       } else {
         emit(LoginFailure(result.message));
       }

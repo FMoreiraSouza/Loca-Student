@@ -1,13 +1,21 @@
-﻿import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
-import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
+﻿import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class AuthRepository {
   Future<LoginResult> login(String email, String password) async {
     try {
       final user = ParseUser(email, password, null);
       final response = await user.login();
+
       if (response.success && response.result != null) {
-        return LoginResult(success: true);
+        final currentUser = response.result as ParseUser;
+
+        final userType = currentUser.get<String>('userType');
+        if (userType == null || userType.isEmpty) {
+          return LoginResult(success: false, message: 'Tipo de usuário não encontrado');
+        }
+
+        return LoginResult(success: true, userType: userType);
       } else {
         return LoginResult(
           success: false,
@@ -37,7 +45,7 @@ class AuthRepository {
     double? longitude,
   }) async {
     try {
-      // 1. Cria usuário base
+      // Cria usuário base
       final user = ParseUser(username, password, emailAddress)
         ..set('userType', userType.toString().split('.').last);
 
@@ -46,9 +54,7 @@ class AuthRepository {
         return LoginResult(success: false, message: response.error?.message ?? 'Erro ao cadastrar');
       }
 
-      // 2. Cria objeto adicional com dados do tipo
       final createdUser = response.result as ParseUser;
-
       ParseObject additionalData;
 
       if (userType == UserType.estudante) {
@@ -75,7 +81,7 @@ class AuthRepository {
         return LoginResult(success: false, message: 'Erro ao salvar dados adicionais');
       }
 
-      return LoginResult(success: true);
+      return LoginResult(success: true, userType: userType.toString().split('.').last);
     } catch (e) {
       return LoginResult(success: false, message: 'Erro: $e');
     }
@@ -95,6 +101,7 @@ class AuthRepository {
 class LoginResult {
   final bool success;
   final String message;
+  final String? userType;
 
-  LoginResult({required this.success, this.message = ''});
+  LoginResult({required this.success, this.message = '', this.userType});
 }

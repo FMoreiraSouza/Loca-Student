@@ -12,13 +12,13 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ProfileCubit(ProfileRepository())..loadProfile(),
+      create: (_) => ProfileCubit(profileRepository: ProfileRepository())..loadProfile(),
       child: Scaffold(
         body: BlocConsumer<ProfileCubit, ProfileState>(
           listener: (context, state) {
             if (state.status == ProfileStatus.initial) {
-              // Exemplo: após logout, volta para a primeira tela
-              Navigator.of(context).popUntil((route) => route.isFirst);
+              // Após logout, redireciona para a LoginPage e remove todas as rotas anteriores
+              Navigator.of(context).pop();
             }
           },
           builder: (context, state) {
