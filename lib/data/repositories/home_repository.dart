@@ -33,6 +33,12 @@ class HomeRepository {
 
     final student = studentResult.results!.first as ParseObject;
 
+    // 👇 Pega nome e email do estudante (ajuste aqui para seus campos)
+    final studentName =
+        student.get<String>('name') ?? currentUser.get<String>('username') ?? 'Nome não informado';
+    final studentEmail =
+        student.get<String>('email') ?? currentUser.get<String>('email') ?? 'Email não informado';
+
     final republicPointer = ParseObject('Republic')..objectId = objectId;
 
     // 3. Verifica se já existe uma reserva para essa república e estudante
@@ -48,16 +54,7 @@ class HomeRepository {
       throw Exception('Você já fez uma reserva para essa república.');
     }
 
-    // 4. Atualiza a vaga na república
-    final republicObject = ParseObject('Republic')..objectId = objectId;
-    republicObject.set('vacancies', currentVacancies - 1);
-    final saveResponse = await republicObject.save();
-
-    if (!saveResponse.success) {
-      throw Exception(saveResponse.error?.message ?? 'Erro ao atualizar vagas');
-    }
-
-    // 5. Busca dados da república para salvar na reserva
+    // 4. Busca dados da república para salvar na reserva
     final republicQuery = QueryBuilder<ParseObject>(ParseObject('Republic'))
       ..whereEqualTo('objectId', objectId)
       ..includeObject(['user']);
@@ -88,11 +85,13 @@ class HomeRepository {
       throw Exception(createReservation.error?.message ?? 'Erro ao salvar reserva');
     }
 
-    // 7. Cria registro na tabela InterestStudents
+    // 7. Cria registro na tabela InterestStudents com nome e email já preenchidos
     final interestStudent = ParseObject('InterestStudents')
       ..set('student', student)
       ..set('republic', republic)
-      ..set('status', 'interested')
+      ..set('status', 'interessado')
+      ..set('studentName', studentName) // ✅ salva o nome direto
+      ..set('studentEmail', studentEmail) // ✅ salva o email direto
       ..set('createdAt', DateTime.now());
 
     final interestSave = await interestStudent.save();
@@ -165,6 +164,7 @@ class HomeRepository {
   }
 
   Future<List<ParseObject>> fetchInterestedStudents(ParseObject currentUserRepublic) async {
+    // Primeiro busca a república do usuário atual
     final republicQuery = QueryBuilder<ParseObject>(ParseObject('Republic'))
       ..whereEqualTo('user', currentUserRepublic);
 
@@ -178,8 +178,10 @@ class HomeRepository {
 
     final republic = republicResponse.results!.first;
 
+    // 🔥 Aqui filtramos apenas interessados com status = "pendente"
     final interestQuery = QueryBuilder<ParseObject>(ParseObject('InterestStudents'))
       ..whereEqualTo('republic', republic)
+      ..whereEqualTo('status', 'interessado') // 👈 FILTRO AQUI
       ..orderByDescending('createdAt');
 
     final interestResponse = await interestQuery.query();
@@ -188,6 +190,100 @@ class HomeRepository {
       return interestResponse.results!.cast<ParseObject>();
     } else {
       throw Exception(interestResponse.error?.message ?? 'Erro ao buscar interessados');
+    }
+  }
+
+  Future<void> updateReservationStatus(
+    ParseObject student,
+    ParseObject republic,
+    String newStatus,
+  ) async {
+    final reservationQuery = QueryBuilder<ParseObject>(ParseObject('Reservations'))
+      ..whereEqualTo('student', student)
+      ..whereEqualTo('republic', republic);
+
+    final reservationResponse = await reservationQuery.query();
+
+    if (reservationResponse.success &&
+        reservationResponse.results != null &&
+        reservationResponse.results!.isNotEmpty) {
+      final reservation = reservationResponse.results!.first as ParseObject;
+      reservation.set('status', newStatus);
+      final saveResponse = await reservation.save();
+      if (!saveResponse.success) {
+        throw Exception(saveResponse.error?.message ?? 'Erro ao atualizar status da reserva');
+      }
+    } else {
+      throw Exception('Reserva não encontrada para este estudante e república.');
+    }
+  }
+
+  Future<void> addTenant(ParseObject interested, ParseObject republic) async {
+    final studentName = interested.get<String>('studentName') ?? 'Nome não informado';
+    final studentEmail = interested.get<String>('studentEmail') ?? 'Email não informado';
+    final student = interested.get<ParseObject>('student');
+
+    final tenant = ParseObject('Tenants')
+      ..set('student', student)
+      ..set('republic', republic)
+      ..set('studentName', studentName)
+      ..set('studentEmail', studentEmail)
+      ..set('createdAt', DateTime.now());
+
+    final response = await tenant.save();
+    if (!response.success) {
+      throw Exception(response.error?.message ?? 'Erro ao salvar locatário');
+    }
+  }
+
+  Future<List<ParseObject>> fetchTenants(ParseObject currentUserRepublic) async {
+    final republicQuery = QueryBuilder<ParseObject>(ParseObject('Republic'))
+      ..whereEqualTo('user', currentUserRepublic);
+
+    final republicResponse = await republicQuery.query();
+    if (!republicResponse.success ||
+        republicResponse.results == null ||
+        republicResponse.results!.isEmpty) {
+      throw Exception('Nenhuma república encontrada');
+    }
+
+    final republic = republicResponse.results!.first;
+
+    final tenantsQuery = QueryBuilder<ParseObject>(ParseObject('Tenants'))
+      ..whereEqualTo('republic', republic)
+      ..orderByDescending('createdAt');
+
+    final tenantsResponse = await tenantsQuery.query();
+
+    if (tenantsResponse.success && tenantsResponse.results != null) {
+      return tenantsResponse.results!.cast<ParseObject>();
+    } else {
+      throw Exception(tenantsResponse.error?.message ?? 'Erro ao buscar locatários');
+    }
+  }
+
+  Future<void> updateVacancy(ParseObject republic) async {
+    // busca o republic atualizado
+    final query = QueryBuilder<ParseObject>(ParseObject('Republic'))
+      ..whereEqualTo('objectId', republic.objectId);
+
+    final response = await query.query();
+
+    if (!response.success || response.results == null || response.results!.isEmpty) {
+      throw Exception('República não encontrada para decrementar vaga');
+    }
+
+    final republicObj = response.results!.first as ParseObject;
+    final currentVacancies = republicObj.get<int>('vacancies') ?? 0;
+
+    if (currentVacancies <= 0) {
+      throw Exception('Sem vagas disponíveis para decrementar');
+    }
+
+    republicObj.set('vacancies', currentVacancies - 1);
+    final saveResponse = await republicObj.save();
+    if (!saveResponse.success) {
+      throw Exception(saveResponse.error?.message ?? 'Erro ao decrementar vaga');
     }
   }
 }

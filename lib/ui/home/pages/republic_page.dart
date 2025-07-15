@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:loca_student/ui/home/reservation-list.dart/widgets/republic_reservation_list_widget.dart';
+import 'package:loca_student/ui/home/republic/widgets/tenant_list_widget.dart';
+import 'package:loca_student/ui/home/reservation-list.dart/widgets/student_interested_list_widget.dart';
 import 'package:loca_student/ui/profile/pages/profile_page.dart';
 import 'package:loca_student/ui/about/pages/about_page.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
@@ -38,7 +39,7 @@ class _RepublicPageState extends State<RepublicPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Olá, Proprietário 👋'),
+        title: const Text('Olá, República 👋'),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
@@ -61,15 +62,15 @@ class _RepublicPageState extends State<RepublicPage> {
         index: _currentIndex,
         children: [
           InterestStudentsWidget(currentUser: _currentUser!),
-          const Center(child: Text('Inquilinos')),
+          TenantListPage(currentUser: _currentUser!),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_work), label: 'Reservas'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Inquilinos'),
+          BottomNavigationBarItem(icon: Icon(Icons.home_work), label: 'Interessados'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Locatários'),
         ],
       ),
     );

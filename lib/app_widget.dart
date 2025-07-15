@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/auth/login_bloc.dart';
 import 'package:loca_student/bloc/auth/user_register_bloc.dart';
 import 'package:loca_student/bloc/home/republic/republic_home_cubit.dart';
-import 'package:loca_student/bloc/home/republic/republic_reservation_list_cubit.dart';
+import 'package:loca_student/bloc/home/republic/student_interested_list_cubit.dart';
+import 'package:loca_student/bloc/home/republic/tenant_list_cubit.dart';
 import 'package:loca_student/bloc/home/student/student_home_cubit.dart';
 import 'package:loca_student/bloc/home/student/student_reservation_list_cubit.dart';
 import 'package:loca_student/bloc/profile/profile_cubit.dart';
@@ -83,6 +84,7 @@ class _AppWidgetState extends State<AppWidget> {
             create: (context) => ProfileCubit(profileRepository: context.read<ProfileRepository>()),
           ),
           BlocProvider(create: (context) => InterestStudentsCubit(context.read<HomeRepository>())),
+          BlocProvider(create: (context) => TenantListCubit(context.read<HomeRepository>())),
         ],
         child: MaterialApp(
           title: 'Loca Student',
