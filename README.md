@@ -1,4 +1,6 @@
-<img src="content/app_logo.png" alt="Logomarca">
+<p align="center">
+  <img src="content/app_logo.png" alt="Logomarca" width="300">
+</p>
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.32.4-blue?logo=flutter)
 ![Dart](https://img.shields.io/badge/Dart-3.8.1-blue?logo=dart)
