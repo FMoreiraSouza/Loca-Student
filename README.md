@@ -23,8 +23,7 @@ Além de um design moderno, o app prioriza **segurança** e **simplicidade**, ga
 - **Dart**: Linguagem principal usada no desenvolvimento.
 - **Flutter**: Framework para construção da interface e lógica de negócio.
 - **Parse Server**: Backend para autenticação, armazenamento de dados e gerenciamento das reservas.
-- **Flutter Bloc**: Gerenciamento de estado reativo e escalável.
-- **Shared Preferences**: Persistência local para pequenas informações (ex.: sessão de login).
+- **Bloc**: Gerenciamento de estado reativo e escalável.
 
 ---
 
@@ -82,10 +81,7 @@ Acompanhe suas reservas **pendentes** ou **aceitas** diretamente no app, podendo
 ## 🛠️ Ambiente de Desenvolvimento
 
 - **IDE:** Visual Studio Code  
-- **SDK:** Flutter 3.32.4  
-- **Dart:** 3.8.1  
-- **Gerenciamento de Estado:** flutter_bloc  
-- **Backend:** Parse Server (ex.: Back4App)
+- **MBaaS:** Back4App
 
 ---
 
