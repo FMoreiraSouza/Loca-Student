@@ -27,19 +27,7 @@ class UserTypePage extends StatelessWidget {
                   border: Border.all(color: Colors.black, width: 2),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Column(
-                  children: [
-                    Text(
-                      'Loca Student',
-                      style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Morar bem é estudar melhor!',
-                      style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
-                    ),
-                  ],
-                ),
+                child: Image.asset('content/app_icon.png', height: 150),
               ),
 
               // TÍTULO SECUNDÁRIO
