@@ -25,7 +25,7 @@ Além de um design moderno, o app prioriza **segurança** e **simplicidade**, ga
 
 ---
 
-## 📌 Funcionalidades
+## 🛎️ Funcionalidades
 
 O aplicativo **Loca Student** oferece as seguintes funcionalidades:
 
