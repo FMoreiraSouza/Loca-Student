@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
+import 'package:loca_student/bloc/user-type/user_type_cubit.dart';
 import 'package:loca_student/ui/auth/login/pages/login_page.dart';
 
 class UserTypePage extends StatelessWidget {

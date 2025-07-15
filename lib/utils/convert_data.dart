@@ -1,5 +1,5 @@
 ﻿// Função auxiliar para converter String? em UserType?
-import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
+import 'package:loca_student/bloc/user-type/user_type_cubit.dart';
 
 UserType? stringToUserType(String? userTypeString) {
   if (userTypeString == null) return null;

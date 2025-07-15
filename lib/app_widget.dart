@@ -1,18 +1,19 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loca_student/bloc/auth/login_bloc.dart';
-import 'package:loca_student/bloc/auth/user_register_bloc.dart';
-import 'package:loca_student/bloc/home/republic/republic_home_cubit.dart';
-import 'package:loca_student/bloc/home/republic/student_interested_list_cubit.dart';
-import 'package:loca_student/bloc/home/republic/tenant_list_cubit.dart';
-import 'package:loca_student/bloc/home/student/student_home_cubit.dart';
-import 'package:loca_student/bloc/home/student/student_reservation_list_cubit.dart';
+import 'package:loca_student/bloc/auth/login/login_bloc.dart';
+import 'package:loca_student/bloc/auth/user-register/user_register_bloc.dart';
+import 'package:loca_student/bloc/republic-home/interested_student_list_cubit.dart';
+import 'package:loca_student/bloc/republic-home/tenant_list_cubit.dart';
+import 'package:loca_student/bloc/student-home/filtered_republic_list_cubit.dart';
+import 'package:loca_student/bloc/student-home/student_reservation_list_cubit.dart';
 import 'package:loca_student/bloc/profile/profile_cubit.dart';
-import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
+import 'package:loca_student/bloc/user-type/user_type_cubit.dart';
 import 'package:loca_student/data/repositories/auth_repository.dart';
-import 'package:loca_student/data/repositories/home_repository.dart';
 import 'package:loca_student/data/repositories/profile_repository.dart';
-import 'package:loca_student/ui/home/pages/home_page.dart';
+import 'package:loca_student/data/repositories/republic_home_repository.dart';
+import 'package:loca_student/data/repositories/student_home_repository.dart';
+import 'package:loca_student/ui/student-home/pages/student_home_page.dart';
+import 'package:loca_student/ui/republic-home/pages/republic_home_page.dart';
 import 'package:loca_student/ui/theme/app_theme.dart';
 import 'package:loca_student/ui/user_type/pages/user_type_page.dart';
 import 'package:loca_student/utils/convert_data.dart';
@@ -41,21 +42,27 @@ class _AppWidgetState extends State<AppWidget> {
 
     if (isLogged) {
       final currentUser = await ParseUser.currentUser() as ParseUser?;
-      final userType = currentUser?.get<String>('userType');
+      final userTypeStr = currentUser?.get<String>('userType');
+      final userType = userTypeStr != null ? stringToUserType(userTypeStr) : null;
 
-      if (userType != null) {
-        _initialPage = HomePage(userType: stringToUserType(userType));
+      if (userType == UserType.student) {
+        _initialPage = const StudentHomePage();
+      } else if (userType == UserType.republic) {
+        _initialPage = const RepublicHomePage();
       } else {
+        // fallback caso userType esteja errado
         _initialPage = const UserTypePage();
       }
     } else {
       _initialPage = const UserTypePage();
     }
 
-    // Força pelo menos 300ms para exibir o loader visualmente
+    // Para dar um tempo de loader
     await Future.delayed(const Duration(milliseconds: 300));
 
-    setState(() => _isLoading = false);
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -63,7 +70,8 @@ class _AppWidgetState extends State<AppWidget> {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (_) => AuthRepository()),
-        RepositoryProvider(create: (_) => HomeRepository()),
+        RepositoryProvider(create: (_) => StudentHomeRepository()),
+        RepositoryProvider(create: (_) => RepublicHomeRepository()),
         RepositoryProvider(create: (_) => ProfileRepository()),
       ],
       child: MultiBlocProvider(
@@ -78,16 +86,21 @@ class _AppWidgetState extends State<AppWidget> {
           BlocProvider(
             create: (context) => UserRegisterBloc(authRepository: context.read<AuthRepository>()),
           ),
-          BlocProvider(create: (_) => RepublicHomeCubit()),
-          BlocProvider(create: (context) => StudentHomeCubit(context.read<HomeRepository>())),
           BlocProvider(
-            create: (context) => StudentReservationListCubit(context.read<HomeRepository>()),
+            create: (context) => FilteredRepublicListCubit(context.read<StudentHomeRepository>()),
+          ),
+          BlocProvider(
+            create: (context) => StudentReservationListCubit(context.read<StudentHomeRepository>()),
           ),
           BlocProvider(
             create: (context) => ProfileCubit(profileRepository: context.read<ProfileRepository>()),
           ),
-          BlocProvider(create: (context) => InterestStudentsCubit(context.read<HomeRepository>())),
-          BlocProvider(create: (context) => TenantListCubit(context.read<HomeRepository>())),
+          BlocProvider(
+            create: (context) => InterestStudentListCubit(context.read<RepublicHomeRepository>()),
+          ),
+          BlocProvider(
+            create: (context) => TenantListCubit(context.read<RepublicHomeRepository>()),
+          ),
         ],
         child: MaterialApp(
           title: 'Loca Student',

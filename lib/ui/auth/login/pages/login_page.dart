@@ -1,11 +1,12 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loca_student/bloc/auth/login_bloc.dart';
-import 'package:loca_student/bloc/auth/login_event.dart';
-import 'package:loca_student/bloc/auth/login_state.dart';
-import 'package:loca_student/bloc/user_type/user_type_cubit.dart';
-import 'package:loca_student/ui/auth/user_register/pages/user_register_page.dart';
-import 'package:loca_student/ui/home/pages/home_page.dart';
+import 'package:loca_student/bloc/auth/login/login_bloc.dart';
+import 'package:loca_student/bloc/auth/login/login_event.dart';
+import 'package:loca_student/bloc/auth/login/login_state.dart';
+import 'package:loca_student/bloc/user-type/user_type_cubit.dart';
+import 'package:loca_student/ui/auth/user-register/pages/user_register_page.dart';
+import 'package:loca_student/ui/republic-home/pages/republic_home_page.dart';
+import 'package:loca_student/ui/student-home/pages/student_home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -54,9 +55,21 @@ class LoginPageState extends State<LoginPage> {
           }
 
           if (state is LoginSuccess) {
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (context) => HomePage(userType: state.userType)));
+            // Redireciona direto baseado no tipo
+            if (state.userType == UserType.student) {
+              Navigator.of(
+                context,
+              ).pushReplacement(MaterialPageRoute(builder: (_) => const StudentHomePage()));
+            } else if (state.userType == UserType.republic) {
+              Navigator.of(
+                context,
+              ).pushReplacement(MaterialPageRoute(builder: (_) => const RepublicHomePage()));
+            } else {
+              // fallback, se precisar
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Tipo de usuário inválido')));
+            }
           }
         },
         builder: (context, state) {
