@@ -6,14 +6,14 @@ import 'package:loca_student/data/models/republic_model.dart';
 import 'package:loca_student/utils/calculate_coordinates.dart';
 import 'package:loca_student/utils/mock_universities.dart';
 
-class StudentHomeWidget extends StatefulWidget {
-  const StudentHomeWidget({super.key});
+class FilteredRepublicListWidget extends StatefulWidget {
+  const FilteredRepublicListWidget({super.key});
 
   @override
-  State<StudentHomeWidget> createState() => _StudentHomeWidgetState();
+  State<FilteredRepublicListWidget> createState() => _FilteredRepublicListWidgetState();
 }
 
-class _StudentHomeWidgetState extends State<StudentHomeWidget> {
+class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget> {
   final TextEditingController _searchController = TextEditingController();
 
   void _showRepublicDetailsDialog(RepublicModel rep) {

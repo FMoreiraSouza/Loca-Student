@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:loca_student/ui/republic-home/widgets/tenant_list_widget.dart';
-import 'package:loca_student/ui/republic-home/widgets/republic_home_widget.dart';
+import 'package:loca_student/ui/republic-home/widgets/interested_student_list_widget.dart';
 import 'package:loca_student/ui/profile/pages/profile_page.dart';
 import 'package:loca_student/ui/about/pages/about_page.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
@@ -61,7 +61,7 @@ class _RepublicHomePageState extends State<RepublicHomePage> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          RepublicHomeWidget(currentUser: _currentUser!),
+          InterestStudentListWidget(currentUser: _currentUser!),
           TenantListPage(currentUser: _currentUser!),
         ],
       ),

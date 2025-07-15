@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/student-home/student_reservation_list_cubit.dart';
 import 'package:loca_student/ui/student-home/widgets/student_reservation_list_widget.dart';
 import 'package:loca_student/ui/profile/pages/profile_page.dart';
-import 'package:loca_student/ui/student-home/widgets/student_home_widget.dart';
+import 'package:loca_student/ui/student-home/widgets/filtered_republic_list_widget.dart';
 import 'package:loca_student/ui/about/pages/about_page.dart';
 
 class StudentHomePage extends StatefulWidget {
@@ -41,7 +41,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
       ),
       body: IndexedStack(
         index: _currentIndex,
-        children: const [StudentHomeWidget(), StudentReservationListWidget()],
+        children: const [FilteredRepublicListWidget(), StudentReservationListWidget()],
       ),
 
       bottomNavigationBar: BottomNavigationBar(

@@ -39,9 +39,14 @@ class StudentHomeRepository {
     final republicPointer = ParseObject('Republic')..objectId = objectId;
 
     // Verifica se já existe uma reserva
+    // Verifica se já existe uma reserva ativa ou pendente (não cancelada)
     final existingReservationQuery = QueryBuilder<ParseObject>(ParseObject('Reservations'))
       ..whereEqualTo('republic', republicPointer)
-      ..whereEqualTo('student', student);
+      ..whereEqualTo('student', student)
+      ..whereNotEqualTo(
+        'status',
+        'cancelado',
+      ); // ✅ permite nova reserva se todas anteriores forem canceladas
 
     final existingReservationResponse = await existingReservationQuery.query();
     if (existingReservationResponse.results != null &&
@@ -95,6 +100,8 @@ class StudentHomeRepository {
 
   Future<List<ParseObject>> fetchReservations() async {
     final query = QueryBuilder<ParseObject>(ParseObject('Reservations'))
+      // 🔥 filtra somente status pendente ou aceito
+      ..whereContainedIn('status', ['pendente', 'aceito'])
       ..orderByDescending('createdAt');
 
     final response = await query.query();

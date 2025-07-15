@@ -45,7 +45,7 @@ class InterestStudentListCubit extends Cubit<InterestStudentListState> {
   }
 
   void removeInterested(ParseObject interested) {
-    final updatedList = List<ParseObject>.from(state.interesteds);
+    final updatedList = List<ParseObject>.from(state.interestedStudentList);
     updatedList.remove(interested);
     emit(state.copyWith(interestedStudents: updatedList));
   }

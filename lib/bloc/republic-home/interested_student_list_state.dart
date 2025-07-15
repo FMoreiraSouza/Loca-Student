@@ -3,9 +3,13 @@
 class InterestStudentListState {
   final bool isLoading;
   final String? error;
-  final List<ParseObject> interesteds;
+  final List<ParseObject> interestedStudentList;
 
-  InterestStudentListState({this.isLoading = false, this.error, this.interesteds = const []});
+  InterestStudentListState({
+    this.isLoading = false,
+    this.error,
+    this.interestedStudentList = const [],
+  });
 
   InterestStudentListState copyWith({
     bool? isLoading,
@@ -15,7 +19,7 @@ class InterestStudentListState {
     return InterestStudentListState(
       isLoading: isLoading ?? this.isLoading,
       error: error,
-      interesteds: interestedStudents ?? this.interesteds,
+      interestedStudentList: interestedStudents ?? interestedStudentList,
     );
   }
 }

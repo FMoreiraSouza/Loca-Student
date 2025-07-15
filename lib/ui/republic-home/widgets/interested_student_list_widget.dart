@@ -4,16 +4,16 @@ import 'package:loca_student/bloc/republic-home/interested_student_list_cubit.da
 import 'package:loca_student/bloc/republic-home/interested_student_list_state.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
-class RepublicHomeWidget extends StatefulWidget {
-  const RepublicHomeWidget({super.key, required this.currentUser});
+class InterestStudentListWidget extends StatefulWidget {
+  const InterestStudentListWidget({super.key, required this.currentUser});
 
   final ParseObject currentUser;
 
   @override
-  State<RepublicHomeWidget> createState() => _RepublicHomeWidgetState();
+  State<InterestStudentListWidget> createState() => _InterestStudentListWidgetState();
 }
 
-class _RepublicHomeWidgetState extends State<RepublicHomeWidget> {
+class _InterestStudentListWidgetState extends State<InterestStudentListWidget> {
   @override
   void initState() {
     super.initState();
@@ -32,14 +32,14 @@ class _RepublicHomeWidgetState extends State<RepublicHomeWidget> {
           return Center(child: Text('Erro ao carregar interessados:\n${state.error}'));
         }
 
-        if (state.interesteds.isEmpty) {
+        if (state.interestedStudentList.isEmpty) {
           return const Center(child: Text('Nenhum estudante interessado encontrado'));
         }
 
         return ListView.builder(
-          itemCount: state.interesteds.length,
+          itemCount: state.interestedStudentList.length,
           itemBuilder: (context, index) {
-            final interested = state.interesteds[index];
+            final interested = state.interestedStudentList[index];
             final studentName = interested.get<String>('studentName') ?? 'Nome não informado';
             final student = interested.get<ParseObject>('student');
             final republic = interested.get<ParseObject>('republic');
