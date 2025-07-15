@@ -16,10 +16,11 @@ class AuthRepository {
 
         return LoginResult(success: true, userType: userType);
       } else {
-        return LoginResult(
-          success: false,
-          message: response.error?.message ?? 'Erro ao fazer login',
-        );
+        final rawMessage = response.error?.message ?? '';
+        if (rawMessage.toLowerCase().contains('invalid')) {
+          return LoginResult(success: false, message: 'Email ou senha inválidos');
+        }
+        return LoginResult(success: false, message: 'Erro ao fazer login. Tente novamente.');
       }
     } catch (e) {
       return LoginResult(success: false, message: 'Erro: $e');

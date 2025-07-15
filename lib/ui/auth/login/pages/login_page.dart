@@ -11,10 +11,10 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final emailFocus = FocusNode();
@@ -29,17 +29,16 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _submitLogin(BuildContext context) {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Preencha todos os campos')));
-      return;
-    }
-    context.read<LoginBloc>().add(
-      LoginSubmitted(email: email, password: password, context: context),
+  void _showErrorDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('OK')),
+        ],
+      ),
     );
   }
 
@@ -50,25 +49,16 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
+          if (state is LoginFailure) {
+            _showErrorDialog(context, 'Erro de login', state.message);
+          }
+
           if (state is LoginSuccess) {
-            final selectedType = context.read<UserTypeCubit>().state;
-            final userTypeFromBackend = state.userType;
-
-            // Verifica se o tipo selecionado pelo usuário é o mesmo do backend
-            if (selectedType != userTypeFromBackend) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Esse usuário não corresponde ao tipo em questão')),
-              );
-              return;
-            }
-
-            // Se estiver tudo certo, navega para a HomePage
             Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (context) => HomePage(userType: state.userType)));
           }
         },
-
         builder: (context, state) {
           return SafeArea(
             child: SingleChildScrollView(
@@ -119,17 +109,28 @@ class _LoginPageState extends State<LoginPage> {
                         obscureText: true,
                         textInputAction: TextInputAction.done,
                         onEditingComplete: () {
-                          // Fechar o teclado
                           FocusScope.of(context).unfocus();
                         },
                       ),
-
                       const SizedBox(height: 16),
                       state is LoginLoading
                           ? const CircularProgressIndicator()
-                          : ElevatedButton(
-                              onPressed: () => _submitLogin(context),
-                              child: const Text('Entrar'),
+                          : SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  context.read<LoginBloc>().add(
+                                    LoginSubmitted(
+                                      email: emailController.text.trim(),
+                                      password: passwordController.text.trim(),
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                ),
+                                child: const Text('Entrar'),
+                              ),
                             ),
                       const SizedBox(height: 16),
                       TextButton(

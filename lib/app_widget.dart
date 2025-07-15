@@ -70,7 +70,10 @@ class _AppWidgetState extends State<AppWidget> {
         providers: [
           BlocProvider(create: (_) => UserTypeCubit()),
           BlocProvider(
-            create: (context) => LoginBloc(authRepository: context.read<AuthRepository>()),
+            create: (context) => LoginBloc(
+              authRepository: context.read<AuthRepository>(),
+              userTypeCubit: context.read<UserTypeCubit>(),
+            ),
           ),
           BlocProvider(
             create: (context) => UserRegisterBloc(authRepository: context.read<AuthRepository>()),
