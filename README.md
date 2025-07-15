@@ -1,4 +1,4 @@
-<img src="content/app_logo.png" alt="Logomarca" width="500" height="500">
+<img src="content/app_logo.png" alt="Logomarca">
 
 # 📱 Loca Student
 
