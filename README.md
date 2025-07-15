@@ -1,9 +1,5 @@
 <img src="content/app_logo.png" alt="Logomarca">
 
-# 📱 Loca Student
-
-Conectando estudantes a repúblicas de forma simples, rápida e segura.  
-
 ![Flutter](https://img.shields.io/badge/Flutter-3.32.4-blue?logo=flutter)
 ![Dart](https://img.shields.io/badge/Dart-3.8.1-blue?logo=dart)
 
