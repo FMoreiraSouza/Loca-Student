@@ -15,49 +15,53 @@ class UserTypePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // LOGO / TÍTULO APP COM BORDA
-              Image.asset('content/app_icon.png', height: 150),
-              const SizedBox(height: 16),
-
-              // TÍTULO SECUNDÁRIO
-              const Text(
-                'Você é',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  fontStyle: FontStyle.italic,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('content/app_icon.png', height: 150),
+                const SizedBox(height: 16),
+                const Text(
+                  'Você é',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-
-              // BOTÕES
-              ElevatedButton(
-                onPressed: () => _goToLogin(context, UserType.student),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(200, 50),
-                  textStyle: const TextStyle(fontSize: 18),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 4,
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => _goToLogin(context, UserType.student),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      textStyle: const TextStyle(fontSize: 18),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 4,
+                    ),
+                    child: const Text('Estudante'),
+                  ),
                 ),
-                child: const Text('Estudante'),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => _goToLogin(context, UserType.republic),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(200, 50),
-                  textStyle: const TextStyle(fontSize: 18),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 4,
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => _goToLogin(context, UserType.republic),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      textStyle: const TextStyle(fontSize: 18),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 4,
+                    ),
+                    child: const Text('República'),
+                  ),
                 ),
-                child: const Text('República'),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

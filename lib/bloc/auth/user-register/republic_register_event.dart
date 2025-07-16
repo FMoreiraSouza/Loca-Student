@@ -6,8 +6,6 @@ class RepublicRegisterSubmitted extends UserRegisterEvent {
   final String address;
   final String city;
   final String state;
-  final double latitude;
-  final double longitude;
   final String email;
   final String password;
   final int vacancies;
@@ -19,8 +17,6 @@ class RepublicRegisterSubmitted extends UserRegisterEvent {
     required this.address,
     required this.city,
     required this.state,
-    required this.latitude,
-    required this.longitude,
     required this.email,
     required this.password,
     required this.vacancies,

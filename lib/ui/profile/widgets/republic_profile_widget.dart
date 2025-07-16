@@ -25,7 +25,9 @@ class RepublicProfileWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Valor: R\$${data['value']?.toStringAsFixed(2) ?? 'Não informado'}'),
+        Text(
+          'Valor: R\$${(data['value'] as num?)?.toDouble().toStringAsFixed(2) ?? 'Não informado'}',
+        ),
         Text('Endereço: ${data['address'] ?? 'Não informado'}'),
         Text('Cidade: ${data['city'] ?? 'Não informado'}'),
         Text('Estado: ${data['state'] ?? 'Não informado'}'),

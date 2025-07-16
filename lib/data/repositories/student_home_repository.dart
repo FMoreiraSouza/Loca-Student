@@ -1,14 +1,32 @@
-﻿import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
+﻿import 'package:loca_student/data/models/republic_model.dart';
+import 'package:loca_student/data/models/reservation_model.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class StudentHomeRepository {
-  Future<List<ParseObject>> searchRepublicsByCity(String city) async {
+  Future<List<RepublicModel>> searchRepublicsByCity(String city) async {
     final query = QueryBuilder<ParseObject>(ParseObject('Republic'))
       ..whereEqualTo('city', city)
       ..includeObject(['user']);
 
     final response = await query.query();
     if (response.success && response.results != null) {
-      return response.results!.cast<ParseObject>();
+      // Aqui você já transforma para RepublicModel
+      return response.results!.map((obj) {
+        final user = obj.get<ParseObject>('user');
+        return RepublicModel(
+          objectId: obj.objectId ?? '',
+          username: user?['username'] ?? 'Desconhecido',
+          email: obj['email'] ?? '',
+          phone: obj['phone'] ?? '',
+          address: obj['address'] ?? '',
+          city: obj['city'] ?? '',
+          state: obj['state'] ?? '',
+          value: (obj['value'] as num?)?.toDouble() ?? 0.0,
+          vacancies: (obj['vacancies'] as num?)?.toInt() ?? 0,
+          latitude: (obj['latitude'] as num?)?.toDouble() ?? 0.0,
+          longitude: (obj['longitude'] as num?)?.toDouble() ?? 0.0,
+        );
+      }).toList();
     } else {
       throw Exception(response.error?.message ?? 'Erro ao buscar repúblicas');
     }
@@ -38,15 +56,10 @@ class StudentHomeRepository {
 
     final republicPointer = ParseObject('Republic')..objectId = objectId;
 
-    // Verifica se já existe uma reserva
-    // Verifica se já existe uma reserva ativa ou pendente (não cancelada)
     final existingReservationQuery = QueryBuilder<ParseObject>(ParseObject('Reservations'))
       ..whereEqualTo('republic', republicPointer)
       ..whereEqualTo('student', student)
-      ..whereNotEqualTo(
-        'status',
-        'cancelado',
-      ); // ✅ permite nova reserva se todas anteriores forem canceladas
+      ..whereNotEqualTo('status', 'cancelado');
 
     final existingReservationResponse = await existingReservationQuery.query();
     if (existingReservationResponse.results != null &&
@@ -54,7 +67,6 @@ class StudentHomeRepository {
       throw Exception('Você já fez uma reserva para essa república.');
     }
 
-    // Busca dados da república
     final republicQuery = QueryBuilder<ParseObject>(ParseObject('Republic'))
       ..whereEqualTo('objectId', objectId)
       ..includeObject(['user']);
@@ -67,7 +79,6 @@ class StudentHomeRepository {
     final republic = result.results!.first as ParseObject;
     final user = republic.get<ParseObject>('user');
 
-    // Cria reserva
     final reservation = ParseObject('Reservations')
       ..set('username', user?['username'] ?? 'Desconhecido')
       ..set('address', republic['address'] ?? '')
@@ -83,7 +94,6 @@ class StudentHomeRepository {
       throw Exception(createReservation.error?.message ?? 'Erro ao salvar reserva');
     }
 
-    // Cria registro de interesse
     final interestStudent = ParseObject('InterestStudents')
       ..set('student', student)
       ..set('republic', republic)
@@ -98,21 +108,23 @@ class StudentHomeRepository {
     }
   }
 
-  Future<List<ParseObject>> fetchReservations() async {
+  Future<List<ReservationModel>> fetchReservations() async {
     final query = QueryBuilder<ParseObject>(ParseObject('Reservations'))
-      // 🔥 filtra somente status pendente ou aceito
       ..whereContainedIn('status', ['pendente', 'aceito'])
       ..orderByDescending('createdAt');
 
     final response = await query.query();
     if (response.success && response.results != null) {
-      return response.results!.cast<ParseObject>();
+      return response.results!
+          .map((obj) => ReservationModel.fromParse(obj as ParseObject))
+          .toList();
     } else {
       throw Exception(response.error?.message ?? 'Erro ao buscar reservas');
     }
   }
 
-  Future<void> cancelReservation(ParseObject reservation) async {
+  Future<void> cancelReservation(String reservationId) async {
+    final reservation = ParseObject('Reservations')..objectId = reservationId;
     reservation.set('status', 'cancelado');
     final response = await reservation.save();
     if (!response.success) {

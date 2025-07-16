@@ -1,162 +1,72 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/student-home/student_reservation_list_cubit.dart';
-import 'package:loca_student/bloc/student-home/student_reservation_list_event.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
+import 'package:loca_student/bloc/student-home/student_reservation_list_state.dart';
 
-class StudentReservationListWidget extends StatefulWidget {
+class StudentReservationListWidget extends StatelessWidget {
   const StudentReservationListWidget({super.key});
-
-  @override
-  State<StudentReservationListWidget> createState() => _StudentReservationListWidgetState();
-}
-
-class _StudentReservationListWidgetState extends State<StudentReservationListWidget> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<StudentReservationListCubit>().fetchReservations();
-  }
-
-  Future<void> _confirmCancelReservation(ParseObject reservation) async {
-    final username = reservation.get<String>('username') ?? 'essa república';
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Cancelar reserva'),
-        content: Text('Deseja mesmo cancelar a reserva em $username?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Não')),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Sim'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      try {
-        await context.read<StudentReservationListCubit>().cancelReservation(reservation);
-        if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Reserva cancelada com sucesso')));
-        }
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Erro ao cancelar reserva: $e')));
-        }
-      }
-    }
-  }
-
-  Future<void> _confirmReactivateReservation(ParseObject reservation) async {
-    final username = reservation.get<String>('username') ?? 'essa república';
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Reativar reserva'),
-        content: Text('Deseja mesmo reativar a reserva em $username?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Não')),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: const Text('Sim'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      try {
-        await context.read<StudentReservationListCubit>().reactivateReservation(reservation);
-        if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Reserva reativada com sucesso')));
-        }
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Erro ao reativar reserva: $e')));
-        }
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StudentReservationListCubit, StudentReservationListState>(
       builder: (context, state) {
-        if (state.isLoading) {
+        if (state.status == ReservationListStatus.initial ||
+            state.status == ReservationListStatus.loading) {
           return const Center(child: CircularProgressIndicator());
         }
-
-        if (state.error != null) {
+        if (state.status == ReservationListStatus.error) {
           return Center(child: Text('Erro ao carregar reservas:\n${state.error}'));
         }
-
-        if (state.reservations.isEmpty) {
+        if (state.status == ReservationListStatus.empty) {
           return const Center(child: Text('Nenhuma reserva encontrada'));
         }
-
-        return ListView.builder(
-          itemCount: state.reservations.length,
-          itemBuilder: (context, index) {
-            final res = state.reservations[index];
-            final username = res.get<String>('username') ?? 'Desconhecido';
-            final address = res.get<String>('address') ?? 'Sem endereço';
-            final value = (res.get<num>('value') ?? 0).toDouble();
-            final city = res.get<String>('city') ?? 'Cidade não informada';
-            final stateStr = res.get<String>('state') ?? 'Estado não informado';
-            final status = res.get<String>('status')?.toLowerCase() ?? 'pendente';
-
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListTile(
-                leading: const Icon(Icons.home),
-                title: Text(username, style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(address),
-                    Text('$city - $stateStr'),
-                    Text('R\$ ${value.toStringAsFixed(2)}/mês'),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Status: ${status[0].toUpperCase()}${status.substring(1)}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: status == 'pendente'
-                            ? Colors.orange
-                            : status == 'cancelado'
-                            ? Colors.red
-                            : Colors.green,
+        if (state.status == ReservationListStatus.success) {
+          return ListView.builder(
+            itemCount: state.reservations.length,
+            itemBuilder: (context, index) {
+              final reservation = state.reservations[index];
+              final republicAddress = reservation.address;
+              final republicValue = reservation.value;
+              final status = reservation.status;
+              final city = reservation.city;
+              final stateStr = reservation.state;
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: ListTile(
+                  title: Text(republicAddress, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(republicAddress),
+                      Text('$city - $stateStr'),
+                      Text('R\$ ${republicValue.toStringAsFixed(2)}/mês'),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Status: ${status[0].toUpperCase()}${status.substring(1)}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: status == 'pendente'
+                              ? Colors.orange
+                              : status == 'cancelado'
+                              ? Colors.red
+                              : Colors.green,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.cancel),
+                    tooltip: 'Cancelar reserva',
+                    onPressed: () {
+                      context.read<StudentReservationListCubit>().cancelReservation(reservation.id);
+                    },
+                  ),
                 ),
-                trailing: status == 'cancelado'
-                    ? IconButton(
-                        icon: const Icon(Icons.assignment_turned_in_outlined, color: Colors.green),
-                        onPressed: () => _confirmReactivateReservation(res),
-                      )
-                    : IconButton(
-                        icon: const Icon(Icons.cancel, color: Colors.red),
-                        onPressed: () => _confirmCancelReservation(res),
-                      ),
-              ),
-            );
-          },
-        );
+              );
+            },
+          );
+        }
+        return const SizedBox.shrink();
       },
     );
   }

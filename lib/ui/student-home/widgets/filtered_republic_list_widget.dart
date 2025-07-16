@@ -16,99 +16,13 @@ class FilteredRepublicListWidget extends StatefulWidget {
 class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget> {
   final TextEditingController _searchController = TextEditingController();
 
-  void _showRepublicDetailsDialog(RepublicModel rep) {
-    final distanceMessages = getNearbyUniversitiesDistanceMessages(
-      latitude: rep.latitude,
-      longitude: rep.longitude,
-      universities: mockUniversities,
-    );
-
-    final hasNoVacancies = rep.vacancies == 0;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(rep.username),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Endereço: ${rep.address}'),
-                Text('Valor: R\$${rep.value.toStringAsFixed(2)}/mês'),
-                const SizedBox(height: 8),
-                if (hasNoVacancies)
-                  const Text(
-                    'Não há mais vagas nessa república',
-                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                  )
-                else
-                  Text('Vagas disponíveis: ${rep.vacancies}'),
-                const SizedBox(height: 8),
-                Text('Telefone: ${rep.phone}'),
-                const SizedBox(height: 8),
-                if (distanceMessages.isNotEmpty)
-                  ...distanceMessages.map(
-                    (msg) => Text(
-                      msg,
-                      style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Fechar')),
-            // Só mostra o botão de reserva se ainda houver vagas
-            if (!hasNoVacancies)
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.pop(context); // Fecha o diálogo
-                  await _reserveSpot(rep);
-                },
-                child: const Text('Fazer Reserva'),
-              ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _reserveSpot(RepublicModel rep) async {
-    final cubit = context.read<FilteredRepublicListCubit>();
-
-    try {
-      await cubit.reserveSpot(rep);
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Reserva realizada com sucesso')));
-        cubit.searchRepublicsByCity(rep.city); // Atualiza a lista
-      }
-    } catch (e) {
-      if (context.mounted) {
-        final errorMsg = e.toString();
-        final isDuplicate = errorMsg.contains('já fez uma reserva');
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isDuplicate ? 'Você já fez essa reserva!' : 'Erro ao reservar: $errorMsg',
-            ),
-          ),
-        );
-      }
-    }
-  }
-
   @override
   void initState() {
     super.initState();
 
     _searchController.addListener(() {
-      final texto = _searchController.text.trim();
-      if (texto.isEmpty) {
+      final text = _searchController.text.trim();
+      if (text.isEmpty) {
         context.read<FilteredRepublicListCubit>().clearRepublics();
       }
     });
@@ -124,6 +38,110 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
     final city = text.trim();
     if (city.isNotEmpty) {
       context.read<FilteredRepublicListCubit>().searchRepublicsByCity(city);
+    }
+  }
+
+  Future<void> _reserveSpot(RepublicModel rep) async {
+    final cubit = context.read<FilteredRepublicListCubit>();
+    try {
+      await cubit.reserveSpot(rep);
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Reserva realizada com sucesso')));
+      cubit.searchRepublicsByCity(rep.city);
+    } catch (e) {
+      if (!mounted) return;
+      final errorMsg = e.toString();
+      final isDuplicate = errorMsg.contains('já fez uma reserva');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isDuplicate ? 'Você já fez essa reserva!' : 'Erro ao reservar: $errorMsg'),
+        ),
+      );
+    }
+  }
+
+  void _showRepublicDetailsDialog(RepublicModel rep) {
+    final distanceMessages = getNearbyUniversitiesDistanceMessages(
+      latitude: rep.latitude,
+      longitude: rep.longitude,
+      universities: mockUniversities,
+    );
+    final hasNoVacancies = rep.vacancies == 0;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(rep.username),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Endereço: ${rep.address}'),
+              Text('Valor: R\$${rep.value.toStringAsFixed(2)}/mês'),
+              const SizedBox(height: 8),
+              if (hasNoVacancies)
+                const Text(
+                  'Não há mais vagas nessa república',
+                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                )
+              else
+                Text('Vagas disponíveis: ${rep.vacancies}'),
+              const SizedBox(height: 8),
+              Text('Telefone: ${rep.phone}'),
+              const SizedBox(height: 8),
+              if (distanceMessages.isNotEmpty)
+                ...distanceMessages.map(
+                  (msg) => Text(
+                    msg,
+                    style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Fechar')),
+          if (!hasNoVacancies)
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await _reserveSpot(rep);
+              },
+              child: const Text('Fazer Reserva'),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(FilteredRepublicListState state) {
+    switch (state.status) {
+      case FilteredRepublicListStatus.loading:
+        return const Center(child: CircularProgressIndicator());
+      case FilteredRepublicListStatus.error:
+        return Center(child: Text(state.error ?? 'Erro desconhecido'));
+      case FilteredRepublicListStatus.empty:
+        return const Center(child: Text('Nenhum alojamento encontrado'));
+      case FilteredRepublicListStatus.success:
+        return ListView.builder(
+          itemCount: state.republics.length,
+          itemBuilder: (context, index) {
+            final republic = state.republics[index];
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: ListTile(
+                leading: const Icon(Icons.home),
+                title: Text(republic.username),
+                subtitle: Text('${republic.address} • R\$${republic.value.toStringAsFixed(2)}/mês'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _showRepublicDetailsDialog(republic),
+              ),
+            );
+          },
+        );
+      default:
+        return const SizedBox.shrink();
     }
   }
 
@@ -146,36 +164,7 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
         ),
         Expanded(
           child: BlocBuilder<FilteredRepublicListCubit, FilteredRepublicListState>(
-            builder: (context, state) {
-              if (state.isLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (state.error != null) {
-                return Center(child: Text(state.error!));
-              }
-
-              if (state.republics.isEmpty) {
-                return const Center(child: Text('Nenhum alojamento encontrado'));
-              }
-
-              return ListView.builder(
-                itemCount: state.republics.length,
-                itemBuilder: (context, index) {
-                  final rep = state.republics[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: ListTile(
-                      leading: const Icon(Icons.home),
-                      title: Text(rep.username),
-                      subtitle: Text('${rep.address} • R\$${rep.value.toStringAsFixed(2)}/mês'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () => _showRepublicDetailsDialog(rep),
-                    ),
-                  );
-                },
-              );
-            },
+            builder: (context, state) => _buildContent(state),
           ),
         ),
       ],

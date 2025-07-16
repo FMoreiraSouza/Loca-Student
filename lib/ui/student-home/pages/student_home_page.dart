@@ -17,6 +17,21 @@ class _StudentHomePageState extends State<StudentHomePage> {
   int _currentIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  void _onTabChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+
+    if (index == 1) {
+      context.read<StudentReservationListCubit>().fetchReservations();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -26,16 +41,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
           IconButton(
             icon: const Icon(Icons.info_outline),
             tooltip: 'Sobre',
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutPage()));
-            },
+            onPressed: () =>
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutPage())),
           ),
           IconButton(
             icon: const Icon(Icons.person),
             tooltip: 'Perfil',
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage()));
-            },
+            onPressed: () =>
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage())),
           ),
         ],
       ),
@@ -43,19 +56,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
         index: _currentIndex,
         children: const [FilteredRepublicListWidget(), StudentReservationListWidget()],
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-
-          if (index == 1) {
-            context.read<StudentReservationListCubit>().fetchReservations();
-          }
-        },
-
+        onTap: _onTabChanged,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_work), label: 'Repúblicas'),
           BottomNavigationBarItem(icon: Icon(Icons.add_home_work), label: 'Minhas reservas'),
