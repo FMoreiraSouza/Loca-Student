@@ -4,6 +4,7 @@ import 'package:loca_student/bloc/republic-home/tenant_list_cubit.dart';
 import 'package:loca_student/bloc/republic-home/tenant_list_state.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
+// TenantListWidget
 class TenantListWidget extends StatefulWidget {
   const TenantListWidget({super.key, required this.currentUser});
   final ParseObject currentUser;
@@ -35,14 +36,12 @@ class _TenantListWidgetState extends State<TenantListWidget> {
               itemCount: state.tenants.length,
               itemBuilder: (context, index) {
                 final tenant = state.tenants[index];
-                final name = tenant.get<String>('studentName') ?? 'Nome não informado';
-                final email = tenant.get<String>('studentEmail') ?? 'Email não informado';
                 return Card(
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
                     leading: const Icon(Icons.person),
-                    title: Text(name),
-                    subtitle: Text(email),
+                    title: Text(tenant.studentName),
+                    subtitle: Text(tenant.studentEmail),
                   ),
                 );
               },

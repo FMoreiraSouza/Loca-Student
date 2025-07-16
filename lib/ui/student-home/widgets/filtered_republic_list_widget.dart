@@ -21,8 +21,8 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
     super.initState();
 
     _searchController.addListener(() {
-      final texto = _searchController.text.trim();
-      if (texto.isEmpty) {
+      final text = _searchController.text.trim();
+      if (text.isEmpty) {
         context.read<FilteredRepublicListCubit>().clearRepublics();
       }
     });
@@ -127,15 +127,15 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
         return ListView.builder(
           itemCount: state.republics.length,
           itemBuilder: (context, index) {
-            final rep = state.republics[index];
+            final republic = state.republics[index];
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: ListTile(
                 leading: const Icon(Icons.home),
-                title: Text(rep.username),
-                subtitle: Text('${rep.address} • R\$${rep.value.toStringAsFixed(2)}/mês'),
+                title: Text(republic.username),
+                subtitle: Text('${republic.address} • R\$${republic.value.toStringAsFixed(2)}/mês'),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => _showRepublicDetailsDialog(rep),
+                onTap: () => _showRepublicDetailsDialog(republic),
               ),
             );
           },

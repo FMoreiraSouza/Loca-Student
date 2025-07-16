@@ -1,4 +1,6 @@
-﻿import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
+﻿import 'package:loca_student/data/models/interested_student_model.dart';
+import 'package:loca_student/data/models/tenant_model.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class RepublicHomeRepository {
   Future<ParseObject?> getCurrentUser() async {
@@ -8,7 +10,9 @@ class RepublicHomeRepository {
     return user;
   }
 
-  Future<List<ParseObject>> fetchInterestedStudents(ParseObject currentUserRepublic) async {
+  Future<List<InterestedStudentModel>> fetchInterestedStudents(
+    ParseObject currentUserRepublic,
+  ) async {
     final republicQuery = QueryBuilder<ParseObject>(ParseObject('Republic'))
       ..whereEqualTo('user', currentUserRepublic);
     final republicResponse = await republicQuery.query();
@@ -22,12 +26,36 @@ class RepublicHomeRepository {
       ..orderByDescending('createdAt');
     final interestResponse = await interestQuery.query();
     if (interestResponse.success && interestResponse.results != null) {
-      return interestResponse.results!.cast<ParseObject>();
+      return interestResponse.results!
+          .map((e) => InterestedStudentModel.fromParse(e as ParseObject))
+          .toList();
     } else {
       throw Exception(interestResponse.error?.message ?? 'Erro ao buscar interessados');
     }
   }
 
+  Future<List<TenantModel>> fetchTenants(ParseObject currentUserRepublic) async {
+    final republicQuery = QueryBuilder<ParseObject>(ParseObject('Republic'))
+      ..whereEqualTo('user', currentUserRepublic);
+
+    final republicResponse = await republicQuery.query();
+    if (republicResponse.results == null || republicResponse.results!.isEmpty) {
+      throw Exception('Nenhuma república encontrada');
+    }
+    final republic = republicResponse.results!.first;
+    final tenantsQuery = QueryBuilder<ParseObject>(ParseObject('Tenants'))
+      ..whereEqualTo('republic', republic)
+      ..orderByDescending('createdAt');
+    final tenantsResponse = await tenantsQuery.query();
+    if (tenantsResponse.success && tenantsResponse.results != null) {
+      return tenantsResponse.results!.map((e) => TenantModel.fromParse(e as ParseObject)).toList();
+    } else {
+      throw Exception(tenantsResponse.error?.message ?? 'Erro ao buscar locatários');
+    }
+  }
+
+  // Os demais métodos continuam iguais porque eles são ações (update, save)
+  // e não retornam listas para o widget.
   Future<void> updateReservationStatus(
     ParseObject student,
     ParseObject republic,
@@ -81,26 +109,6 @@ class RepublicHomeRepository {
     final response = await tenant.save();
     if (!response.success) {
       throw Exception(response.error?.message ?? 'Erro ao salvar locatário');
-    }
-  }
-
-  Future<List<ParseObject>> fetchTenants(ParseObject currentUserRepublic) async {
-    final republicQuery = QueryBuilder<ParseObject>(ParseObject('Republic'))
-      ..whereEqualTo('user', currentUserRepublic);
-
-    final republicResponse = await republicQuery.query();
-    if (republicResponse.results == null || republicResponse.results!.isEmpty) {
-      throw Exception('Nenhuma república encontrada');
-    }
-    final republic = republicResponse.results!.first;
-    final tenantsQuery = QueryBuilder<ParseObject>(ParseObject('Tenants'))
-      ..whereEqualTo('republic', republic)
-      ..orderByDescending('createdAt');
-    final tenantsResponse = await tenantsQuery.query();
-    if (tenantsResponse.success && tenantsResponse.results != null) {
-      return tenantsResponse.results!.cast<ParseObject>();
-    } else {
-      throw Exception(tenantsResponse.error?.message ?? 'Erro ao buscar locatários');
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:loca_student/bloc/republic-home/interested_student_list_cubit.da
 import 'package:loca_student/bloc/republic-home/interested_student_list_state.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
+// InterestStudentListWidget
 class InterestStudentListWidget extends StatefulWidget {
   const InterestStudentListWidget({super.key, required this.currentUser});
 
@@ -27,23 +28,15 @@ class _InterestStudentListWidgetState extends State<InterestStudentListWidget> {
         switch (state.status) {
           case InterestStudentStatus.loading:
             return const Center(child: CircularProgressIndicator());
-
           case InterestStudentStatus.error:
             return Center(child: Text('Erro ao carregar interessados:\n${state.error}'));
-
           case InterestStudentStatus.empty:
             return const Center(child: Text('Nenhum estudante interessado encontrado'));
-
           case InterestStudentStatus.success:
             return ListView.builder(
               itemCount: state.interestedStudentList.length,
               itemBuilder: (context, index) {
                 final interested = state.interestedStudentList[index];
-
-                final studentName = interested.get<String>('studentName') ?? 'Nome não informado';
-                final student = interested.get<ParseObject>('student');
-                final republic = interested.get<ParseObject>('republic');
-
                 return Card(
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Padding(
@@ -52,32 +45,29 @@ class _InterestStudentListWidgetState extends State<InterestStudentListWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'O estudante $studentName solicitou entrada na república. Aceitar?',
+                          'O estudante ${interested.studentName} solicitou entrada na república. Aceitar?',
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(height: 12),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            // Recusar
                             TextButton(
                               onPressed: () {
-                                // Chama apenas a atualização de status
                                 context
                                     .read<InterestStudentListCubit>()
-                                    .updateInterestStudentStatus(interested.objectId!, 'recusado');
+                                    .updateInterestStudentStatus(interested.objectId, 'recusado');
                               },
                               style: TextButton.styleFrom(foregroundColor: Colors.red),
                               child: const Text('Não'),
                             ),
                             const SizedBox(width: 8),
-                            // Aceitar
                             TextButton(
                               onPressed: () {
                                 context.read<InterestStudentListCubit>().acceptInterestedStudent(
-                                  interestId: interested.objectId!,
-                                  studentId: student!.objectId!,
-                                  republicId: republic!.objectId!,
+                                  interestId: interested.objectId,
+                                  studentId: interested.studentId,
+                                  republicId: interested.republicId,
                                   currentUser: widget.currentUser,
                                 );
                               },
@@ -92,7 +82,6 @@ class _InterestStudentListWidgetState extends State<InterestStudentListWidget> {
                 );
               },
             );
-
           default:
             return const SizedBox.shrink();
         }

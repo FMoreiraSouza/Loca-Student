@@ -1,11 +1,11 @@
-﻿import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
+﻿import 'package:loca_student/data/models/interested_student_model.dart';
 
 enum InterestStudentStatus { initial, loading, success, empty, error }
 
 class InterestStudentListState {
   final InterestStudentStatus status;
   final String? error;
-  final List<ParseObject> interestedStudentList;
+  final List<InterestedStudentModel> interestedStudentList;
 
   const InterestStudentListState({
     this.status = InterestStudentStatus.initial,
@@ -16,7 +16,7 @@ class InterestStudentListState {
   InterestStudentListState copyWith({
     InterestStudentStatus? status,
     String? error,
-    List<ParseObject>? interestedStudentList,
+    List<InterestedStudentModel>? interestedStudentList,
   }) {
     return InterestStudentListState(
       status: status ?? this.status,

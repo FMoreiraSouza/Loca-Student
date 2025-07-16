@@ -30,18 +30,15 @@ class _RepublicHomePageState extends State<RepublicHomePage> {
         if (state.isLoading) {
           return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
-
         if (state.error != null) {
           return Scaffold(
             appBar: AppBar(title: const Text('República')),
             body: Center(child: Text('Erro: ${state.error}')),
           );
         }
-
         if (state.currentUser == null) {
           return const Scaffold(body: Center(child: Text('Usuário não encontrado')));
         }
-
         return Scaffold(
           appBar: AppBar(
             title: const Text('Olá, República 👋'),

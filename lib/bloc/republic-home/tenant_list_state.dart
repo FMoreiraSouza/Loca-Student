@@ -1,15 +1,15 @@
-﻿import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
+﻿import 'package:loca_student/data/models/tenant_model.dart';
 
 enum TenantListStatus { initial, loading, success, empty, error }
 
 class TenantListState {
   final TenantListStatus status;
-  final List<ParseObject> tenants;
+  final List<TenantModel> tenants;
   final String? error;
 
   TenantListState({this.status = TenantListStatus.initial, this.tenants = const [], this.error});
 
-  TenantListState copyWith({TenantListStatus? status, List<ParseObject>? tenants, String? error}) {
+  TenantListState copyWith({TenantListStatus? status, List<TenantModel>? tenants, String? error}) {
     return TenantListState(
       status: status ?? this.status,
       tenants: tenants ?? this.tenants,

@@ -1,6 +1,4 @@
-﻿// lib/ui/profile/pages/profile_page.dart
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/profile/profile_cubit.dart';
 import 'package:loca_student/bloc/profile/profile_state.dart';
@@ -55,11 +53,9 @@ class _ProfilePageState extends State<ProfilePage> {
     switch (state.status) {
       case ProfileStatus.failure:
         return Center(child: Text('Erro: ${state.errorMessage}'));
-
       case ProfileStatus.success:
         final data = state.profileData!;
         final userType = data['userType'] as String;
-
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: ListView(
@@ -86,7 +82,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
         );
-
       default:
         return const SizedBox.shrink();
     }
