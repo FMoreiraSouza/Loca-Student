@@ -35,7 +35,7 @@ class _AboutPageState extends State<AboutPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 16),
-            Image.asset('content/app_icon.png', height: 150, color: Colors.white),
+            Image.asset('content/app_icon.png', height: 150),
             const SizedBox(height: 16),
 
             Text(

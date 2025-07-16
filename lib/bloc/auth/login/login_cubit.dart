@@ -4,11 +4,11 @@ import 'package:loca_student/bloc/auth/login/login_state.dart';
 import 'package:loca_student/data/repositories/auth_repository.dart';
 import 'package:loca_student/bloc/user-type/user_type_cubit.dart';
 
-class LoginBloc extends Bloc<LoginEvent, LoginState> {
+class LoginCubit extends Bloc<LoginEvent, LoginState> {
   final AuthRepository authRepository;
   final UserTypeCubit userTypeCubit;
 
-  LoginBloc({required this.authRepository, required this.userTypeCubit}) : super(LoginInitial()) {
+  LoginCubit({required this.authRepository, required this.userTypeCubit}) : super(LoginInitial()) {
     on<LoginSubmitted>((event, emit) async {
       if (event.email.isEmpty || event.password.isEmpty) {
         emit(LoginFailure('Preencha todos os campos'));

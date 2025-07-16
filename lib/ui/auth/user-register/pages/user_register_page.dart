@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loca_student/bloc/auth/user-register/user_register_bloc.dart';
+import 'package:loca_student/bloc/auth/user-register/user_register_cubit.dart';
 import 'package:loca_student/bloc/auth/user-register/user_register_state.dart';
 import 'package:loca_student/bloc/user-type/user_type_cubit.dart';
 import 'package:loca_student/ui/auth/user-register/widgets/republic_form_widget.dart';
@@ -17,7 +17,7 @@ class UserRegisterPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(userType == UserType.student ? 'Cadastro Estudante' : 'Cadastro Proprietário'),
       ),
-      body: BlocConsumer<UserRegisterBloc, UserRegisterState>(
+      body: BlocConsumer<UserRegisterCubit, UserRegisterState>(
         listener: (context, state) {
           if (state is UserRegisterSuccess) {
             Navigator.of(context).pop();
@@ -38,9 +38,15 @@ class UserRegisterPage extends StatelessWidget {
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 24),
+                // O Form Widget já deve disparar StudentRegisterSubmitted
+                // ou RepublicRegisterSubmitted sem validações extras
                 userType == UserType.student
                     ? StudentForm(state: state)
                     : RepublicForm(state: state),
+                if (state is UserRegisterLoading) ...[
+                  const SizedBox(height: 24),
+                  const Center(child: CircularProgressIndicator()),
+                ],
               ],
             ),
           );

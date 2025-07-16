@@ -25,9 +25,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(state.copyWith(status: ProfileStatus.loading));
     try {
       await profileRepository.logout();
-      // Pode emitir um estado específico para logout feito
       emit(const ProfileState(status: ProfileStatus.initial));
-      // Ou você pode adicionar uma lógica para redirecionar o usuário (ex: emit LogoutSuccess)
     } catch (e) {
       emit(state.copyWith(status: ProfileStatus.failure, errorMessage: e.toString()));
     }

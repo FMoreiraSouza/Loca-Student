@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/auth/user-register/student_register_event.dart';
-import 'package:loca_student/bloc/auth/user-register/user_register_bloc.dart';
+import 'package:loca_student/bloc/auth/user-register/user_register_cubit.dart';
 import 'package:loca_student/bloc/auth/user-register/user_register_state.dart';
 
 class StudentForm extends StatefulWidget {
@@ -64,7 +64,7 @@ class _StudentFormState extends State<StudentForm> {
 
   void _submitForm(BuildContext context) {
     if (_validateFields(context)) {
-      context.read<UserRegisterBloc>().add(
+      context.read<UserRegisterCubit>().add(
         StudentRegisterSubmitted(
           name: nameController.text.trim(),
           age: int.tryParse(ageController.text.trim()) ?? 0,
