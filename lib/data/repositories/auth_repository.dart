@@ -35,8 +35,7 @@ class AuthRepository {
     required String sex,
   }) async {
     try {
-      final user = ParseUser(username, password, emailAddress)
-        ..set('userType', 'estudante'); // gravando em português
+      final user = ParseUser(username, password, emailAddress)..set('userType', 'estudante');
 
       final response = await user.signUp();
       if (!response.success || response.result == null) {

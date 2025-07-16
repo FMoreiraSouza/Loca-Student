@@ -1,25 +1,27 @@
 ﻿import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
+enum InterestStudentStatus { initial, loading, success, empty, error }
+
 class InterestStudentListState {
-  final bool isLoading;
+  final InterestStudentStatus status;
   final String? error;
   final List<ParseObject> interestedStudentList;
 
-  InterestStudentListState({
-    this.isLoading = false,
+  const InterestStudentListState({
+    this.status = InterestStudentStatus.initial,
     this.error,
     this.interestedStudentList = const [],
   });
 
   InterestStudentListState copyWith({
-    bool? isLoading,
+    InterestStudentStatus? status,
     String? error,
-    List<ParseObject>? interestedStudents,
+    List<ParseObject>? interestedStudentList,
   }) {
     return InterestStudentListState(
-      isLoading: isLoading ?? this.isLoading,
+      status: status ?? this.status,
       error: error,
-      interestedStudentList: interestedStudents ?? interestedStudentList,
+      interestedStudentList: interestedStudentList ?? this.interestedStudentList,
     );
   }
 }

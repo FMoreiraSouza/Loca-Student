@@ -24,87 +24,78 @@ class _InterestStudentListWidgetState extends State<InterestStudentListWidget> {
   Widget build(BuildContext context) {
     return BlocBuilder<InterestStudentListCubit, InterestStudentListState>(
       builder: (context, state) {
-        if (state.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        switch (state.status) {
+          case InterestStudentStatus.loading:
+            return const Center(child: CircularProgressIndicator());
 
-        if (state.error != null) {
-          return Center(child: Text('Erro ao carregar interessados:\n${state.error}'));
-        }
+          case InterestStudentStatus.error:
+            return Center(child: Text('Erro ao carregar interessados:\n${state.error}'));
 
-        if (state.interestedStudentList.isEmpty) {
-          return const Center(child: Text('Nenhum estudante interessado encontrado'));
-        }
+          case InterestStudentStatus.empty:
+            return const Center(child: Text('Nenhum estudante interessado encontrado'));
 
-        return ListView.builder(
-          itemCount: state.interestedStudentList.length,
-          itemBuilder: (context, index) {
-            final interested = state.interestedStudentList[index];
-            final studentName = interested.get<String>('studentName') ?? 'Nome não informado';
-            final student = interested.get<ParseObject>('student');
-            final republic = interested.get<ParseObject>('republic');
+          case InterestStudentStatus.success:
+            return ListView.builder(
+              itemCount: state.interestedStudentList.length,
+              itemBuilder: (context, index) {
+                final interested = state.interestedStudentList[index];
 
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'O estudante $studentName solicitou entrada na república. Aceitar?',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                final studentName = interested.get<String>('studentName') ?? 'Nome não informado';
+                final student = interested.get<ParseObject>('student');
+                final republic = interested.get<ParseObject>('republic');
+
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TextButton(
-                          onPressed: () async {
-                            final cubit = context.read<InterestStudentListCubit>();
-
-                            final studentObj = student!;
-                            final republicObj = republic!;
-
-                            // Atualiza status na tabela Reservations
-                            await cubit.updateReservationWithoutReload(
-                              studentObj,
-                              republicObj,
-                              'recusado',
-                            );
-
-                            // Atualiza status na tabela InterestStudents
-                            await cubit.updateInterestStudentStatus(interested, 'recusado');
-
-                            // Remove da lista local
-                            cubit.removeInterested(interested);
-                          },
-                          style: TextButton.styleFrom(foregroundColor: Colors.red),
-                          child: const Text('Não'),
+                        Text(
+                          'O estudante $studentName solicitou entrada na república. Aceitar?',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                         ),
-
-                        const SizedBox(width: 8),
-                        TextButton(
-                          onPressed: () async {
-                            final cubit = context.read<InterestStudentListCubit>();
-                            await cubit.acceptInterestedStudent(
-                              interested,
-                              student!,
-                              republic!,
-                              widget.currentUser,
-                            );
-                          },
-                          style: TextButton.styleFrom(foregroundColor: Colors.green),
-                          child: const Text('Sim'),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            // Recusar
+                            TextButton(
+                              onPressed: () {
+                                // Chama apenas a atualização de status
+                                context
+                                    .read<InterestStudentListCubit>()
+                                    .updateInterestStudentStatus(interested.objectId!, 'recusado');
+                              },
+                              style: TextButton.styleFrom(foregroundColor: Colors.red),
+                              child: const Text('Não'),
+                            ),
+                            const SizedBox(width: 8),
+                            // Aceitar
+                            TextButton(
+                              onPressed: () {
+                                context.read<InterestStudentListCubit>().acceptInterestedStudent(
+                                  interestId: interested.objectId!,
+                                  studentId: student!.objectId!,
+                                  republicId: republic!.objectId!,
+                                  currentUser: widget.currentUser,
+                                );
+                              },
+                              style: TextButton.styleFrom(foregroundColor: Colors.green),
+                              child: const Text('Sim'),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             );
-          },
-        );
+
+          default:
+            return const SizedBox.shrink();
+        }
       },
     );
   }

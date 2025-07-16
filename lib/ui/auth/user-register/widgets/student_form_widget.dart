@@ -1,24 +1,22 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/auth/user-register/student_register_event.dart';
-import 'package:loca_student/bloc/auth/user-register/user_register_cubit.dart';
+import 'package:loca_student/bloc/auth/user-register/user_register_bloc.dart';
 import 'package:loca_student/bloc/auth/user-register/user_register_state.dart';
 
-class StudentForm extends StatefulWidget {
+class StudentFormWidget extends StatefulWidget {
   final UserRegisterState state;
-
-  const StudentForm({super.key, required this.state});
+  const StudentFormWidget({super.key, required this.state});
 
   @override
-  _StudentFormState createState() => _StudentFormState();
+  StudentFormWidgetState createState() => StudentFormWidgetState();
 }
 
-class _StudentFormState extends State<StudentForm> {
+class StudentFormWidgetState extends State<StudentFormWidget> {
   final nameController = TextEditingController();
   final ageController = TextEditingController();
   final degreeController = TextEditingController();
   final originController = TextEditingController();
-  String? sex;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -29,135 +27,119 @@ class _StudentFormState extends State<StudentForm> {
   final emailFocus = FocusNode();
   final passwordFocus = FocusNode();
 
+  String? selectedSex;
+
   @override
   void dispose() {
-    nameController.dispose();
-    ageController.dispose();
-    degreeController.dispose();
-    originController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    nameFocus.dispose();
-    ageFocus.dispose();
-    degreeFocus.dispose();
-    originFocus.dispose();
-    emailFocus.dispose();
-    passwordFocus.dispose();
+    for (final controller in [
+      nameController,
+      ageController,
+      degreeController,
+      originController,
+      emailController,
+      passwordController,
+    ]) {
+      controller.dispose();
+    }
+    for (final focus in [
+      nameFocus,
+      ageFocus,
+      degreeFocus,
+      originFocus,
+      emailFocus,
+      passwordFocus,
+    ]) {
+      focus.dispose();
+    }
     super.dispose();
   }
 
-  bool _validateFields(BuildContext context) {
-    if (nameController.text.trim().isEmpty ||
-        emailController.text.trim().isEmpty ||
-        passwordController.text.trim().isEmpty ||
-        ageController.text.trim().isEmpty ||
-        degreeController.text.trim().isEmpty ||
-        originController.text.trim().isEmpty ||
-        sex == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Preencha todos os campos para estudante')));
-      return false;
-    }
-    return true;
-  }
-
-  void _submitForm(BuildContext context) {
-    if (_validateFields(context)) {
-      context.read<UserRegisterCubit>().add(
-        StudentRegisterSubmitted(
-          name: nameController.text.trim(),
-          age: int.tryParse(ageController.text.trim()) ?? 0,
-          degree: degreeController.text.trim(),
-          origin: originController.text.trim(),
-          sex: sex ?? "",
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-        ),
-      );
-    }
+  void _onSubmit() {
+    context.read<UserRegisterBloc>().add(
+      StudentRegisterSubmitted(
+        name: nameController.text.trim(),
+        age: int.tryParse(ageController.text.trim()) ?? 0,
+        degree: degreeController.text.trim(),
+        origin: originController.text.trim(),
+        sex: selectedSex ?? '',
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = widget.state is UserRegisterLoading;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         TextField(
           controller: nameController,
           focusNode: nameFocus,
-          decoration: const InputDecoration(labelText: 'Nome'),
           textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(ageFocus);
-          },
+          onEditingComplete: () => FocusScope.of(context).requestFocus(ageFocus),
+          decoration: const InputDecoration(labelText: 'Nome'),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextField(
           controller: ageController,
           focusNode: ageFocus,
-          decoration: const InputDecoration(labelText: 'Idade'),
-          keyboardType: TextInputType.number,
           textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(degreeFocus);
-          },
+          onEditingComplete: () => FocusScope.of(context).requestFocus(degreeFocus),
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: 'Idade'),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextField(
           controller: degreeController,
           focusNode: degreeFocus,
-          decoration: const InputDecoration(labelText: 'Grau a cursar'),
           textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(originFocus);
-          },
+          onEditingComplete: () => FocusScope.of(context).requestFocus(originFocus),
+          decoration: const InputDecoration(labelText: 'Grau a cursar'),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextField(
           controller: originController,
           focusNode: originFocus,
+          textInputAction: TextInputAction.next,
+          onEditingComplete: () => FocusScope.of(context).requestFocus(emailFocus),
           decoration: const InputDecoration(labelText: 'De onde vem'),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         DropdownButtonFormField<String>(
+          value: selectedSex,
           decoration: const InputDecoration(labelText: 'Sexo'),
-          value: sex,
-          items: [
-            'Masculino',
-            'Feminino',
-            'Outro',
-          ].map((sex) => DropdownMenuItem(value: sex, child: Text(sex))).toList(),
-          onChanged: (value) => setState(() => sex = value),
+          items: const [
+            DropdownMenuItem(value: 'Masculino', child: Text('Masculino')),
+            DropdownMenuItem(value: 'Feminino', child: Text('Feminino')),
+            DropdownMenuItem(value: 'Outro', child: Text('Outro')),
+          ],
+          onChanged: (value) => setState(() => selectedSex = value),
         ),
-        SizedBox(height: 8),
-
+        const SizedBox(height: 8),
         TextField(
           controller: emailController,
           focusNode: emailFocus,
-          decoration: const InputDecoration(labelText: 'Email'),
-          keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).requestFocus(passwordFocus);
-          },
+          onEditingComplete: () => FocusScope.of(context).requestFocus(passwordFocus),
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(labelText: 'Email'),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextField(
           controller: passwordController,
           focusNode: passwordFocus,
-          decoration: const InputDecoration(labelText: 'Senha'),
-          obscureText: true,
           textInputAction: TextInputAction.done,
-          onEditingComplete: () {
-            // Fechar o teclado
-            FocusScope.of(context).unfocus();
-          },
+          onEditingComplete: () => FocusScope.of(context).unfocus(),
+          obscureText: true,
+          decoration: const InputDecoration(labelText: 'Senha'),
         ),
         const SizedBox(height: 24),
-        widget.state is UserRegisterLoading
-            ? const Center(child: CircularProgressIndicator())
-            : ElevatedButton(onPressed: () => _submitForm(context), child: const Text('Cadastrar')),
+        if (isLoading)
+          const Center(child: CircularProgressIndicator())
+        else
+          ElevatedButton(onPressed: _onSubmit, child: const Text('Cadastrar')),
       ],
     );
   }

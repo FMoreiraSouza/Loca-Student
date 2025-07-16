@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loca_student/bloc/auth/login/login_cubit.dart';
+import 'package:loca_student/bloc/auth/login/login_bloc.dart';
 import 'package:loca_student/bloc/auth/login/login_event.dart';
 import 'package:loca_student/bloc/auth/login/login_state.dart';
 import 'package:loca_student/bloc/user-type/user_type_cubit.dart';
@@ -43,19 +43,23 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
+  void _onSubmit() {
+    context.read<LoginBloc>().add(
+      LoginSubmitted(email: emailController.text.trim(), password: passwordController.text.trim()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final userType = context.watch<UserTypeCubit>().state;
 
     return Scaffold(
-      body: BlocConsumer<LoginCubit, LoginState>(
+      body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginFailure) {
             _showErrorDialog(context, 'Erro de login', state.message);
           }
-
           if (state is LoginSuccess) {
-            // Redireciona direto baseado no tipo
             if (state.userType == UserType.student) {
               Navigator.of(
                 context,
@@ -65,7 +69,6 @@ class LoginPageState extends State<LoginPage> {
                 context,
               ).pushReplacement(MaterialPageRoute(builder: (_) => const RepublicHomePage()));
             } else {
-              // fallback, se precisar
               ScaffoldMessenger.of(
                 context,
               ).showSnackBar(const SnackBar(content: Text('Tipo de usuário inválido')));
@@ -89,9 +92,7 @@ class LoginPageState extends State<LoginPage> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.arrow_circle_left, size: 50),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
+                        onPressed: () => Navigator.of(context).pop(),
                         tooltip: 'Voltar',
                       ),
                       userType == UserType.student
@@ -107,9 +108,7 @@ class LoginPageState extends State<LoginPage> {
                         ),
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
-                        onEditingComplete: () {
-                          FocusScope.of(context).requestFocus(passwordFocus);
-                        },
+                        onEditingComplete: () => FocusScope.of(context).requestFocus(passwordFocus),
                       ),
                       const SizedBox(height: 8),
                       TextField(
@@ -121,9 +120,7 @@ class LoginPageState extends State<LoginPage> {
                         ),
                         obscureText: true,
                         textInputAction: TextInputAction.done,
-                        onEditingComplete: () {
-                          FocusScope.of(context).unfocus();
-                        },
+                        onEditingComplete: () => FocusScope.of(context).unfocus(),
                       ),
                       const SizedBox(height: 16),
                       state is LoginLoading
@@ -131,14 +128,7 @@ class LoginPageState extends State<LoginPage> {
                           : SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  context.read<LoginCubit>().add(
-                                    LoginSubmitted(
-                                      email: emailController.text.trim(),
-                                      password: passwordController.text.trim(),
-                                    ),
-                                  );
-                                },
+                                onPressed: _onSubmit,
                                 style: ElevatedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(vertical: 16),
                                 ),

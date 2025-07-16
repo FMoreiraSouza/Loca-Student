@@ -1,39 +1,32 @@
 ﻿import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loca_student/bloc/student-home/student_reservation_list_event.dart';
+import 'package:loca_student/bloc/student-home/student_reservation_list_state.dart';
 import 'package:loca_student/data/repositories/student_home_repository.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class StudentReservationListCubit extends Cubit<StudentReservationListState> {
   final StudentHomeRepository _repository;
 
-  StudentReservationListCubit(this._repository) : super(StudentReservationListState());
+  StudentReservationListCubit(this._repository) : super(const StudentReservationListState());
 
   Future<void> fetchReservations() async {
-    emit(state.copyWith(isLoading: true, error: null));
-
+    emit(state.copyWith(status: ReservationListStatus.loading));
     try {
-      final reservations = await _repository.fetchReservations();
-      emit(state.copyWith(isLoading: false, reservations: reservations));
+      final results = await _repository.fetchReservations();
+      if (results.isEmpty) {
+        emit(state.copyWith(status: ReservationListStatus.empty, reservations: []));
+      } else {
+        emit(state.copyWith(status: ReservationListStatus.success, reservations: results));
+      }
     } catch (e) {
-      emit(state.copyWith(isLoading: false, error: e.toString()));
+      emit(state.copyWith(status: ReservationListStatus.error, error: e.toString()));
     }
   }
 
-  Future<void> cancelReservation(ParseObject reservation) async {
+  Future<void> cancelReservation(String reservationId) async {
     try {
-      await _repository.cancelReservation(reservation);
+      await _repository.cancelReservation(reservationId);
       await fetchReservations();
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
-    }
-  }
-
-  Future<void> reactivateReservation(ParseObject reservation) async {
-    try {
-      await _repository.reactivateReservation(reservation);
-      await fetchReservations();
-    } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(status: ReservationListStatus.error, error: e.toString()));
     }
   }
 }

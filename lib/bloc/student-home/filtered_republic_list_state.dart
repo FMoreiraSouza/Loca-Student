@@ -1,25 +1,27 @@
-﻿import 'package:equatable/equatable.dart';
-import 'package:loca_student/data/models/republic_model.dart';
+﻿import 'package:loca_student/data/models/republic_model.dart';
 
-class FilteredRepublicListState extends Equatable {
-  final bool isLoading;
-  final String? error;
+enum FilteredRepublicListStatus { initial, loading, success, empty, error }
+
+class FilteredRepublicListState {
+  final FilteredRepublicListStatus status;
   final List<RepublicModel> republics;
+  final String? error;
 
-  const FilteredRepublicListState({this.isLoading = false, this.error, this.republics = const []});
+  const FilteredRepublicListState({
+    this.status = FilteredRepublicListStatus.initial,
+    this.republics = const [],
+    this.error,
+  });
 
   FilteredRepublicListState copyWith({
-    bool? isLoading,
-    String? error,
+    FilteredRepublicListStatus? status,
     List<RepublicModel>? republics,
+    String? error,
   }) {
     return FilteredRepublicListState(
-      isLoading: isLoading ?? this.isLoading,
-      error: error,
+      status: status ?? this.status,
       republics: republics ?? this.republics,
+      error: error,
     );
   }
-
-  @override
-  List<Object?> get props => [isLoading, error, republics];
 }
