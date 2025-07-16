@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loca_student/bloc/auth/login/login_bloc.dart';
+import 'package:loca_student/bloc/auth/login/login_cubit.dart';
 import 'package:loca_student/bloc/auth/login/login_event.dart';
 import 'package:loca_student/bloc/auth/login/login_state.dart';
 import 'package:loca_student/bloc/user-type/user_type_cubit.dart';
@@ -48,7 +48,7 @@ class LoginPageState extends State<LoginPage> {
     final userType = context.watch<UserTypeCubit>().state;
 
     return Scaffold(
-      body: BlocConsumer<LoginBloc, LoginState>(
+      body: BlocConsumer<LoginCubit, LoginState>(
         listener: (context, state) {
           if (state is LoginFailure) {
             _showErrorDialog(context, 'Erro de login', state.message);
@@ -132,7 +132,7 @@ class LoginPageState extends State<LoginPage> {
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  context.read<LoginBloc>().add(
+                                  context.read<LoginCubit>().add(
                                     LoginSubmitted(
                                       email: emailController.text.trim(),
                                       password: passwordController.text.trim(),

@@ -1,5 +1,4 @@
-﻿import 'package:loca_student/bloc/user-type/user_type_cubit.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
+﻿import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class AuthRepository {
   Future<LoginResult> login(String email, String password) async {
@@ -13,7 +12,6 @@ class AuthRepository {
         if (userType == null || userType.isEmpty) {
           return LoginResult(success: false, message: 'Tipo de usuário não encontrado');
         }
-
         return LoginResult(success: true, userType: userType);
       } else {
         final rawMessage = response.error?.message ?? '';
@@ -38,7 +36,7 @@ class AuthRepository {
   }) async {
     try {
       final user = ParseUser(username, password, emailAddress)
-        ..set('userType', UserType.student.toString().split('.').last);
+        ..set('userType', 'estudante'); // gravando em português
 
       final response = await user.signUp();
       if (!response.success || response.result == null) {
@@ -58,7 +56,7 @@ class AuthRepository {
         return LoginResult(success: false, message: 'Erro ao salvar dados do estudante');
       }
 
-      return LoginResult(success: true, userType: UserType.student.toString().split('.').last);
+      return LoginResult(success: true, userType: 'estudante');
     } catch (e) {
       return LoginResult(success: false, message: 'Erro: $e');
     }
@@ -78,13 +76,11 @@ class AuthRepository {
     required String phone,
   }) async {
     try {
-      final user = ParseUser(username, password, emailAddress)
-        ..set('userType', UserType.republic.toString().split('.').last);
+      final user = ParseUser(username, password, emailAddress)..set('userType', 'proprietario');
 
-      // Configurar ACL para leitura e escrita públicas
       final acl = ParseACL();
-      acl.setPublicReadAccess(allowed: true); // Permite leitura pública
-      acl.setPublicWriteAccess(allowed: true); // Permite escrita pública
+      acl.setPublicReadAccess(allowed: true);
+      acl.setPublicWriteAccess(allowed: true);
       user.setACL(acl);
 
       final response = await user.signUp();
@@ -109,7 +105,7 @@ class AuthRepository {
         return LoginResult(success: false, message: 'Erro ao salvar dados do proprietário');
       }
 
-      return LoginResult(success: true, userType: UserType.republic.toString().split('.').last);
+      return LoginResult(success: true, userType: 'proprietario');
     } catch (e) {
       return LoginResult(success: false, message: 'Erro: $e');
     }

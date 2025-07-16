@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:loca_student/bloc/auth/user-register/republic_register_event.dart';
-import 'package:loca_student/bloc/auth/user-register/user_register_bloc.dart';
+import 'package:loca_student/bloc/auth/user-register/user_register_cubit.dart';
 import 'package:loca_student/bloc/auth/user-register/user_register_state.dart';
 
 class RepublicForm extends StatefulWidget {
@@ -121,7 +121,7 @@ class _RepublicFormState extends State<RepublicForm> {
         return;
       }
 
-      context.read<UserRegisterBloc>().add(
+      context.read<UserRegisterCubit>().add(
         RepublicRegisterSubmitted(
           name: nameController.text.trim(),
           value: double.tryParse(valueController.text.trim()) ?? 0.0,

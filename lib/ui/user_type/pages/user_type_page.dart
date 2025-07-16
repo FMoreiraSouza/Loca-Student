@@ -20,15 +20,8 @@ class UserTypePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // LOGO / TÍTULO APP COM BORDA
-              Container(
-                padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.only(bottom: 32),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Image.asset('content/app_icon.png', height: 150),
-              ),
+              Image.asset('content/app_icon.png', height: 150),
+              const SizedBox(height: 16),
 
               // TÍTULO SECUNDÁRIO
               const Text(
