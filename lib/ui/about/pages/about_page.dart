@@ -73,7 +73,7 @@ class _AboutPageState extends State<AboutPage> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Desenvolvido com ❤️ para estudantes',
+              'Desenvolvido para estudantes',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
