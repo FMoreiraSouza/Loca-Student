@@ -3,27 +3,21 @@ import 'package:loca_student/data/models/tenant_model.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class RepublicHomeRepository {
-  Future<ParseObject?> getCurrentUser() async {
-    final user = await ParseUser.currentUser() as ParseObject?;
-    if (user == null) return null;
-    await user.fetch();
-    return user;
-  }
-
-  Future<List<InterestedStudentModel>> fetchInterestedStudents(
-    ParseObject currentUserRepublic,
-  ) async {
+  Future<List<InterestedStudentModel>> fetchInterestedStudents(ParseUser currentUser) async {
     final republicQuery = QueryBuilder<ParseObject>(ParseObject('Republic'))
-      ..whereEqualTo('user', currentUserRepublic);
+      ..whereEqualTo('user', currentUser);
+
     final republicResponse = await republicQuery.query();
     if (republicResponse.results == null || republicResponse.results!.isEmpty) {
       throw Exception('Nenhuma república encontrada para o usuário atual');
     }
+
     final republic = republicResponse.results!.first;
     final interestQuery = QueryBuilder<ParseObject>(ParseObject('InterestStudents'))
       ..whereEqualTo('republic', republic)
       ..whereEqualTo('status', 'interessado')
       ..orderByDescending('createdAt');
+
     final interestResponse = await interestQuery.query();
     if (interestResponse.success && interestResponse.results != null) {
       return interestResponse.results!
@@ -54,8 +48,6 @@ class RepublicHomeRepository {
     }
   }
 
-  // Os demais métodos continuam iguais porque eles são ações (update, save)
-  // e não retornam listas para o widget.
   Future<void> updateReservationStatus(
     ParseObject student,
     ParseObject republic,
@@ -129,7 +121,7 @@ class RepublicHomeRepository {
     await updateReservationStatus(
       ParseObject('Student')..objectId = studentId,
       ParseObject('Republic')..objectId = republicId,
-      'aceito',
+      'aceita',
     );
     final interestObj = ParseObject('InterestStudents')..objectId = interestId;
     interestObj.set<String>('status', 'aceito');
@@ -162,5 +154,26 @@ class RepublicHomeRepository {
     if (!saveResp.success) {
       throw Exception(saveResp.error?.message ?? 'Erro ao salvar locatário');
     }
+  }
+
+  Future<void> updateInterestStudentStatusAndReservation({
+    required String interestId,
+    required String studentId,
+    required String republicId,
+  }) async {
+    // 🔹 Atualiza status na tabela InterestStudents
+    final interestObj = ParseObject('InterestStudents')..objectId = interestId;
+    interestObj.set<String>('status', 'recusado');
+    final interestResp = await interestObj.save();
+    if (!interestResp.success) {
+      throw Exception(interestResp.error?.message ?? 'Erro ao atualizar status do interessado');
+    }
+
+    // 🔹 Atualiza status da reserva correspondente na tabela Reservations
+    await updateReservationStatus(
+      ParseObject('Student')..objectId = studentId,
+      ParseObject('Republic')..objectId = republicId,
+      'recusada',
+    );
   }
 }

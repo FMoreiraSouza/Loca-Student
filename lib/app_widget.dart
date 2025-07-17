@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/auth/login/login_bloc.dart';
 import 'package:loca_student/bloc/auth/user-register/user_register_bloc.dart';
 import 'package:loca_student/bloc/republic-home/interested_student_list_cubit.dart';
-import 'package:loca_student/bloc/republic-home/republic_home_cubit.dart';
 import 'package:loca_student/bloc/republic-home/tenant_list_cubit.dart';
 import 'package:loca_student/bloc/student-home/filtered_republic_list_cubit.dart';
 import 'package:loca_student/bloc/student-home/student_reservation_list_cubit.dart';
@@ -100,9 +99,6 @@ class _AppWidgetState extends State<AppWidget> {
           ),
           BlocProvider(
             create: (context) => TenantListCubit(context.read<RepublicHomeRepository>()),
-          ),
-          BlocProvider(
-            create: (context) => RepublicHomeCubit(context.read<RepublicHomeRepository>()),
           ),
         ],
         child: MaterialApp(

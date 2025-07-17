@@ -5,6 +5,8 @@ import 'package:loca_student/bloc/profile/profile_state.dart';
 import 'package:loca_student/ui/user_type/pages/user_type_page.dart';
 import 'package:loca_student/ui/profile/widgets/republic_profile_widget.dart';
 import 'package:loca_student/ui/profile/widgets/student_profile_widget.dart';
+import 'package:loca_student/utils/parse_configs.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -14,14 +16,31 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late ParseUser _currentUser;
+  bool _isLoadingUser = true;
+
   @override
   void initState() {
     super.initState();
-    context.read<ProfileCubit>().loadProfile();
+    _loadCurrentUser();
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final user = await ParseConfigs.getCurrentUser();
+    if (!mounted) return;
+    setState(() {
+      _currentUser = user;
+      _isLoadingUser = false;
+    });
+    context.read<ProfileCubit>().loadProfile(user);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingUser) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Perfil')),
       body: BlocConsumer<ProfileCubit, ProfileState>(
@@ -45,6 +64,13 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.read<ProfileCubit>().logout(_currentUser);
+        },
+        tooltip: 'Sair',
+        child: const Icon(Icons.exit_to_app),
       ),
     );
   }
@@ -74,11 +100,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 StudentProfileWidget(data: data)
               else if (userType == 'proprietario')
                 RepublicProfileWidget(data: data),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: () => context.read<ProfileCubit>().logout(),
-                child: const Text('Sair'),
-              ),
             ],
           ),
         );

@@ -47,7 +47,7 @@ class StudentReservationListWidget extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           color: status == 'pendente'
                               ? Colors.orange
-                              : status == 'cancelado'
+                              : status == 'recusada'
                               ? Colors.red
                               : Colors.green,
                         ),
@@ -55,10 +55,21 @@ class StudentReservationListWidget extends StatelessWidget {
                     ],
                   ),
                   trailing: IconButton(
-                    icon: const Icon(Icons.cancel),
-                    tooltip: 'Cancelar reserva',
+                    icon: Icon(
+                      status == 'recusada' ? Icons.refresh : Icons.cancel, // 👈 troca de ícone
+                      color: status == 'recusada' ? Colors.blue : Colors.red,
+                    ),
+                    tooltip: status == 'recusada' ? 'Reenviar solicitação' : 'Cancelar reserva',
                     onPressed: () {
-                      context.read<StudentReservationListCubit>().cancelReservation(reservation.id);
+                      if (status == 'recusada') {
+                        // 👇 chama método para reenviar reserva
+                        context.read<StudentReservationListCubit>().resendReserve(reservation.id);
+                      } else {
+                        // 👇 método atual de cancelar
+                        context.read<StudentReservationListCubit>().cancelReservation(
+                          reservation.id,
+                        );
+                      }
                     },
                   ),
                 ),

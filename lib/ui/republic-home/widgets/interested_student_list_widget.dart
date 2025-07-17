@@ -8,7 +8,7 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 class InterestStudentListWidget extends StatefulWidget {
   const InterestStudentListWidget({super.key, required this.currentUser});
 
-  final ParseObject currentUser;
+  final ParseUser currentUser;
 
   @override
   State<InterestStudentListWidget> createState() => _InterestStudentListWidgetState();
@@ -56,11 +56,17 @@ class _InterestStudentListWidgetState extends State<InterestStudentListWidget> {
                               onPressed: () {
                                 context
                                     .read<InterestStudentListCubit>()
-                                    .updateInterestStudentStatus(interested.objectId, 'recusado');
+                                    .updateInterestStudentStatus(
+                                      interestId: interested.objectId,
+                                      studentId: interested.studentId,
+                                      republicId: interested.republicId,
+                                      currentUser: widget.currentUser,
+                                    );
                               },
                               style: TextButton.styleFrom(foregroundColor: Colors.red),
                               child: const Text('Não'),
                             ),
+
                             const SizedBox(width: 8),
                             TextButton(
                               onPressed: () {
