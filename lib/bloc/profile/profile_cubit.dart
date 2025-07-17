@@ -1,5 +1,6 @@
 ﻿import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/data/repositories/profile_repository.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 import 'profile_state.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
@@ -7,10 +8,10 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   ProfileCubit({required this.profileRepository}) : super(const ProfileState());
 
-  Future<void> loadProfile() async {
+  Future<void> loadProfile(ParseUser currentUser) async {
     emit(state.copyWith(status: ProfileStatus.loading));
     try {
-      final data = await profileRepository.getUserProfileData();
+      final data = await profileRepository.getUserProfileData(currentUser);
       if (data != null) {
         emit(state.copyWith(status: ProfileStatus.success, profileData: data));
       } else {
@@ -21,10 +22,10 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  Future<void> logout() async {
+  Future<void> logout(ParseUser currentUser) async {
     emit(state.copyWith(status: ProfileStatus.loading));
     try {
-      await profileRepository.logout();
+      await profileRepository.logout(currentUser);
       emit(const ProfileState(status: ProfileStatus.initial));
     } catch (e) {
       emit(state.copyWith(status: ProfileStatus.failure, errorMessage: e.toString()));

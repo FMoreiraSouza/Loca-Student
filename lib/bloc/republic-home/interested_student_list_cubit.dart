@@ -5,9 +5,10 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class InterestStudentListCubit extends Cubit<InterestStudentListState> {
   final RepublicHomeRepository repository;
-  InterestStudentListCubit(this.repository) : super(InterestStudentListState());
 
-  Future<void> loadInterestStudents(ParseObject currentUser) async {
+  InterestStudentListCubit(this.repository) : super(const InterestStudentListState());
+
+  Future<void> loadInterestStudents(ParseUser currentUser) async {
     emit(state.copyWith(status: InterestStudentStatus.loading));
     try {
       final interested = await repository.fetchInterestedStudents(currentUser);
@@ -23,9 +24,30 @@ class InterestStudentListCubit extends Cubit<InterestStudentListState> {
     }
   }
 
-  Future<void> updateInterestStudentStatus(String interestId, String newStatus) async {
+  Future<void> updateInterestStudentStatus({
+    required String interestId,
+    required String studentId,
+    required String republicId,
+    required ParseUser currentUser,
+  }) async {
     try {
-      await repository.updateInterestStudentStatus(interestId, newStatus);
+      await repository.updateInterestStudentStatusAndReservation(
+        interestId: interestId,
+        studentId: studentId,
+        republicId: republicId,
+      );
+
+      // Remover localmente o estudante recusado
+      final updatedList = state.interestedStudentList
+          .where((e) => e.objectId != interestId)
+          .toList();
+
+      emit(
+        state.copyWith(
+          interestedStudentList: updatedList,
+          status: updatedList.isEmpty ? InterestStudentStatus.empty : InterestStudentStatus.success,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -35,7 +57,7 @@ class InterestStudentListCubit extends Cubit<InterestStudentListState> {
     required String interestId,
     required String studentId,
     required String republicId,
-    required ParseObject currentUser,
+    required ParseUser currentUser,
   }) async {
     try {
       await repository.acceptInterestedStudent(

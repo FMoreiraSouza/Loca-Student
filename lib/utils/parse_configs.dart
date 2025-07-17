@@ -10,4 +10,17 @@ class ParseConfigs {
       debug: true,
     );
   }
+
+  static Future<ParseUser> getCurrentUser() async {
+    try {
+      final user = await ParseUser.currentUser() as ParseUser?;
+      if (user == null) {
+        throw Exception('Nenhum usuário logado');
+      }
+      await user.fetch();
+      return user;
+    } catch (e) {
+      throw Exception('Falha ao obter usuário atual: $e');
+    }
+  }
 }

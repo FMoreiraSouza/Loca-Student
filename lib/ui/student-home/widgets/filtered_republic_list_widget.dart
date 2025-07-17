@@ -13,8 +13,12 @@ class FilteredRepublicListWidget extends StatefulWidget {
   State<FilteredRepublicListWidget> createState() => _FilteredRepublicListWidgetState();
 }
 
-class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget> {
+class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
+    with AutomaticKeepAliveClientMixin {
   final TextEditingController _searchController = TextEditingController();
+
+  @override
+  bool get wantKeepAlive => false; // força recriar o estado ao trocar aba
 
   @override
   void initState() {
@@ -26,6 +30,15 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
         context.read<FilteredRepublicListCubit>().clearRepublics();
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Limpa lista caso campo pesquisa vazio ao voltar para o widget
+    if (_searchController.text.trim().isEmpty) {
+      context.read<FilteredRepublicListCubit>().clearRepublics();
+    }
   }
 
   @override
@@ -78,7 +91,7 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Endereço: ${rep.address}'),
-              Text('Valor: R\$${rep.value.toStringAsFixed(2)}/mês'),
+              Text('Valor: R\$${rep.value.toStringAsFixed(2)}'),
               const SizedBox(height: 8),
               if (hasNoVacancies)
                 const Text(
@@ -116,6 +129,11 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
   }
 
   Widget _buildContent(FilteredRepublicListState state) {
+    // Se a barra de pesquisa está vazia, não exibe nada mesmo que haja estado carregado
+    if (_searchController.text.trim().isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     switch (state.status) {
       case FilteredRepublicListStatus.loading:
         return const Center(child: CircularProgressIndicator());
@@ -147,6 +165,7 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // AutomaticKeepAliveClientMixin
     return Column(
       children: [
         Padding(
