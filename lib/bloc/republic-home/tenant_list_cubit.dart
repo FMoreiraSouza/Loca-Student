@@ -8,6 +8,7 @@ class TenantListCubit extends Cubit<TenantListState> {
 
   TenantListCubit(this.repository) : super(TenantListState());
 
+  // 🔹 Carregar inquilinos
   Future<void> loadTenants(ParseObject currentUser) async {
     emit(state.copyWith(status: TenantListStatus.loading, error: null));
     try {
@@ -17,6 +18,18 @@ class TenantListCubit extends Cubit<TenantListState> {
       } else {
         emit(state.copyWith(status: TenantListStatus.success, tenants: tenants));
       }
+    } catch (e) {
+      emit(state.copyWith(status: TenantListStatus.error, error: e.toString()));
+    }
+  }
+
+  // 🔹 Remover inquilino
+  Future<void> removeTenant({required String tenantId, required ParseObject currentUser}) async {
+    try {
+      // Aqui poderia ter um estado intermediário de carregamento se quiser
+      await repository.removeTenant(tenantId);
+      // Depois de remover, recarrega a lista atualizada
+      await loadTenants(currentUser);
     } catch (e) {
       emit(state.copyWith(status: TenantListStatus.error, error: e.toString()));
     }
