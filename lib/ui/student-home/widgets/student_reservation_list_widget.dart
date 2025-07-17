@@ -54,23 +54,40 @@ class StudentReservationListWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  trailing: IconButton(
-                    icon: Icon(
-                      status == 'recusada' ? Icons.refresh : Icons.cancel, // 👈 troca de ícone
-                      color: status == 'recusada' ? Colors.blue : Colors.red,
-                    ),
-                    tooltip: status == 'recusada' ? 'Reenviar solicitação' : 'Cancelar reserva',
-                    onPressed: () {
-                      if (status == 'recusada') {
-                        // 👇 chama método para reenviar reserva
-                        context.read<StudentReservationListCubit>().resendReserve(reservation.id);
-                      } else {
-                        // 👇 método atual de cancelar
-                        context.read<StudentReservationListCubit>().cancelReservation(
-                          reservation.id,
-                        );
-                      }
-                    },
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (status == 'recusada') ...[
+                        IconButton(
+                          icon: const Icon(Icons.cancel, color: Colors.red),
+                          tooltip: 'Cancelar reserva',
+                          onPressed: () {
+                            context.read<StudentReservationListCubit>().cancelReservation(
+                              reservation.id,
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.refresh, color: Colors.blue),
+                          tooltip: 'Reenviar solicitação',
+                          onPressed: () {
+                            context.read<StudentReservationListCubit>().resendReserve(
+                              reservation.id,
+                            );
+                          },
+                        ),
+                      ] else ...[
+                        IconButton(
+                          icon: const Icon(Icons.cancel, color: Colors.red),
+                          tooltip: 'Cancelar reserva',
+                          onPressed: () {
+                            context.read<StudentReservationListCubit>().cancelReservation(
+                              reservation.id,
+                            );
+                          },
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               );

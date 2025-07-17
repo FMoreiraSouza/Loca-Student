@@ -68,7 +68,7 @@ class StudentHomeRepository {
       final existingReservation = existingReservationResponse.results!.first as ParseObject;
       final status = existingReservation.get<String>('status');
 
-      if (status != null && status != 'cancelado') {
+      if (status != null && status != 'cancelada') {
         // Já existe uma reserva ativa (pendente ou aceita)
         throw Exception('Você já fez uma reserva para essa república.');
       } else {
@@ -160,7 +160,6 @@ class StudentHomeRepository {
   }
 
   Future<void> cancelReservation(String reservationId) async {
-    // 🔹 Busca a reserva para obter o student e a republic
     final reservationQuery = QueryBuilder<ParseObject>(ParseObject('Reservations'))
       ..whereEqualTo('objectId', reservationId)
       ..includeObject(['student', 'republic']);
@@ -171,16 +170,16 @@ class StudentHomeRepository {
         reservationResult.results!.isNotEmpty) {
       final reservation = reservationResult.results!.first as ParseObject;
 
-      // ✅ Atualiza status da reserva
-      reservation.set('status', 'cancelado');
+      final student = reservation.get<ParseObject>('student');
+      final republic = reservation.get<ParseObject>('republic');
+
+      final currentStatus = reservation.get<String>('status');
+
+      reservation.set('status', 'cancelada');
       final response = await reservation.save();
       if (!response.success) {
         throw Exception(response.error?.message ?? 'Erro ao cancelar reserva');
       }
-
-      // ✅ Atualiza status do InterestStudents
-      final student = reservation.get<ParseObject>('student');
-      final republic = reservation.get<ParseObject>('republic');
 
       if (student != null && republic != null) {
         final interestQuery = QueryBuilder<ParseObject>(ParseObject('InterestStudents'))
@@ -201,8 +200,31 @@ class StudentHomeRepository {
           }
         }
       }
-    } else {
-      throw Exception('Reserva não encontrada');
+
+      if (currentStatus == 'aceita' && republic != null && student != null) {
+        final republicObj = ParseObject('Republic')..objectId = republic.objectId;
+        await republicObj.fetch();
+        final currentVacancies = republicObj.get<int>('vacancies') ?? 0;
+        republicObj.set('vacancies', currentVacancies + 1);
+        final saveResp = await republicObj.save();
+        if (!saveResp.success) {
+          throw Exception(saveResp.error?.message ?? 'Erro ao atualizar vagas da república');
+        }
+
+        final tenantQuery = QueryBuilder<ParseObject>(ParseObject('Tenants'))
+          ..whereEqualTo('student', student)
+          ..whereEqualTo('republic', republic);
+
+        final tenantResp = await tenantQuery.query();
+        if (tenantResp.success && tenantResp.results != null && tenantResp.results!.isNotEmpty) {
+          final tenantObj = tenantResp.results!.first as ParseObject;
+          tenantObj.set<bool>('belongs', false);
+          final updateTenant = await tenantObj.save();
+          if (!updateTenant.success) {
+            throw Exception(updateTenant.error?.message ?? 'Erro ao atualizar tenant');
+          }
+        }
+      }
     }
   }
 

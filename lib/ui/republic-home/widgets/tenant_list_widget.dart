@@ -42,6 +42,15 @@ class _TenantListWidgetState extends State<TenantListWidget> {
                     leading: const Icon(Icons.person),
                     title: Text(tenant.studentName),
                     subtitle: Text(tenant.studentEmail),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.cancel, color: Colors.red),
+                      onPressed: () async {
+                        await context.read<TenantListCubit>().removeTenant(
+                          tenantId: tenant.objectId,
+                          currentUser: widget.currentUser,
+                        );
+                      },
+                    ),
                   ),
                 );
               },
