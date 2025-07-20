@@ -4,10 +4,9 @@ import 'package:loca_student/bloc/republic-home/tenant_list_cubit.dart';
 import 'package:loca_student/bloc/republic-home/tenant_list_state.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
-// TenantListWidget
 class TenantListWidget extends StatefulWidget {
   const TenantListWidget({super.key, required this.currentUser});
-  final ParseObject currentUser;
+  final ParseUser currentUser;
 
   @override
   State<TenantListWidget> createState() => _TenantListWidgetState();
@@ -46,7 +45,7 @@ class _TenantListWidgetState extends State<TenantListWidget> {
                       icon: const Icon(Icons.cancel, color: Colors.red),
                       onPressed: () async {
                         await context.read<TenantListCubit>().removeTenant(
-                          tenantId: tenant.objectId,
+                          tenant: tenant,
                           currentUser: widget.currentUser,
                         );
                       },

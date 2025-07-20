@@ -23,7 +23,7 @@ class StudentReservationListCubit extends Cubit<StudentReservationListState> {
 
   Future<void> cancelReservation(String reservationId) async {
     try {
-      await _repository.cancelReservation(reservationId);
+      await _repository.cancelReservationByIdModular(reservationId);
       await fetchReservations();
     } catch (e) {
       emit(state.copyWith(status: ReservationListStatus.error, error: e.toString()));
@@ -32,7 +32,7 @@ class StudentReservationListCubit extends Cubit<StudentReservationListState> {
 
   Future<void> resendReserve(String reservationId) async {
     try {
-      await _repository.resendReserve(reservationId);
+      await _repository.resendReservationByIdModular(reservationId);
       await fetchReservations();
     } catch (e) {
       emit(state.copyWith(status: ReservationListStatus.error, error: e.toString()));

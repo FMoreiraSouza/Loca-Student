@@ -27,14 +27,18 @@ class RepublicModel extends UserModel {
   });
 
   factory RepublicModel.fromParse(ParseObject obj, {ParseUser? user}) {
+    final num? valueNum = obj.get<num>('value');
+    final num? latNum = obj.get<num>('latitude');
+    final num? lonNum = obj.get<num>('longitude');
+
     return RepublicModel(
       objectId: obj.objectId ?? '',
-      value: obj.get<double>('value') ?? 0.0,
+      value: (valueNum ?? 0).toDouble(),
       address: obj.get<String>('address') ?? '',
       city: obj.get<String>('city') ?? '',
       state: obj.get<String>('state') ?? '',
-      latitude: obj.get<double>('latitude') ?? 0.0,
-      longitude: obj.get<double>('longitude') ?? 0.0,
+      latitude: (latNum ?? 0).toDouble(),
+      longitude: (lonNum ?? 0).toDouble(),
       vacancies: obj.get<int>('vacancies') ?? 0,
       phone: obj.get<String>('phone') ?? '',
       username: user?.username ?? '',
@@ -46,7 +50,7 @@ class RepublicModel extends UserModel {
     final republic = ParseObject('Republic');
 
     if (objectId.isNotEmpty) {
-      republic.objectId = objectId; // só define se for válido
+      republic.objectId = objectId;
     }
 
     republic

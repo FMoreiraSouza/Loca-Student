@@ -57,9 +57,7 @@ class _InterestStudentListWidgetState extends State<InterestStudentListWidget> {
                                 context
                                     .read<InterestStudentListCubit>()
                                     .updateInterestStudentStatus(
-                                      interestId: interested.objectId,
-                                      studentId: interested.studentId,
-                                      republicId: interested.republicId,
+                                      interested: interested,
                                       currentUser: widget.currentUser,
                                     );
                               },
@@ -71,9 +69,7 @@ class _InterestStudentListWidgetState extends State<InterestStudentListWidget> {
                             TextButton(
                               onPressed: () {
                                 context.read<InterestStudentListCubit>().acceptInterestedStudent(
-                                  interestId: interested.objectId,
-                                  studentId: interested.studentId,
-                                  republicId: interested.republicId,
+                                  interested: interested,
                                   currentUser: widget.currentUser,
                                 );
                               },

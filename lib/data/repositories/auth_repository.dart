@@ -86,7 +86,6 @@ class AuthRepository {
 
       return LoginResult(success: true, userType: 'proprietario');
     } catch (e) {
-      print(e);
       return LoginResult(success: false, message: 'Erro: $e');
     }
   }
