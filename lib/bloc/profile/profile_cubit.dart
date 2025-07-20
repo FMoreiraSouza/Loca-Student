@@ -11,9 +11,10 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> loadProfile(ParseUser currentUser) async {
     emit(state.copyWith(status: ProfileStatus.loading));
     try {
-      final data = await profileRepository.getUserProfileData(currentUser);
-      if (data != null) {
-        emit(state.copyWith(status: ProfileStatus.success, profileData: data));
+      final profile = await profileRepository.getUserProfile(currentUser);
+
+      if (profile != null) {
+        emit(state.copyWith(status: ProfileStatus.success, profileData: profile));
       } else {
         emit(state.copyWith(status: ProfileStatus.failure, errorMessage: 'Usuário não encontrado'));
       }

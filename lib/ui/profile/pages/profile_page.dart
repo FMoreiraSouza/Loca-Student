@@ -2,6 +2,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/profile/profile_cubit.dart';
 import 'package:loca_student/bloc/profile/profile_state.dart';
+import 'package:loca_student/data/models/republic_model.dart';
+import 'package:loca_student/data/models/student_model.dart';
 import 'package:loca_student/ui/user_type/pages/user_type_page.dart';
 import 'package:loca_student/ui/profile/widgets/republic_profile_widget.dart';
 import 'package:loca_student/ui/profile/widgets/student_profile_widget.dart';
@@ -80,29 +82,40 @@ class _ProfilePageState extends State<ProfilePage> {
       case ProfileStatus.failure:
         return Center(child: Text('Erro: ${state.errorMessage}'));
       case ProfileStatus.success:
-        final data = state.profileData!;
-        final userType = data['userType'] as String;
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ListView(
-            children: [
-              Text(
-                'Nome: ${data['name'] ?? 'Não informado'}',
-                style: const TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Email: ${data['email'] ?? 'Não informado'}',
-                style: const TextStyle(fontSize: 16),
-              ),
-              const Divider(height: 32),
-              if (userType == 'estudante')
-                StudentProfileWidget(data: data)
-              else if (userType == 'proprietario')
-                RepublicProfileWidget(data: data),
-            ],
-          ),
-        );
+        final data = state.profileData;
+        if (data == null) {
+          return const Center(child: Text('Nenhum dado de perfil encontrado.'));
+        }
+
+        if (data is StudentModel) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView(
+              children: [
+                Text('Nome: ${data.username}', style: const TextStyle(fontSize: 18)),
+                const SizedBox(height: 8),
+                Text('Email: ${data.email}', style: const TextStyle(fontSize: 16)),
+                const Divider(height: 32),
+                StudentProfileWidget(student: data),
+              ],
+            ),
+          );
+        } else if (data is RepublicModel) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView(
+              children: [
+                Text('Nome: ${data.username}', style: const TextStyle(fontSize: 18)),
+                const SizedBox(height: 8),
+                Text('Email: ${data.email}', style: const TextStyle(fontSize: 16)),
+                const Divider(height: 32),
+                RepublicProfileWidget(republic: data),
+              ],
+            ),
+          );
+        } else {
+          return const Center(child: Text('Tipo de perfil desconhecido'));
+        }
       default:
         return const SizedBox.shrink();
     }

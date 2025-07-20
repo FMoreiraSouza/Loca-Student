@@ -1,20 +1,20 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:loca_student/data/models/student_model.dart';
 
 class StudentProfileWidget extends StatelessWidget {
-  final Map<String, dynamic> data;
+  final StudentModel student;
 
-  const StudentProfileWidget({super.key, required this.data});
+  const StudentProfileWidget({super.key, required this.student});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Idade: ${data['age'] ?? 'Não informado'}'),
-        Text('Curso: ${data['degree'] ?? 'Não informado'}'),
-        Text('Origem: ${data['origin'] ?? 'Não informado'}'),
-        Text('Sexo: ${data['sex'] ?? 'Não informado'}'),
-        Text('Universidade: ${data['university'] ?? 'Não informado'}'),
+        Text('Idade: ${student.age != 0 ? student.age : 'Não informado'}'),
+        Text('Curso: ${student.degree.isNotEmpty ? student.degree : 'Não informado'}'),
+        Text('Origem: ${student.origin.isNotEmpty ? student.origin : 'Não informado'}'),
+        Text('Sexo: ${student.sex.isNotEmpty ? student.sex : 'Não informado'}'),
       ],
     );
   }

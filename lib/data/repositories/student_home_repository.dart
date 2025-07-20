@@ -9,24 +9,9 @@ class StudentHomeRepository {
       ..includeObject(['user']);
 
     final response = await query.query();
+
     if (response.success && response.results != null) {
-      // Aqui você já transforma para RepublicModel
-      return response.results!.map((obj) {
-        final user = obj.get<ParseObject>('user');
-        return RepublicModel(
-          objectId: obj.objectId ?? '',
-          username: user?['username'] ?? 'Desconhecido',
-          email: obj['email'] ?? '',
-          phone: obj['phone'] ?? '',
-          address: obj['address'] ?? '',
-          city: obj['city'] ?? '',
-          state: obj['state'] ?? '',
-          value: (obj['value'] as num?)?.toDouble() ?? 0.0,
-          vacancies: (obj['vacancies'] as num?)?.toInt() ?? 0,
-          latitude: (obj['latitude'] as num?)?.toDouble() ?? 0.0,
-          longitude: (obj['longitude'] as num?)?.toDouble() ?? 0.0,
-        );
-      }).toList();
+      return response.results!.map((obj) => RepublicModel.fromParse(obj as ParseObject)).toList();
     } else {
       throw Exception(response.error?.message ?? 'Erro ao buscar repúblicas');
     }
