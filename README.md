@@ -76,6 +76,14 @@ Acompanhe suas reservas **pendentes** ou **aceitas** diretamente no app, podendo
 
 ---
 
+## 🎥 Demonstração
+
+Vídeo que apresenta o funcionamento do aplicativo e explica como cada requisito foi implementado no código:
+
+[📽️ Assistir](https://youtu.be/r2aBu6VeumI)
+
+---
+
 ## 🛠️ Ambiente de Desenvolvimento
 
 - **IDE:** Visual Studio Code  
