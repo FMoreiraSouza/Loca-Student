@@ -1,10 +1,10 @@
 ﻿import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loca_student/data/repositories/profile_repository.dart';
+import 'package:loca_student/data/repositories/interfaces/i_profile_repository.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 import 'profile_state.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
-  final ProfileRepository profileRepository;
+  final IProfileRepository profileRepository;
 
   ProfileCubit({required this.profileRepository}) : super(const ProfileState());
 

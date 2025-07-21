@@ -1,8 +1,10 @@
-﻿import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
+﻿import 'package:loca_student/data/repositories/interfaces/i_profile_repository.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 import 'package:loca_student/data/models/student_model.dart';
 import 'package:loca_student/data/models/republic_model.dart';
 
-class ProfileRepository {
+class ProfileRepository implements IProfileRepository {
+  @override
   Future<StudentModel?> getStudentProfile(ParseUser currentUser) async {
     final query = QueryBuilder<ParseObject>(ParseObject('Student'))
       ..whereEqualTo('user', currentUser);
@@ -16,6 +18,7 @@ class ProfileRepository {
     return null;
   }
 
+  @override
   Future<RepublicModel?> getRepublicProfile(ParseUser currentUser) async {
     final query = QueryBuilder<ParseObject>(ParseObject('Republic'))
       ..whereEqualTo('user', currentUser);
@@ -29,6 +32,7 @@ class ProfileRepository {
     return null;
   }
 
+  @override
   Future<dynamic> getUserProfile(ParseUser currentUser) async {
     final userType = (currentUser.get('userType') as String?) ?? '';
 
@@ -40,6 +44,7 @@ class ProfileRepository {
     return null;
   }
 
+  @override
   Future<void> logout(ParseUser currentUser) async {
     await currentUser.logout();
   }
