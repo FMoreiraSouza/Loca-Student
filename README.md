@@ -9,19 +9,14 @@
 
 ## ✨ Descrição
 
-O **Loca Student** é um aplicativo pensado para a comunidade estudantil.  
-Ele foi desenvolvido para aproximar **estudantes** e **repúblicas**, permitindo pesquisar acomodações, reservar vagas e gerenciar reservas já feitas.  
-
-Além de um design moderno, o app prioriza **segurança** e **simplicidade**, garantindo uma experiência agradável.
+O **Loca Student** é um aplicativo pensado para a comunidade estudantil. Ele foi desenvolvido para aproximar **estudantes** e **repúblicas**, permitindo pesquisar acomodações, reservar vagas e gerenciar reservas já feitas. Além de um design moderno, o app prioriza **simplicidade**, garantindo uma experiência agradável.
 
 ---
 
 ## 🚀 Tecnologias Utilizadas
 
-- **Dart**: Linguagem principal usada no desenvolvimento.
-- **Flutter**: Framework para construção da interface e lógica de negócio.
 - **Parse Server**: Backend para autenticação, armazenamento de dados e gerenciamento das reservas.
-- **Bloc**: Gerenciamento de estado reativo e escalável.
+- **Bloc**: Gerenciamento de estado escalável.
 
 ---
 
@@ -46,7 +41,7 @@ Acompanhe suas reservas **pendentes** ou **aceitas** diretamente no app, podendo
   - Tabela `Reservations`: reservas criadas e seus status.  
   - Tabela `InterestedStudents`: controle de interesse dos estudantes e seus status.
   - Tabela `Tenants`: lista de estudantes aceitos como inquilinos na república.
-  - 
+ 
 ---
 
 ## 🎨 Telas do Aplicativo
