@@ -4,24 +4,19 @@ import 'package:loca_student/data/models/reservation_model.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class StudentHomeRepository {
-  // 🔹 Buscar repúblicas por cidade
-  Future<List<RepublicModel>> searchRepublicsByCity(String city, ParseUser user) async {
+  Future<List<RepublicModel>> searchRepublicsByCity(String city) async {
     final query = QueryBuilder<ParseObject>(ParseObject('Republic'))
       ..whereEqualTo('city', city)
       ..includeObject(['user']);
-
     final response = await query.query();
 
     if (response.success && response.results != null) {
-      return response.results!
-          .map((obj) => RepublicModel.fromParse(obj as ParseObject, user: user))
-          .toList();
+      return response.results!.map((obj) => RepublicModel.fromParse(obj as ParseObject)).toList();
     } else {
       throw Exception(response.error?.message ?? 'Erro ao buscar repúblicas');
     }
   }
 
-  // 🔹 Buscar objeto Student vinculado ao usuário atual
   Future<ParseObject> getStudentForUser(ParseUser user) async {
     final studentQuery = QueryBuilder<ParseObject>(ParseObject('Student'))
       ..whereEqualTo('user', user);
@@ -33,7 +28,6 @@ class StudentHomeRepository {
     return result.results!.first as ParseObject;
   }
 
-  // 🔹 Buscar reservas existentes de um estudante em uma república
   Future<List<ParseObject>> findExistingReservation(
     ParseObject student,
     ParseObject republic,
@@ -46,7 +40,6 @@ class StudentHomeRepository {
     return (response.results ?? []).cast<ParseObject>();
   }
 
-  // 🔹 Salvar uma reserva (nova ou atualizada)
   Future<void> saveReservation(ReservationModel reservation) async {
     final parseObj = reservation.toParse();
     final resp = await parseObj.save();
@@ -55,7 +48,6 @@ class StudentHomeRepository {
     }
   }
 
-  // 🔹 Atualizar status de uma reserva existente
   Future<void> updateReservationStatus(ParseObject reservationObj, String status) async {
     reservationObj.set('status', status);
     final resp = await reservationObj.save();
@@ -64,9 +56,8 @@ class StudentHomeRepository {
     }
   }
 
-  // 🔹 Buscar interesse do estudante
   Future<List<ParseObject>> findInterest(ParseObject student, ParseObject republic) async {
-    final query = QueryBuilder<ParseObject>(ParseObject('InterestStudents'))
+    final query = QueryBuilder<ParseObject>(ParseObject('InterestedStudents'))
       ..whereEqualTo('student', student)
       ..whereEqualTo('republic', republic);
 
@@ -74,7 +65,6 @@ class StudentHomeRepository {
     return (resp.results ?? []).cast<ParseObject>();
   }
 
-  // 🔹 Salvar ou atualizar objeto de interesse
   Future<void> saveInterest(ParseObject interestObj) async {
     final resp = await interestObj.save();
     if (!resp.success) {
@@ -82,10 +72,10 @@ class StudentHomeRepository {
     }
   }
 
-  // 🔹 Buscar reservas do app
   Future<List<ReservationModel>> fetchReservations() async {
     final query = QueryBuilder<ParseObject>(ParseObject('Reservations'))
       ..whereContainedIn('status', ['pendente', 'aceita', 'recusada'])
+      ..includeObject(['republic', 'republic.user', 'student'])
       ..orderByDescending('createdAt');
 
     final response = await query.query();
@@ -98,7 +88,6 @@ class StudentHomeRepository {
     }
   }
 
-  // 🔹 Cancelar reserva simples (sem regras extras)
   Future<ParseObject?> getReservationById(String reservationId) async {
     final query = QueryBuilder<ParseObject>(ParseObject('Reservations'))
       ..whereEqualTo('objectId', reservationId)
@@ -202,7 +191,6 @@ class StudentHomeRepository {
     }
   }
 
-  // Cancelar reserva modularizado
   Future<void> cancelReservationByIdModular(String reservationId) async {
     final reservation = await getReservationByIdWithRelations(reservationId);
     if (reservation == null) throw Exception('Reserva não encontrada');
@@ -211,18 +199,14 @@ class StudentHomeRepository {
     final student = reservation.get<ParseObject>('student');
     final republic = reservation.get<ParseObject>('republic');
 
-    // Atualiza status da reserva para cancelada
     await updateReservationStatusByObject(reservation, 'cancelada');
 
     if (student != null && republic != null) {
-      // Atualiza status do interesse para "desinteressado"
       await updateInterestStatus(student, republic, 'desinteressado');
 
       if (currentStatus == 'aceita') {
-        // Atualiza vagas da república (incrementa 1)
         await incrementRepublicVacancies(republic, 1);
 
-        // Atualiza tenant para 'belongs = false'
         await updateTenantBelongs(student, republic, false);
       }
     }
@@ -233,9 +217,9 @@ class StudentHomeRepository {
     ParseObject republic,
     String status,
   ) async {
-    final interests = await findInterest(student, republic);
-    if (interests.isNotEmpty) {
-      final interestObj = interests.first;
+    final interestedList = await findInterest(student, republic);
+    if (interestedList.isNotEmpty) {
+      final interestObj = interestedList.first;
       interestObj.set('status', status);
       await saveInterest(interestObj);
     }
@@ -250,19 +234,15 @@ class StudentHomeRepository {
     return ParseObject('Republic')..objectId = republic.objectId;
   }
 
-  // --- Métodos modulares para Reenviar Reserva ---
-
   Future<void> resendReservationByIdModular(String reservationId) async {
     final reservation = await getReservationByIdWithRelations(reservationId);
     if (reservation == null) throw Exception('Reserva não encontrada');
 
-    // Atualiza status da reserva para 'pendente'
     await updateReservationStatusByObject(reservation, 'pendente');
 
     final student = reservation.get<ParseObject>('student');
     final republic = reservation.get<ParseObject>('republic');
     if (student != null && republic != null) {
-      // Atualiza interesse para 'interessado'
       await updateInterestStatus(student, republic, 'interessado');
     }
   }

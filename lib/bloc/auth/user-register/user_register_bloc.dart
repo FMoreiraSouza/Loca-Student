@@ -25,9 +25,7 @@ class UserRegisterBloc extends Bloc<UserRegisterEvent, UserRegisterState> {
     if (event.name.isEmpty ||
         event.email.isEmpty ||
         event.password.isEmpty ||
-        event.degree.isEmpty ||
-        event.origin.isEmpty ||
-        event.sex.isEmpty) {
+        event.origin.isEmpty) {
       emit(UserRegisterFailure('Preencha todos os campos'));
       return;
     }
@@ -37,7 +35,7 @@ class UserRegisterBloc extends Bloc<UserRegisterEvent, UserRegisterState> {
       return;
     }
     if (event.password.length < 8) {
-      emit(UserRegisterFailure('A senha deve ter no mínimo 8 caracteres'));
+      emit(UserRegisterFailure('A senha deve ter mais do que 8 caracteres'));
       return;
     }
 
@@ -49,9 +47,8 @@ class UserRegisterBloc extends Bloc<UserRegisterEvent, UserRegisterState> {
       password: event.password,
       student: StudentModel(
         age: event.age,
-        degree: event.degree,
         origin: event.origin,
-        sex: event.sex,
+        phone: event.phone,
         username: event.name,
         email: event.email,
       ),
@@ -84,7 +81,7 @@ class UserRegisterBloc extends Bloc<UserRegisterEvent, UserRegisterState> {
       return;
     }
     if (event.password.length < 8) {
-      emit(UserRegisterFailure('A senha deve ter no mínimo 8 caracteres'));
+      emit(UserRegisterFailure('A senha deve ter mais do que 8 caracteres'));
       return;
     }
 

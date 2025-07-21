@@ -19,16 +19,25 @@ class TenantListCubit extends Cubit<TenantListState> {
         emit(state.copyWith(status: TenantListStatus.success, tenants: tenants));
       }
     } catch (e) {
-      emit(state.copyWith(status: TenantListStatus.error, error: e.toString()));
+      emit(state.copyWith(status: TenantListStatus.empty, error: e.toString()));
     }
   }
 
   Future<void> removeTenant({required TenantModel tenant, required ParseUser currentUser}) async {
     try {
-      await repository.removeTenant(tenant);
+      await repository.updateTenantBelongs(tenant.objectId, false);
+      await repository.updateReservationStatus(
+        studentId: tenant.studentId,
+        republicId: tenant.republicId,
+        newStatus: 'cancelada',
+      );
+      await repository.updateInterestStatus(tenant.studentId, tenant.republicId, 'recusado');
+      await repository.incrementVacancy(tenant.republicId);
+
+      // recarrega lista
       await loadTenants(currentUser);
     } catch (e) {
-      emit(state.copyWith(status: TenantListStatus.error, error: e.toString()));
+      emit(state.copyWith(status: TenantListStatus.empty, error: e.toString()));
     }
   }
 }

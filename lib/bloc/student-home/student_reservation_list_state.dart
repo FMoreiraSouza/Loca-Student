@@ -1,6 +1,6 @@
 ﻿import 'package:loca_student/data/models/reservation_model.dart';
 
-enum ReservationListStatus { initial, loading, success, empty, error }
+enum ReservationListStatus { initial, loading, success, empty }
 
 class StudentReservationListState {
   final ReservationListStatus status;

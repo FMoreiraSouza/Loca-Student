@@ -12,9 +12,7 @@ class StudentProfileWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Idade: ${student.age != 0 ? student.age : 'Não informado'}'),
-        Text('Curso: ${student.degree.isNotEmpty ? student.degree : 'Não informado'}'),
         Text('Origem: ${student.origin.isNotEmpty ? student.origin : 'Não informado'}'),
-        Text('Sexo: ${student.sex.isNotEmpty ? student.sex : 'Não informado'}'),
       ],
     );
   }

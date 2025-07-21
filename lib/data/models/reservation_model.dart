@@ -9,7 +9,7 @@ class ReservationModel {
   final String status;
   final ParseObject? studentPointer;
   final ParseObject? republicPointer;
-  final String? username;
+  final String republicUsername;
 
   ReservationModel({
     required this.id,
@@ -20,10 +20,16 @@ class ReservationModel {
     required this.status,
     this.studentPointer,
     this.republicPointer,
-    this.username,
+    this.republicUsername = '',
   });
 
   factory ReservationModel.fromParse(ParseObject obj) {
+    final republicObj = obj.get<ParseObject>('republic');
+
+    final userObj = republicObj?.get<ParseObject>('user');
+
+    final username = userObj?.get<String>('username') ?? '';
+
     return ReservationModel(
       id: obj.objectId ?? '',
       address: obj.get<String>('address') ?? '',
@@ -32,8 +38,8 @@ class ReservationModel {
       value: (obj.get<num>('value') ?? 0).toDouble(),
       status: obj.get<String>('status') ?? '',
       studentPointer: obj.get<ParseObject>('student'),
-      republicPointer: obj.get<ParseObject>('republic'),
-      username: obj.get<String>('username'),
+      republicPointer: republicObj,
+      republicUsername: username,
     );
   }
 
@@ -48,7 +54,6 @@ class ReservationModel {
     obj.set('status', status);
     if (studentPointer != null) obj.set('student', studentPointer!);
     if (republicPointer != null) obj.set('republic', republicPointer!);
-    if (username != null) obj.set('username', username!);
 
     return obj;
   }

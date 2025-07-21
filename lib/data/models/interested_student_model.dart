@@ -37,25 +37,18 @@ class InterestedStudentModel {
   }
 
   ParseObject toParse({required ParseObject republic}) {
-    final interestObj = ParseObject('InterestStudents');
+    final interestedObj = ParseObject('InterestedStudents');
 
     if (objectId.isNotEmpty) {
-      interestObj.objectId = objectId;
+      interestedObj.objectId = objectId;
     }
 
-    // Sempre referencie o student existente usando o ID
-    interestObj.set('student', ParseObject('Student')..objectId = studentId);
+    interestedObj.set('student', ParseObject('Student')..objectId = studentId);
+    interestedObj.set('studentName', studentName);
+    interestedObj.set('studentEmail', studentEmail);
+    interestedObj.set('republic', republic);
+    interestedObj.set('status', 'interessado');
 
-    // Nome e email podem vir do próprio modelo
-    interestObj.set('studentName', studentName);
-    interestObj.set('studentEmail', studentEmail);
-
-    // Referência à república
-    interestObj.set('republic', republic);
-
-    // Status inicial ou o que for necessário
-    interestObj.set('status', 'interessado');
-
-    return interestObj;
+    return interestedObj;
   }
 }

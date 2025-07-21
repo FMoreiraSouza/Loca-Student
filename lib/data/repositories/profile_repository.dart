@@ -11,7 +11,7 @@ class ProfileRepository {
     if (response.success && response.results != null && response.results!.isNotEmpty) {
       final studObj = response.results!.first as ParseObject;
 
-      return StudentModel.fromParse(studObj, user: currentUser);
+      return StudentModel.fromParse(studObj);
     }
     return null;
   }
@@ -24,7 +24,7 @@ class ProfileRepository {
     if (response.success && response.results != null && response.results!.isNotEmpty) {
       final repObj = response.results!.first as ParseObject;
 
-      return RepublicModel.fromParse(repObj, user: currentUser);
+      return RepublicModel.fromParse(repObj);
     }
     return null;
   }
@@ -34,7 +34,7 @@ class ProfileRepository {
 
     if (userType == 'estudante') {
       return await getStudentProfile(currentUser);
-    } else if (userType == 'proprietario') {
+    } else if (userType == 'república') {
       return await getRepublicProfile(currentUser);
     }
     return null;

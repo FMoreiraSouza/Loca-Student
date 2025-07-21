@@ -36,6 +36,11 @@ class AuthRepository {
     try {
       final user = ParseUser(username, password, emailAddress)..set('userType', 'estudante');
 
+      final acl = ParseACL();
+      acl.setPublicReadAccess(allowed: true);
+      acl.setPublicWriteAccess(allowed: true);
+      user.setACL(acl);
+
       final response = await user.signUp();
       if (!response.success || response.result == null) {
         return LoginResult(success: false, message: response.error?.message ?? 'Erro ao cadastrar');
@@ -63,7 +68,7 @@ class AuthRepository {
     required RepublicModel republic,
   }) async {
     try {
-      final user = ParseUser(username, password, emailAddress)..set('userType', 'proprietario');
+      final user = ParseUser(username, password, emailAddress)..set('userType', 'república');
 
       final acl = ParseACL();
       acl.setPublicReadAccess(allowed: true);
@@ -81,10 +86,10 @@ class AuthRepository {
 
       final extraResponse = await republicObj.save();
       if (!extraResponse.success) {
-        return LoginResult(success: false, message: 'Erro ao salvar dados do proprietário');
+        return LoginResult(success: false, message: 'Erro ao salvar dados da república');
       }
 
-      return LoginResult(success: true, userType: 'proprietario');
+      return LoginResult(success: true, userType: 'república');
     } catch (e) {
       return LoginResult(success: false, message: 'Erro: $e');
     }

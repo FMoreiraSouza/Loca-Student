@@ -1,10 +1,10 @@
 ﻿import 'package:equatable/equatable.dart';
 
-enum ProfileStatus { initial, loading, success, failure }
+enum ProfileStatus { initial, loading, success, empty }
 
 class ProfileState extends Equatable {
   final ProfileStatus status;
-  final Object? profileData; // aceitando StudentModel ou RepublicModel
+  final Object? profileData;
   final String? errorMessage;
 
   const ProfileState({this.status = ProfileStatus.initial, this.profileData, this.errorMessage});

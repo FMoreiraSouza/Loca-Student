@@ -17,7 +17,7 @@ class StudentReservationListCubit extends Cubit<StudentReservationListState> {
         emit(state.copyWith(status: ReservationListStatus.success, reservations: results));
       }
     } catch (e) {
-      emit(state.copyWith(status: ReservationListStatus.error, error: e.toString()));
+      emit(state.copyWith(status: ReservationListStatus.empty, error: e.toString()));
     }
   }
 
@@ -26,7 +26,7 @@ class StudentReservationListCubit extends Cubit<StudentReservationListState> {
       await _repository.cancelReservationByIdModular(reservationId);
       await fetchReservations();
     } catch (e) {
-      emit(state.copyWith(status: ReservationListStatus.error, error: e.toString()));
+      emit(state.copyWith(status: ReservationListStatus.empty, error: e.toString()));
     }
   }
 
@@ -35,7 +35,7 @@ class StudentReservationListCubit extends Cubit<StudentReservationListState> {
       await _repository.resendReservationByIdModular(reservationId);
       await fetchReservations();
     } catch (e) {
-      emit(state.copyWith(status: ReservationListStatus.error, error: e.toString()));
+      emit(state.copyWith(status: ReservationListStatus.empty, error: e.toString()));
     }
   }
 }

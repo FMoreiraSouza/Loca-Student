@@ -26,10 +26,14 @@ class RepublicModel extends UserModel {
     required super.email,
   });
 
-  factory RepublicModel.fromParse(ParseObject obj, {ParseUser? user}) {
+  factory RepublicModel.fromParse(ParseObject obj) {
     final num? valueNum = obj.get<num>('value');
     final num? latNum = obj.get<num>('latitude');
     final num? lonNum = obj.get<num>('longitude');
+
+    final userObj = obj.get<ParseObject>('user');
+    final username = userObj?.get<String>('username') ?? '';
+    final email = userObj?.get<String>('email') ?? '';
 
     return RepublicModel(
       objectId: obj.objectId ?? '',
@@ -41,8 +45,8 @@ class RepublicModel extends UserModel {
       longitude: (lonNum ?? 0).toDouble(),
       vacancies: obj.get<int>('vacancies') ?? 0,
       phone: obj.get<String>('phone') ?? '',
-      username: user?.username ?? '',
-      email: user?.emailAddress ?? '',
+      username: username,
+      email: email,
     );
   }
 

@@ -16,10 +16,10 @@ class ProfileCubit extends Cubit<ProfileState> {
       if (profile != null) {
         emit(state.copyWith(status: ProfileStatus.success, profileData: profile));
       } else {
-        emit(state.copyWith(status: ProfileStatus.failure, errorMessage: 'Usuário não encontrado'));
+        emit(state.copyWith(status: ProfileStatus.empty, errorMessage: 'Usuário não encontrado'));
       }
     } catch (e) {
-      emit(state.copyWith(status: ProfileStatus.failure, errorMessage: e.toString()));
+      emit(state.copyWith(status: ProfileStatus.empty, errorMessage: e.toString()));
     }
   }
 
@@ -29,7 +29,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       await profileRepository.logout(currentUser);
       emit(const ProfileState(status: ProfileStatus.initial));
     } catch (e) {
-      emit(state.copyWith(status: ProfileStatus.failure, errorMessage: e.toString()));
+      emit(state.copyWith(status: ProfileStatus.empty, errorMessage: e.toString()));
     }
   }
 }

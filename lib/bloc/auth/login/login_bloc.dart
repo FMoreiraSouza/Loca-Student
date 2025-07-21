@@ -22,7 +22,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
 
       if (event.password.length < 8) {
-        emit(LoginFailure('A senha deve ter no mínimo 8 caracteres'));
+        emit(LoginFailure('A senha deve ter mais do que 8 caracteres'));
         return;
       }
 
@@ -40,7 +40,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       if (userTypeStr == 'estudante') {
         userType = UserType.student;
-      } else if (userTypeStr == 'proprietario') {
+      } else if (userTypeStr == 'república') {
         userType = UserType.republic;
       }
 

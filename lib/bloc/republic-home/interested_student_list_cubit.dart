@@ -5,33 +5,36 @@ import 'package:loca_student/data/models/tenant_model.dart';
 import 'package:loca_student/data/repositories/republic_home_repository.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
-class InterestStudentListCubit extends Cubit<InterestStudentListState> {
+class InterestedStudentListCubit extends Cubit<InterestStudentListState> {
   final RepublicHomeRepository repository;
 
-  InterestStudentListCubit(this.repository) : super(const InterestStudentListState());
+  InterestedStudentListCubit(this.repository) : super(const InterestStudentListState());
 
-  Future<void> loadInterestStudents(ParseUser currentUser) async {
-    emit(state.copyWith(status: InterestStudentStatus.loading));
+  Future<void> loadInterestedStudents(ParseUser currentUser) async {
+    emit(state.copyWith(status: InterestedStudentStatus.loading));
     try {
       final interested = await repository.fetchInterestedStudents(currentUser);
       if (interested.isEmpty) {
-        emit(state.copyWith(status: InterestStudentStatus.empty));
+        emit(state.copyWith(status: InterestedStudentStatus.empty));
       } else {
         emit(
-          state.copyWith(status: InterestStudentStatus.success, interestedStudentList: interested),
+          state.copyWith(
+            status: InterestedStudentStatus.success,
+            interestedStudentList: interested,
+          ),
         );
       }
     } catch (e) {
-      emit(state.copyWith(status: InterestStudentStatus.error, error: e.toString()));
+      emit(state.copyWith(status: InterestedStudentStatus.empty, error: e.toString()));
     }
   }
 
-  Future<void> updateInterestStudentStatus({
+  Future<void> updateInterestedStudentStatus({
     required InterestedStudentModel interested,
     required ParseUser currentUser,
   }) async {
     try {
-      await repository.updateInterestStudentStatusAndReservation(interested: interested);
+      await repository.updateInterestedStudentStatusAndReservation(interested: interested);
 
       final updatedList = state.interestedStudentList
           .where((e) => e.objectId != interested.objectId)
@@ -40,7 +43,9 @@ class InterestStudentListCubit extends Cubit<InterestStudentListState> {
       emit(
         state.copyWith(
           interestedStudentList: updatedList,
-          status: updatedList.isEmpty ? InterestStudentStatus.empty : InterestStudentStatus.success,
+          status: updatedList.isEmpty
+              ? InterestedStudentStatus.empty
+              : InterestedStudentStatus.success,
         ),
       );
     } catch (e) {
@@ -53,26 +58,22 @@ class InterestStudentListCubit extends Cubit<InterestStudentListState> {
     required ParseUser currentUser,
   }) async {
     try {
-      // 👉 atualiza reserva e interesse (mantém como está)
       await repository.updateReservationStatus(
         studentId: interested.studentId,
         republicId: interested.republicId,
         newStatus: 'aceita',
       );
 
-      await repository.updateInterestStatusAceito(interested);
+      await repository.acceptInterestStudent(interested);
 
-      // 👉 Lógica de tenants fica aqui no cubit
       final existingTenant = await repository.getTenantByStudentAndRepublic(
         interested.studentId,
         interested.republicId,
       );
 
       if (existingTenant != null) {
-        // já existe → só atualizar belongs
         await repository.updateTenantBelongs(existingTenant.objectId, true);
       } else {
-        // não existe → criar novo
         final tenant = TenantModel(
           studentName: interested.studentName,
           studentEmail: interested.studentEmail,
@@ -83,11 +84,9 @@ class InterestStudentListCubit extends Cubit<InterestStudentListState> {
         await repository.createTenant(tenant);
       }
 
-      // 👉 atualiza vagas
       await repository.updateVacancy(interested.republicId);
 
-      // 👉 recarrega lista
-      await loadInterestStudents(currentUser);
+      await loadInterestedStudents(currentUser);
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }

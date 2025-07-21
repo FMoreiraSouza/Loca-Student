@@ -37,7 +37,6 @@ class TenantModel {
       tenantObj.objectId = objectId;
     }
 
-    // Referências
     final studentPointer = ParseObject('Student')..objectId = studentId;
     final republicPointer = ParseObject('Republic')..objectId = republicId;
 

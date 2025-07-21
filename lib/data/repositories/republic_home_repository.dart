@@ -13,7 +13,7 @@ class RepublicHomeRepository {
     }
 
     final republic = republicResponse.results!.first;
-    final interestQuery = QueryBuilder<ParseObject>(ParseObject('InterestStudents'))
+    final interestQuery = QueryBuilder<ParseObject>(ParseObject('InterestedStudents'))
       ..whereEqualTo('republic', republic)
       ..whereEqualTo('status', 'interessado')
       ..orderByDescending('createdAt');
@@ -94,38 +94,7 @@ class RepublicHomeRepository {
     }
   }
 
-  Future<void> acceptInterestedStudent({
-    required InterestedStudentModel interested,
-    required TenantModel tenant,
-  }) async {
-    // atualiza reserva
-    await updateReservationStatus(
-      studentId: interested.studentId,
-      republicId: interested.republicId,
-      newStatus: 'aceita',
-    );
-
-    // atualiza interesse
-    final updatedInterest = interested.toParse(
-      republic: ParseObject('Republic')..objectId = interested.republicId,
-    )..set('status', 'aceito');
-
-    final interestResp = await updatedInterest.save();
-    if (!interestResp.success) {
-      throw Exception(interestResp.error?.message ?? 'Erro ao atualizar interessado');
-    }
-
-    final tenantObj = tenant.toParse();
-    final tenantResp = await tenantObj.save();
-    if (!tenantResp.success) {
-      throw Exception(tenantResp.error?.message ?? 'Erro ao salvar tenant');
-    }
-
-    // atualiza vagas
-    await updateVacancy(interested.republicId);
-  }
-
-  Future<void> updateInterestStatusAceito(InterestedStudentModel interested) async {
+  Future<void> acceptInterestStudent(InterestedStudentModel interested) async {
     final interestObj = interested.toParse(
       republic: ParseObject('Republic')..objectId = interested.republicId,
     )..set('status', 'aceito');
@@ -166,7 +135,7 @@ class RepublicHomeRepository {
     }
   }
 
-  Future<void> updateInterestStudentStatusAndReservation({
+  Future<void> updateInterestedStudentStatusAndReservation({
     required InterestedStudentModel interested,
   }) async {
     final updatedInterest = interested.toParse(
@@ -185,42 +154,26 @@ class RepublicHomeRepository {
     );
   }
 
-  Future<void> removeTenant(TenantModel tenant) async {
-    // atualiza belongs
-    final tenantObj = tenant.toParse()..set('belongs', false);
-    final tenantResp = await tenantObj.save();
-    if (!tenantResp.success) {
-      throw Exception(tenantResp.error?.message ?? 'Erro ao atualizar tenant');
-    }
+  Future<void> updateInterestStatus(String studentId, String republicId, String newStatus) async {
+    final interestQuery = QueryBuilder<ParseObject>(ParseObject('InterestedStudents'))
+      ..whereEqualTo('student', ParseObject('Student')..objectId = studentId)
+      ..whereEqualTo('republic', ParseObject('Republic')..objectId = republicId);
 
-    // reserva cancelada
-    final reservationQuery = QueryBuilder<ParseObject>(ParseObject('Reservations'))
-      ..whereEqualTo('student', ParseObject('Student')..objectId = tenant.studentId)
-      ..whereEqualTo('republic', ParseObject('Republic')..objectId = tenant.republicId);
-
-    final reservationResp = await reservationQuery.query();
-    if (reservationResp.results != null && reservationResp.results!.isNotEmpty) {
-      final reservationObj = ParseObject('Reservations')
-        ..objectId = (reservationResp.results!.first as ParseObject).objectId
-        ..set('status', 'cancelada');
-      await reservationObj.save();
-    }
-
-    // interesse recusado
-    final interestQuery = QueryBuilder<ParseObject>(ParseObject('InterestStudents'))
-      ..whereEqualTo('student', ParseObject('Student')..objectId = tenant.studentId)
-      ..whereEqualTo('republic', ParseObject('Republic')..objectId = tenant.republicId);
     final interestResp = await interestQuery.query();
     if (interestResp.results != null && interestResp.results!.isNotEmpty) {
-      final interestObj = ParseObject('InterestStudents')
+      final interestObj = ParseObject('InterestedStudents')
         ..objectId = (interestResp.results!.first as ParseObject).objectId
-        ..set('status', 'recusado');
-      await interestObj.save();
+        ..set('status', newStatus);
+      final saveResp = await interestObj.save();
+      if (!saveResp.success) {
+        throw Exception(saveResp.error?.message ?? 'Erro ao atualizar interesse');
+      }
     }
+  }
 
-    // vagas +1
+  Future<void> incrementVacancy(String republicId) async {
     final republicQuery = QueryBuilder<ParseObject>(ParseObject('Republic'))
-      ..whereEqualTo('objectId', tenant.republicId);
+      ..whereEqualTo('objectId', republicId);
     final republicResp = await republicQuery.query();
     if (republicResp.results != null && republicResp.results!.isNotEmpty) {
       final republicObj = republicResp.results!.first as ParseObject;
@@ -228,7 +181,10 @@ class RepublicHomeRepository {
       final updateRep = ParseObject('Republic')
         ..objectId = republicObj.objectId
         ..set('vacancies', currentVacancies + 1);
-      await updateRep.save();
+      final saveResp = await updateRep.save();
+      if (!saveResp.success) {
+        throw Exception(saveResp.error?.message ?? 'Erro ao incrementar vaga');
+      }
     }
   }
 }

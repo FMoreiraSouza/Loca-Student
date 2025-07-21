@@ -16,10 +16,10 @@ class RepublicProfileWidget extends StatelessWidget {
     List<String> distanceMessages = [];
 
     if (latitude != 0 && longitude != 0) {
-      distanceMessages = getNearbyUniversitiesDistanceMessages(
+      distanceMessages = CalculateCoordinates().getNearbyUniversitiesDistanceMessages(
         latitude: latitude,
         longitude: longitude,
-        universities: mockUniversities,
+        universities: MockData().mockUniversities,
       );
     }
 
@@ -32,17 +32,19 @@ class RepublicProfileWidget extends StatelessWidget {
         Text('Estado: ${republic.state.isNotEmpty ? republic.state : 'Não informado'}'),
         if (distanceMessages.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(top: 12.0),
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: distanceMessages
-                  .map(
-                    (msg) => Text(
-                      msg,
-                      style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                    ),
-                  )
-                  .toList(),
+              children: distanceMessages.map((msg) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: Text(
+                    msg,
+                    style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.justify,
+                  ),
+                );
+              }).toList(),
             ),
           ),
       ],

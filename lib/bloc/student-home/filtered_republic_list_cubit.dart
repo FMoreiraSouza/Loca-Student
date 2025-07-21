@@ -4,7 +4,7 @@ import 'package:loca_student/data/models/republic_model.dart';
 import 'package:loca_student/data/models/reservation_model.dart';
 import 'package:loca_student/data/models/student_model.dart';
 import 'package:loca_student/data/repositories/student_home_repository.dart';
-import 'package:loca_student/utils/parse_configs.dart';
+import 'package:loca_student/data/services/api_service.dart';
 
 import 'filtered_republic_list_state.dart';
 
@@ -16,9 +16,7 @@ class FilteredRepublicListCubit extends Cubit<FilteredRepublicListState> {
   Future<void> searchRepublicsByCity(String city) async {
     emit(state.copyWith(status: FilteredRepublicListStatus.loading, error: null));
     try {
-      final currentUser = await ParseConfigs.getCurrentUser();
-
-      final republics = await _repository.searchRepublicsByCity(city, currentUser);
+      final republics = await _repository.searchRepublicsByCity(city);
 
       if (republics.isEmpty) {
         emit(state.copyWith(status: FilteredRepublicListStatus.empty, republics: []));
@@ -26,20 +24,18 @@ class FilteredRepublicListCubit extends Cubit<FilteredRepublicListState> {
         emit(state.copyWith(status: FilteredRepublicListStatus.success, republics: republics));
       }
     } catch (e) {
-      emit(state.copyWith(status: FilteredRepublicListStatus.error, error: e.toString()));
+      emit(state.copyWith(status: FilteredRepublicListStatus.empty, error: e.toString()));
     }
   }
 
   Future<void> reserveSpot(RepublicModel rep) async {
     emit(state.copyWith(status: FilteredRepublicListStatus.loading));
     try {
-      final currentUser = await ParseConfigs.getCurrentUser();
+      final currentUser = await APIService.getCurrentUser();
 
-      // Obtém o ParseObject do Student (repo continua cuidando de conexão)
       final studentParse = await _repository.getStudentForUser(currentUser);
       final republicPtr = _repository.getRepublicPointer(rep);
 
-      // Verifica se já existe reserva
       final existing = await _repository.findExistingReservation(studentParse, republicPtr);
       if (existing.isNotEmpty) {
         final existingRes = existing.first;
@@ -49,7 +45,6 @@ class FilteredRepublicListCubit extends Cubit<FilteredRepublicListState> {
         } else {
           await _repository.updateReservationStatus(existingRes, 'pendente');
 
-          // Atualiza status de interesse se já existir
           await _repository.updateInterestStatusIfExists(studentParse, republicPtr, 'interessado');
 
           emit(state.copyWith(status: FilteredRepublicListStatus.success));
@@ -57,7 +52,6 @@ class FilteredRepublicListCubit extends Cubit<FilteredRepublicListState> {
         }
       }
 
-      // Criar nova reserva
       final reservation = ReservationModel(
         id: '',
         address: rep.address,
@@ -67,16 +61,13 @@ class FilteredRepublicListCubit extends Cubit<FilteredRepublicListState> {
         status: 'pendente',
         studentPointer: studentParse,
         republicPointer: republicPtr,
-        username: currentUser.get<String>('username') ?? 'Desconhecido',
       );
 
       await _repository.saveReservation(reservation);
 
-      // Monta o StudentModel puro a partir do ParseObject
       final studentModel = StudentModel.fromParse(studentParse);
 
-      // Monta o modelo puro de interesse
-      final newInterestModel = InterestedStudentModel(
+      final newInterested = InterestedStudentModel(
         objectId: '',
         studentName: currentUser.username ?? "",
         studentEmail: currentUser.emailAddress ?? "",
@@ -85,17 +76,17 @@ class FilteredRepublicListCubit extends Cubit<FilteredRepublicListState> {
         student: studentModel,
       );
 
-      // Primeiro verifica se já existe interesse para atualizar, senão cria novo
       final existingInterests = await _repository.findInterest(studentParse, republicPtr);
       if (existingInterests.isNotEmpty) {
         await _repository.updateInterestStatusIfExists(studentParse, republicPtr, 'interessado');
       } else {
-        await _repository.saveInterestModel(newInterestModel, rep);
+        await _repository.saveInterestModel(newInterested, rep);
       }
 
       emit(state.copyWith(status: FilteredRepublicListStatus.success));
     } catch (e) {
-      emit(state.copyWith(status: FilteredRepublicListStatus.error, error: e.toString()));
+      emit(state.copyWith(status: FilteredRepublicListStatus.empty, error: e.toString()));
+      rethrow;
     }
   }
 

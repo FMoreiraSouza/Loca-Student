@@ -1,6 +1,6 @@
 ﻿import 'package:loca_student/data/models/republic_model.dart';
 
-enum FilteredRepublicListStatus { initial, loading, success, empty, error }
+enum FilteredRepublicListStatus { initial, loading, success, empty }
 
 class FilteredRepublicListState {
   final FilteredRepublicListStatus status;
