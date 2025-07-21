@@ -13,7 +13,7 @@ O **Loca Student** é um aplicativo pensado para a comunidade estudantil. Ele fo
 
 ---
 
-## 💻 Tecnologias Utilizadas
+## 💻 Recursos Utilizadas
 
 - **Parse Server**: Backend para autenticação, armazenamento de dados e gerenciamento das reservas.
 - **BLoC**: Gerenciamento de estado escalável.
