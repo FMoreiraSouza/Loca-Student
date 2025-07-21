@@ -76,11 +76,11 @@ Acompanhe suas reservas **pendentes** ou **aceitas** diretamente no app, podendo
 
 ---
 
-## 🎥 Demonstração
+## 🎥 Apresentação
 
 Vídeo que apresenta o funcionamento do aplicativo e explica como cada requisito foi implementado no código:
 
-[📽️ Assistir](https://youtu.be/r2aBu6VeumI)
+[Assistir](https://youtu.be/r2aBu6VeumI)
 
 ---
 
