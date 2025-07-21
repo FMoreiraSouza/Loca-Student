@@ -2,12 +2,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/republic-home/tenant_list_cubit.dart';
 import 'package:loca_student/bloc/republic-home/tenant_list_state.dart';
+import 'package:loca_student/utils/states/empty_state_widget.dart';
+import 'package:loca_student/utils/states/initial_state_widget.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
-// TenantListWidget
 class TenantListWidget extends StatefulWidget {
   const TenantListWidget({super.key, required this.currentUser});
-  final ParseObject currentUser;
+  final ParseUser currentUser;
 
   @override
   State<TenantListWidget> createState() => _TenantListWidgetState();
@@ -25,12 +26,12 @@ class _TenantListWidgetState extends State<TenantListWidget> {
     return BlocBuilder<TenantListCubit, TenantListState>(
       builder: (context, state) {
         switch (state.status) {
+          case TenantListStatus.initial:
+            return const InitialStateWidget(message: 'Carregando locatários');
           case TenantListStatus.loading:
             return const Center(child: CircularProgressIndicator());
-          case TenantListStatus.error:
-            return Center(child: Text('Erro ao carregar locatários:\n${state.error}'));
           case TenantListStatus.empty:
-            return const Center(child: Text('Nenhum locatário encontrado.'));
+            return const EmptyStateWidget(message: 'Nenhum locatário encontrado.');
           case TenantListStatus.success:
             return ListView.builder(
               itemCount: state.tenants.length,
@@ -46,7 +47,7 @@ class _TenantListWidgetState extends State<TenantListWidget> {
                       icon: const Icon(Icons.cancel, color: Colors.red),
                       onPressed: () async {
                         await context.read<TenantListCubit>().removeTenant(
-                          tenantId: tenant.objectId,
+                          tenant: tenant,
                           currentUser: widget.currentUser,
                         );
                       },
@@ -55,8 +56,6 @@ class _TenantListWidgetState extends State<TenantListWidget> {
                 );
               },
             );
-          default:
-            return const SizedBox.shrink();
         }
       },
     );

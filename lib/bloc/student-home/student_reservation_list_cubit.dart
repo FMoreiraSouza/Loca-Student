@@ -17,25 +17,25 @@ class StudentReservationListCubit extends Cubit<StudentReservationListState> {
         emit(state.copyWith(status: ReservationListStatus.success, reservations: results));
       }
     } catch (e) {
-      emit(state.copyWith(status: ReservationListStatus.error, error: e.toString()));
+      emit(state.copyWith(status: ReservationListStatus.empty, error: e.toString()));
     }
   }
 
   Future<void> cancelReservation(String reservationId) async {
     try {
-      await _repository.cancelReservation(reservationId);
+      await _repository.cancelReservationByIdModular(reservationId);
       await fetchReservations();
     } catch (e) {
-      emit(state.copyWith(status: ReservationListStatus.error, error: e.toString()));
+      emit(state.copyWith(status: ReservationListStatus.empty, error: e.toString()));
     }
   }
 
   Future<void> resendReserve(String reservationId) async {
     try {
-      await _repository.resendReserve(reservationId);
+      await _repository.resendReservationByIdModular(reservationId);
       await fetchReservations();
     } catch (e) {
-      emit(state.copyWith(status: ReservationListStatus.error, error: e.toString()));
+      emit(state.copyWith(status: ReservationListStatus.empty, error: e.toString()));
     }
   }
 }

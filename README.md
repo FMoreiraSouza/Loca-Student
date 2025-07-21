@@ -44,7 +44,7 @@ Acompanhe suas reservas **pendentes** ou **aceitas** diretamente no app, podendo
   - Tabela `Student`: informações de cada estudante.  
   - Tabela `Republic`: informações de cada república.  
   - Tabela `Reservations`: reservas criadas e seus status.  
-  - Tabela `InterestStudents`: controle de interesse dos estudantes e seus status.
+  - Tabela `InterestedStudents`: controle de interesse dos estudantes e seus status.
   - Tabela `Tenants`: lista de estudantes aceitos como inquilinos na república.
 - **Consultas em Tempo Real**: Dados atualizados a cada ação do usuário.
 
@@ -53,17 +53,17 @@ Acompanhe suas reservas **pendentes** ou **aceitas** diretamente no app, podendo
 ## 🎨 Telas do Aplicativo
 
 - **Login**  
-  Tela de autenticação onde o usuário (estudante ou proprietário) informa email e senha para entrar no app.
+  Tela de autenticação onde o usuário (estudante ou república) informa email e senha para entrar no app.
 
 - **Cadastro de Usuário**  
-  Formulário para registrar novo estudante ou proprietário, com campos específicos para cada tipo.
+  Formulário para registrar novo estudante ou república, com campos específicos para cada tipo.
 
 - **Página Inicial do Estudante**  
   Tela com duas abas:  
   - Lista filtrada de repúblicas disponíveis para reserva.  
   - Visualização das reservas feitas pelo estudante, com status e opções de gerenciamento.
 
-- **Página Inicial da República (Proprietário)**  
+- **Página Inicial da República**  
   Tela com duas abas:  
   - Lista dos estudantes interessados em vagas na república.  
   - Lista dos inquilinos (estudantes aceitos).

@@ -15,9 +15,9 @@ import 'package:loca_student/data/repositories/student_home_repository.dart';
 import 'package:loca_student/data/services/geocoding_service.dart';
 import 'package:loca_student/ui/student-home/pages/student_home_page.dart';
 import 'package:loca_student/ui/republic-home/pages/republic_home_page.dart';
-import 'package:loca_student/ui/theme/app_theme.dart';
+import 'package:loca_student/utils/theme/app_theme.dart';
 import 'package:loca_student/ui/user_type/pages/user_type_page.dart';
-import 'package:loca_student/utils/convert_data.dart';
+import 'package:loca_student/utils/format_methods.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class AppWidget extends StatefulWidget {
@@ -43,7 +43,7 @@ class _AppWidgetState extends State<AppWidget> {
     if (isLogged) {
       final currentUser = await ParseUser.currentUser() as ParseUser?;
       final userTypeStr = currentUser?.get<String>('userType');
-      final userType = userTypeStr != null ? stringToUserType(userTypeStr) : null;
+      final userType = userTypeStr != null ? FormatMethods().stringToUserType(userTypeStr) : null;
       if (userType == UserType.student) {
         _initialPage = const StudentHomePage();
       } else if (userType == UserType.republic) {
@@ -95,7 +95,7 @@ class _AppWidgetState extends State<AppWidget> {
             create: (context) => ProfileCubit(profileRepository: context.read<ProfileRepository>()),
           ),
           BlocProvider(
-            create: (context) => InterestStudentListCubit(context.read<RepublicHomeRepository>()),
+            create: (context) => InterestedStudentListCubit(context.read<RepublicHomeRepository>()),
           ),
           BlocProvider(
             create: (context) => TenantListCubit(context.read<RepublicHomeRepository>()),

@@ -21,7 +21,7 @@ class UserTypePage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('content/app_icon.png', height: 150),
+                Image.asset('content/app_logo.png', height: 200),
                 const SizedBox(height: 16),
                 const Text(
                   'Você é',

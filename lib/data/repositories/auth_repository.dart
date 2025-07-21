@@ -1,4 +1,6 @@
-﻿import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
+﻿import 'package:loca_student/data/models/republic_model.dart';
+import 'package:loca_student/data/models/student_model.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class AuthRepository {
   Future<LoginResult> login(String email, String password) async {
@@ -29,13 +31,15 @@ class AuthRepository {
     required String username,
     required String emailAddress,
     required String password,
-    required int age,
-    required String degree,
-    required String origin,
-    required String sex,
+    required StudentModel student,
   }) async {
     try {
       final user = ParseUser(username, password, emailAddress)..set('userType', 'estudante');
+
+      final acl = ParseACL();
+      acl.setPublicReadAccess(allowed: true);
+      acl.setPublicWriteAccess(allowed: true);
+      user.setACL(acl);
 
       final response = await user.signUp();
       if (!response.success || response.result == null) {
@@ -43,14 +47,10 @@ class AuthRepository {
       }
 
       final createdUser = response.result as ParseUser;
-      final student = ParseObject('Student')
-        ..set('age', age)
-        ..set('degree', degree)
-        ..set('origin', origin)
-        ..set('sex', sex)
-        ..set('user', createdUser);
 
-      final extraResponse = await student.save();
+      final studentObj = student.toParse(user: createdUser);
+
+      final extraResponse = await studentObj.save();
       if (!extraResponse.success) {
         return LoginResult(success: false, message: 'Erro ao salvar dados do estudante');
       }
@@ -65,17 +65,10 @@ class AuthRepository {
     required String username,
     required String emailAddress,
     required String password,
-    required double value,
-    required String address,
-    required String city,
-    required String state,
-    required double latitude,
-    required double longitude,
-    required int vacancies,
-    required String phone,
+    required RepublicModel republic,
   }) async {
     try {
-      final user = ParseUser(username, password, emailAddress)..set('userType', 'proprietario');
+      final user = ParseUser(username, password, emailAddress)..set('userType', 'república');
 
       final acl = ParseACL();
       acl.setPublicReadAccess(allowed: true);
@@ -88,23 +81,15 @@ class AuthRepository {
       }
 
       final createdUser = response.result as ParseUser;
-      final republic = ParseObject('Republic')
-        ..set('value', value)
-        ..set('address', address)
-        ..set('city', city)
-        ..set('state', state)
-        ..set('latitude', latitude)
-        ..set('longitude', longitude)
-        ..set('vacancies', vacancies)
-        ..set('phone', phone)
-        ..set('user', createdUser);
 
-      final extraResponse = await republic.save();
+      final republicObj = republic.toParse(user: createdUser);
+
+      final extraResponse = await republicObj.save();
       if (!extraResponse.success) {
-        return LoginResult(success: false, message: 'Erro ao salvar dados do proprietário');
+        return LoginResult(success: false, message: 'Erro ao salvar dados da república');
       }
 
-      return LoginResult(success: true, userType: 'proprietario');
+      return LoginResult(success: true, userType: 'república');
     } catch (e) {
       return LoginResult(success: false, message: 'Erro: $e');
     }

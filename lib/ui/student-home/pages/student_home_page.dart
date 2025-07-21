@@ -56,13 +56,16 @@ class _StudentHomePageState extends State<StudentHomePage> {
         index: _currentIndex,
         children: const [FilteredRepublicListWidget(), StudentReservationListWidget()],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onTabChanged,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_work), label: 'Repúblicas'),
-          BottomNavigationBarItem(icon: Icon(Icons.add_home_work), label: 'Minhas reservas'),
-        ],
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: _onTabChanged,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home_work), label: 'Repúblicas'),
+            BottomNavigationBarItem(icon: Icon(Icons.add_home_work), label: 'Minhas reservas'),
+          ],
+        ),
       ),
     );
   }
