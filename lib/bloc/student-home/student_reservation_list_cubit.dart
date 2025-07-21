@@ -1,6 +1,7 @@
 ﻿import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/student-home/student_reservation_list_state.dart';
 import 'package:loca_student/data/repositories/interfaces/i_student_home_repository.dart';
+import 'package:loca_student/data/services/api_service.dart';
 
 class StudentReservationListCubit extends Cubit<StudentReservationListState> {
   final IStudentHomeRepository studentHomeRepository;
@@ -11,7 +12,8 @@ class StudentReservationListCubit extends Cubit<StudentReservationListState> {
   Future<void> fetchReservations() async {
     emit(state.copyWith(status: ReservationListStatus.loading));
     try {
-      final results = await studentHomeRepository.fetchReservations();
+      final currentUser = await APIService.getCurrentUser();
+      final results = await studentHomeRepository.fetchReservations(currentUser);
       if (results.isEmpty) {
         emit(state.copyWith(status: ReservationListStatus.empty, reservations: []));
       } else {
