@@ -1,6 +1,6 @@
 ﻿import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
-class ParseConfigs {
+class APIService {
   static Future<void> initializeParse() async {
     await Parse().initialize(
       'fp39HoyCcVZjJBIujmayVOKajrPfpvGdyulby2Uf',

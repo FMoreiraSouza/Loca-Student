@@ -5,6 +5,8 @@ import 'package:loca_student/bloc/student-home/filtered_republic_list_state.dart
 import 'package:loca_student/data/models/republic_model.dart';
 import 'package:loca_student/utils/calculate_coordinates.dart';
 import 'package:loca_student/utils/mock_universities.dart';
+import 'package:loca_student/utils/states/empty_state_widget.dart';
+import 'package:loca_student/utils/states/initial_state_widget.dart';
 
 class FilteredRepublicListWidget extends StatefulWidget {
   const FilteredRepublicListWidget({super.key});
@@ -18,7 +20,7 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
   final TextEditingController _searchController = TextEditingController();
 
   @override
-  bool get wantKeepAlive => false; // força recriar o estado ao trocar aba
+  bool get wantKeepAlive => false;
 
   @override
   void initState() {
@@ -35,7 +37,6 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Limpa lista caso campo pesquisa vazio ao voltar para o widget
     if (_searchController.text.trim().isEmpty) {
       context.read<FilteredRepublicListCubit>().clearRepublics();
     }
@@ -76,10 +77,10 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
   }
 
   void _showRepublicDetailsDialog(RepublicModel rep) {
-    final distanceMessages = getNearbyUniversitiesDistanceMessages(
+    final distanceMessages = CalculateCoordinates().getNearbyUniversitiesDistanceMessages(
       latitude: rep.latitude,
       longitude: rep.longitude,
-      universities: mockUniversities,
+      universities: MockData().mockUniversities,
     );
     final hasNoVacancies = rep.vacancies == 0;
     showDialog(
@@ -129,18 +130,19 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
   }
 
   Widget _buildContent(FilteredRepublicListState state) {
-    // Se a barra de pesquisa está vazia, não exibe nada mesmo que haja estado carregado
-    if (_searchController.text.trim().isEmpty) {
-      return const SizedBox.shrink();
+    final searchText = _searchController.text.trim();
+
+    if (searchText.isEmpty) {
+      return const InitialStateWidget(message: 'Digite uma cidade para buscar repúblicas');
     }
 
     switch (state.status) {
+      case FilteredRepublicListStatus.initial:
+        return const InitialStateWidget(message: 'Digite uma cidade para buscar repúblicas');
       case FilteredRepublicListStatus.loading:
         return const Center(child: CircularProgressIndicator());
-      case FilteredRepublicListStatus.error:
-        return Center(child: Text(state.error ?? 'Erro desconhecido'));
       case FilteredRepublicListStatus.empty:
-        return const Center(child: Text('Nenhum alojamento encontrado'));
+        return const EmptyStateWidget(message: 'Nenhuma república encontrada');
       case FilteredRepublicListStatus.success:
         return ListView.builder(
           itemCount: state.republics.length,
@@ -158,14 +160,12 @@ class _FilteredRepublicListWidgetState extends State<FilteredRepublicListWidget>
             );
           },
         );
-      default:
-        return const SizedBox.shrink();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // AutomaticKeepAliveClientMixin
+    super.build(context);
     return Column(
       children: [
         Padding(

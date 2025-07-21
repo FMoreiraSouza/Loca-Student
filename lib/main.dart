@@ -1,11 +1,11 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:loca_student/app_widget.dart';
-import 'package:loca_student/utils/parse_configs.dart';
+import 'package:loca_student/data/services/api_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await ParseConfigs.initializeParse();
+  await APIService.initializeParse();
 
   runApp(const MyApp());
 }

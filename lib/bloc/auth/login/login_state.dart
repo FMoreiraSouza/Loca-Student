@@ -7,7 +7,7 @@ class LoginInitial extends LoginState {}
 class LoginLoading extends LoginState {}
 
 class LoginSuccess extends LoginState {
-  final UserType userType; // 👈 Passa para HomePage
+  final UserType userType;
 
   LoginSuccess(this.userType);
 }

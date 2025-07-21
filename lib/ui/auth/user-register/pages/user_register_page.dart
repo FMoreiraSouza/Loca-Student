@@ -15,7 +15,9 @@ class UserRegisterPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(userType == UserType.student ? 'Cadastro Estudante' : 'Cadastro Proprietário'),
+        title: Text(
+          userType == UserType.student ? 'Cadastro de Estudante' : 'Cadastro de República',
+        ),
       ),
       body: BlocConsumer<UserRegisterBloc, UserRegisterState>(
         listener: (context, state) {
@@ -34,17 +36,13 @@ class UserRegisterPage extends StatelessWidget {
                 Text(
                   userType == UserType.student
                       ? 'Preencha os dados para estudante'
-                      : 'Preencha os dados para proprietário',
+                      : 'Preencha os dados para república',
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 24),
                 userType == UserType.student
                     ? StudentFormWidget(state: state)
                     : RepublicFormWidget(state: state),
-                if (state is UserRegisterLoading) ...[
-                  const SizedBox(height: 24),
-                  const Center(child: CircularProgressIndicator()),
-                ],
               ],
             ),
           );

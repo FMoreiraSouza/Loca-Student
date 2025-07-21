@@ -2,10 +2,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/profile/profile_cubit.dart';
 import 'package:loca_student/bloc/profile/profile_state.dart';
+import 'package:loca_student/data/models/republic_model.dart';
+import 'package:loca_student/data/models/student_model.dart';
+import 'package:loca_student/data/services/api_service.dart';
 import 'package:loca_student/ui/user_type/pages/user_type_page.dart';
 import 'package:loca_student/ui/profile/widgets/republic_profile_widget.dart';
 import 'package:loca_student/ui/profile/widgets/student_profile_widget.dart';
-import 'package:loca_student/utils/parse_configs.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -26,7 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _loadCurrentUser() async {
-    final user = await ParseConfigs.getCurrentUser();
+    final user = await APIService.getCurrentUser();
     if (!mounted) return;
     setState(() {
       _currentUser = user;
@@ -58,51 +60,131 @@ class _ProfilePageState extends State<ProfilePage> {
               _buildContent(context, state),
               if (state.status == ProfileStatus.loading)
                 Container(
-                  color: Colors.black54,
+                  color: Colors.black45,
                   child: const Center(child: CircularProgressIndicator()),
                 ),
             ],
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           context.read<ProfileCubit>().logout(_currentUser);
         },
-        tooltip: 'Sair',
-        child: const Icon(Icons.exit_to_app),
+        icon: const Icon(Icons.exit_to_app),
+        label: const Text('Sair'),
+        backgroundColor: Colors.redAccent,
       ),
     );
   }
 
   Widget _buildContent(BuildContext context, ProfileState state) {
     switch (state.status) {
-      case ProfileStatus.failure:
-        return Center(child: Text('Erro: ${state.errorMessage}'));
-      case ProfileStatus.success:
-        final data = state.profileData!;
-        final userType = data['userType'] as String;
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ListView(
-            children: [
-              Text(
-                'Nome: ${data['name'] ?? 'Não informado'}',
-                style: const TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Email: ${data['email'] ?? 'Não informado'}',
-                style: const TextStyle(fontSize: 16),
-              ),
-              const Divider(height: 32),
-              if (userType == 'estudante')
-                StudentProfileWidget(data: data)
-              else if (userType == 'proprietario')
-                RepublicProfileWidget(data: data),
-            ],
+      case ProfileStatus.empty:
+        return Center(
+          child: Text(
+            'Erro: ${state.errorMessage}',
+            style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
           ),
         );
+
+      case ProfileStatus.success:
+        final data = state.profileData;
+        if (data == null) {
+          return const Center(child: Text('Nenhum dado de perfil encontrado.'));
+        }
+        if (data is StudentModel) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView(
+              children: [
+                Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Informações Gerais',
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Nome: ${_currentUser.username}',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Email: ${_currentUser.emailAddress}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: StudentProfileWidget(student: data),
+                  ),
+                ),
+              ],
+            ),
+          );
+        } else if (data is RepublicModel) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView(
+              children: [
+                Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Informações Gerais',
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Nome: ${_currentUser.username}',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Email: ${_currentUser.emailAddress}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: RepublicProfileWidget(republic: data),
+                  ),
+                ),
+              ],
+            ),
+          );
+        } else {
+          return const Center(child: Text('Tipo de perfil desconhecido'));
+        }
+
       default:
         return const SizedBox.shrink();
     }

@@ -11,14 +11,15 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> loadProfile(ParseUser currentUser) async {
     emit(state.copyWith(status: ProfileStatus.loading));
     try {
-      final data = await profileRepository.getUserProfileData(currentUser);
-      if (data != null) {
-        emit(state.copyWith(status: ProfileStatus.success, profileData: data));
+      final profile = await profileRepository.getUserProfile(currentUser);
+
+      if (profile != null) {
+        emit(state.copyWith(status: ProfileStatus.success, profileData: profile));
       } else {
-        emit(state.copyWith(status: ProfileStatus.failure, errorMessage: 'Usuário não encontrado'));
+        emit(state.copyWith(status: ProfileStatus.empty, errorMessage: 'Usuário não encontrado'));
       }
     } catch (e) {
-      emit(state.copyWith(status: ProfileStatus.failure, errorMessage: e.toString()));
+      emit(state.copyWith(status: ProfileStatus.empty, errorMessage: e.toString()));
     }
   }
 
@@ -28,7 +29,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       await profileRepository.logout(currentUser);
       emit(const ProfileState(status: ProfileStatus.initial));
     } catch (e) {
-      emit(state.copyWith(status: ProfileStatus.failure, errorMessage: e.toString()));
+      emit(state.copyWith(status: ProfileStatus.empty, errorMessage: e.toString()));
     }
   }
 }

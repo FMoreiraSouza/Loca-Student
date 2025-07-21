@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/republic-home/tenant_list_cubit.dart';
-import 'package:loca_student/utils/parse_configs.dart';
+import 'package:loca_student/data/services/api_service.dart';
 import 'package:loca_student/ui/republic-home/widgets/tenant_list_widget.dart';
 import 'package:loca_student/ui/republic-home/widgets/interested_student_list_widget.dart';
 import 'package:loca_student/ui/profile/pages/profile_page.dart';
@@ -27,7 +27,7 @@ class _RepublicHomePageState extends State<RepublicHomePage> {
   }
 
   Future<void> _loadCurrentUser() async {
-    final user = await ParseConfigs.getCurrentUser();
+    final user = await APIService.getCurrentUser();
     if (!mounted) return;
     setState(() {
       _currentUser = user;
@@ -35,14 +35,12 @@ class _RepublicHomePageState extends State<RepublicHomePage> {
     });
   }
 
-  // 🔥 Aqui o método para trocar de aba e disparar o fetch
   void _onTabChanged(int index) {
     setState(() {
       _currentIndex = index;
     });
 
     if (index == 1) {
-      // 👉 Quando for para a aba de locatários, recarrega a lista
       context.read<TenantListCubit>().loadTenants(_currentUser!);
     }
   }
@@ -77,17 +75,20 @@ class _RepublicHomePageState extends State<RepublicHomePage> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          InterestStudentListWidget(currentUser: _currentUser!),
+          InterestedStudentListWidget(currentUser: _currentUser!),
           TenantListWidget(currentUser: _currentUser!),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onTabChanged, // 👈 aqui usamos o método novo
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_work), label: 'Interessados'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Locatários'),
-        ],
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: _onTabChanged,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.group_add), label: 'Estudantes interessados'),
+            BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Locatários'),
+          ],
+        ),
       ),
     );
   }

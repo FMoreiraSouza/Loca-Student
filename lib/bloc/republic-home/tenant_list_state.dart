@@ -1,6 +1,6 @@
 ﻿import 'package:loca_student/data/models/tenant_model.dart';
 
-enum TenantListStatus { initial, loading, success, empty, error }
+enum TenantListStatus { initial, loading, success, empty }
 
 class TenantListState {
   final TenantListStatus status;
