@@ -7,7 +7,7 @@
 
 ---
 
-## ✨ Descrição
+## 📃 Descrição
 
 O **Loca Student** é um aplicativo pensado para a comunidade estudantil. Ele foi desenvolvido para aproximar **estudantes** e **repúblicas**, permitindo pesquisar acomodações, reservar vagas e gerenciar reservas já feitas. Além de um design moderno, o app prioriza **simplicidade**, garantindo uma experiência agradável.
 
