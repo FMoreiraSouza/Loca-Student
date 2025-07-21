@@ -2,18 +2,18 @@
 import 'package:loca_student/bloc/republic-home/interested_student_list_state.dart';
 import 'package:loca_student/data/models/interested_student_model.dart';
 import 'package:loca_student/data/models/tenant_model.dart';
-import 'package:loca_student/data/repositories/republic_home_repository.dart';
+import 'package:loca_student/data/repositories/interfaces/i_republic_home_repository.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class InterestedStudentListCubit extends Cubit<InterestStudentListState> {
-  final RepublicHomeRepository repository;
+  final IRepublicHomeRepository republicHomeRepository;
 
-  InterestedStudentListCubit(this.repository) : super(const InterestStudentListState());
+  InterestedStudentListCubit(this.republicHomeRepository) : super(const InterestStudentListState());
 
   Future<void> loadInterestedStudents(ParseUser currentUser) async {
     emit(state.copyWith(status: InterestedStudentStatus.loading));
     try {
-      final interested = await repository.fetchInterestedStudents(currentUser);
+      final interested = await republicHomeRepository.fetchInterestedStudents(currentUser);
       if (interested.isEmpty) {
         emit(state.copyWith(status: InterestedStudentStatus.empty));
       } else {
@@ -34,7 +34,9 @@ class InterestedStudentListCubit extends Cubit<InterestStudentListState> {
     required ParseUser currentUser,
   }) async {
     try {
-      await repository.updateInterestedStudentStatusAndReservation(interested: interested);
+      await republicHomeRepository.updateInterestedStudentStatusAndReservation(
+        interested: interested,
+      );
 
       final updatedList = state.interestedStudentList
           .where((e) => e.objectId != interested.objectId)
@@ -58,21 +60,21 @@ class InterestedStudentListCubit extends Cubit<InterestStudentListState> {
     required ParseUser currentUser,
   }) async {
     try {
-      await repository.updateReservationStatus(
+      await republicHomeRepository.updateReservationStatus(
         studentId: interested.studentId,
         republicId: interested.republicId,
         newStatus: 'aceita',
       );
 
-      await repository.acceptInterestStudent(interested);
+      await republicHomeRepository.acceptInterestStudent(interested);
 
-      final existingTenant = await repository.getTenantByStudentAndRepublic(
+      final existingTenant = await republicHomeRepository.getTenantByStudentAndRepublic(
         interested.studentId,
         interested.republicId,
       );
 
       if (existingTenant != null) {
-        await repository.updateTenantBelongs(existingTenant.objectId, true);
+        await republicHomeRepository.updateTenantBelongs(existingTenant.objectId, true);
       } else {
         final tenant = TenantModel(
           studentName: interested.studentName,
@@ -81,10 +83,10 @@ class InterestedStudentListCubit extends Cubit<InterestStudentListState> {
           republicId: interested.republicId,
           belongs: true,
         );
-        await repository.createTenant(tenant);
+        await republicHomeRepository.createTenant(tenant);
       }
 
-      await repository.updateVacancy(interested.republicId);
+      await republicHomeRepository.updateVacancy(interested.republicId);
 
       await loadInterestedStudents(currentUser);
     } catch (e) {

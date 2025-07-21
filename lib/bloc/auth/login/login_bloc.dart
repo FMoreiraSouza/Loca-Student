@@ -1,11 +1,11 @@
 ﻿import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/auth/login/login_event.dart';
 import 'package:loca_student/bloc/auth/login/login_state.dart';
-import 'package:loca_student/data/repositories/auth_repository.dart';
 import 'package:loca_student/bloc/user-type/user_type_cubit.dart';
+import 'package:loca_student/data/repositories/interfaces/i_auth_repository.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  final AuthRepository authRepository;
+  final IAuthRepository authRepository;
   final UserTypeCubit userTypeCubit;
 
   LoginBloc({required this.authRepository, required this.userTypeCubit}) : super(LoginInitial()) {

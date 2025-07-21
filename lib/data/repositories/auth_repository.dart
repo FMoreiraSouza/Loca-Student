@@ -1,8 +1,10 @@
 ﻿import 'package:loca_student/data/models/republic_model.dart';
 import 'package:loca_student/data/models/student_model.dart';
+import 'package:loca_student/data/repositories/interfaces/i_auth_repository.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
-class AuthRepository {
+class AuthRepository implements IAuthRepository {
+  @override
   Future<LoginResult> login(String email, String password) async {
     try {
       final user = ParseUser(email, password, null);
@@ -27,6 +29,7 @@ class AuthRepository {
     }
   }
 
+  @override
   Future<LoginResult> registerStudent({
     required String username,
     required String emailAddress,
@@ -61,6 +64,7 @@ class AuthRepository {
     }
   }
 
+  @override
   Future<LoginResult> registerRepublic({
     required String username,
     required String emailAddress,
@@ -95,11 +99,13 @@ class AuthRepository {
     }
   }
 
+  @override
   Future<void> logout() async {
     final user = await ParseUser.currentUser() as ParseUser?;
     await user?.logout();
   }
 
+  @override
   Future<bool> isLoggedIn() async {
     final user = await ParseUser.currentUser() as ParseUser?;
     return user != null;

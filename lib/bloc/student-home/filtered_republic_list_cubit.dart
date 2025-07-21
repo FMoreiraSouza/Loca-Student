@@ -3,20 +3,20 @@ import 'package:loca_student/data/models/interested_student_model.dart';
 import 'package:loca_student/data/models/republic_model.dart';
 import 'package:loca_student/data/models/reservation_model.dart';
 import 'package:loca_student/data/models/student_model.dart';
-import 'package:loca_student/data/repositories/student_home_repository.dart';
+import 'package:loca_student/data/repositories/interfaces/i_student_home_repository.dart';
 import 'package:loca_student/data/services/api_service.dart';
 
 import 'filtered_republic_list_state.dart';
 
 class FilteredRepublicListCubit extends Cubit<FilteredRepublicListState> {
-  final StudentHomeRepository _repository;
+  final IStudentHomeRepository studentHomeRepository;
 
-  FilteredRepublicListCubit(this._repository) : super(const FilteredRepublicListState());
+  FilteredRepublicListCubit(this.studentHomeRepository) : super(const FilteredRepublicListState());
 
   Future<void> searchRepublicsByCity(String city) async {
     emit(state.copyWith(status: FilteredRepublicListStatus.loading, error: null));
     try {
-      final republics = await _repository.searchRepublicsByCity(city);
+      final republics = await studentHomeRepository.searchRepublicsByCity(city);
 
       if (republics.isEmpty) {
         emit(state.copyWith(status: FilteredRepublicListStatus.empty, republics: []));
@@ -33,19 +33,26 @@ class FilteredRepublicListCubit extends Cubit<FilteredRepublicListState> {
     try {
       final currentUser = await APIService.getCurrentUser();
 
-      final studentParse = await _repository.getStudentForUser(currentUser);
-      final republicPtr = _repository.getRepublicPointer(rep);
+      final studentParse = await studentHomeRepository.getStudentForUser(currentUser);
+      final republicPtr = studentHomeRepository.getRepublicPointer(rep);
 
-      final existing = await _repository.findExistingReservation(studentParse, republicPtr);
+      final existing = await studentHomeRepository.findExistingReservation(
+        studentParse,
+        republicPtr,
+      );
       if (existing.isNotEmpty) {
         final existingRes = existing.first;
         final status = existingRes.get<String>('status');
         if (status != null && status != 'cancelada') {
           throw Exception('Você já fez uma reserva para essa república');
         } else {
-          await _repository.updateReservationStatus(existingRes, 'pendente');
+          await studentHomeRepository.updateReservationStatus(existingRes, 'pendente');
 
-          await _repository.updateInterestStatusIfExists(studentParse, republicPtr, 'interessado');
+          await studentHomeRepository.updateInterestStatusIfExists(
+            studentParse,
+            republicPtr,
+            'interessado',
+          );
 
           emit(state.copyWith(status: FilteredRepublicListStatus.success));
           return;
@@ -63,7 +70,7 @@ class FilteredRepublicListCubit extends Cubit<FilteredRepublicListState> {
         republicPointer: republicPtr,
       );
 
-      await _repository.saveReservation(reservation);
+      await studentHomeRepository.saveReservation(reservation);
 
       final studentModel = StudentModel.fromParse(studentParse);
 
@@ -76,11 +83,15 @@ class FilteredRepublicListCubit extends Cubit<FilteredRepublicListState> {
         student: studentModel,
       );
 
-      final existingInterests = await _repository.findInterest(studentParse, republicPtr);
+      final existingInterests = await studentHomeRepository.findInterest(studentParse, republicPtr);
       if (existingInterests.isNotEmpty) {
-        await _repository.updateInterestStatusIfExists(studentParse, republicPtr, 'interessado');
+        await studentHomeRepository.updateInterestStatusIfExists(
+          studentParse,
+          republicPtr,
+          'interessado',
+        );
       } else {
-        await _repository.saveInterestModel(newInterested, rep);
+        await studentHomeRepository.saveInterestModel(newInterested, rep);
       }
 
       emit(state.copyWith(status: FilteredRepublicListStatus.success));

@@ -1,9 +1,11 @@
 ﻿import 'package:loca_student/data/models/interested_student_model.dart';
 import 'package:loca_student/data/models/republic_model.dart';
 import 'package:loca_student/data/models/reservation_model.dart';
+import 'package:loca_student/data/repositories/interfaces/i_student_home_repository.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
-class StudentHomeRepository {
+class StudentHomeRepository implements IStudentHomeRepository {
+  @override
   Future<List<RepublicModel>> searchRepublicsByCity(String city) async {
     final query = QueryBuilder<ParseObject>(ParseObject('Republic'))
       ..whereEqualTo('city', city)
@@ -17,6 +19,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<ParseObject> getStudentForUser(ParseUser user) async {
     final studentQuery = QueryBuilder<ParseObject>(ParseObject('Student'))
       ..whereEqualTo('user', user);
@@ -28,6 +31,7 @@ class StudentHomeRepository {
     return result.results!.first as ParseObject;
   }
 
+  @override
   Future<List<ParseObject>> findExistingReservation(
     ParseObject student,
     ParseObject republic,
@@ -40,6 +44,7 @@ class StudentHomeRepository {
     return (response.results ?? []).cast<ParseObject>();
   }
 
+  @override
   Future<void> saveReservation(ReservationModel reservation) async {
     final parseObj = reservation.toParse();
     final resp = await parseObj.save();
@@ -48,6 +53,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<void> updateReservationStatus(ParseObject reservationObj, String status) async {
     reservationObj.set('status', status);
     final resp = await reservationObj.save();
@@ -56,6 +62,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<List<ParseObject>> findInterest(ParseObject student, ParseObject republic) async {
     final query = QueryBuilder<ParseObject>(ParseObject('InterestedStudents'))
       ..whereEqualTo('student', student)
@@ -65,6 +72,7 @@ class StudentHomeRepository {
     return (resp.results ?? []).cast<ParseObject>();
   }
 
+  @override
   Future<void> saveInterest(ParseObject interestObj) async {
     final resp = await interestObj.save();
     if (!resp.success) {
@@ -72,6 +80,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<List<ReservationModel>> fetchReservations() async {
     final query = QueryBuilder<ParseObject>(ParseObject('Reservations'))
       ..whereContainedIn('status', ['pendente', 'aceita', 'recusada'])
@@ -88,6 +97,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<ParseObject?> getReservationById(String reservationId) async {
     final query = QueryBuilder<ParseObject>(ParseObject('Reservations'))
       ..whereEqualTo('objectId', reservationId)
@@ -100,6 +110,7 @@ class StudentHomeRepository {
     return null;
   }
 
+  @override
   Future<void> saveGeneric(ParseObject obj) async {
     final resp = await obj.save();
     if (!resp.success) {
@@ -107,6 +118,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<void> updateReservation(ParseObject reservation) async {
     final resp = await reservation.save();
     if (!resp.success) {
@@ -114,6 +126,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<void> updateRepublicVacancies(String republicId, int increment) async {
     final republicObj = ParseObject('Republic')..objectId = republicId;
     await republicObj.fetch();
@@ -125,6 +138,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<List<ParseObject>> findTenant(ParseObject student, ParseObject republic) async {
     final tenantQuery = QueryBuilder<ParseObject>(ParseObject('Tenants'))
       ..whereEqualTo('student', student)
@@ -133,6 +147,7 @@ class StudentHomeRepository {
     return (tenantResp.results ?? []).cast<ParseObject>();
   }
 
+  @override
   Future<void> updateTenant(ParseObject tenantObj) async {
     final resp = await tenantObj.save();
     if (!resp.success) {
@@ -140,6 +155,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<ParseObject?> getReservationByIdWithRelations(String reservationId) async {
     final query = QueryBuilder<ParseObject>(ParseObject('Reservations'))
       ..whereEqualTo('objectId', reservationId)
@@ -152,12 +168,14 @@ class StudentHomeRepository {
     return null;
   }
 
+  @override
   Future<void> updateReservationStatusByObject(ParseObject reservationObj, String status) async {
     reservationObj.set('status', status);
     final resp = await reservationObj.save();
     if (!resp.success) throw Exception(resp.error?.message ?? 'Erro ao atualizar reserva');
   }
 
+  @override
   Future<void> updateInterestStatus(
     ParseObject student,
     ParseObject republic,
@@ -172,6 +190,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<void> incrementRepublicVacancies(ParseObject republic, int increment) async {
     final currentVacancies = republic.get<int>('vacancies') ?? 0;
     republic.set('vacancies', currentVacancies + increment);
@@ -181,6 +200,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<void> updateTenantBelongs(ParseObject student, ParseObject republic, bool belongs) async {
     final tenants = await findTenant(student, republic);
     if (tenants.isNotEmpty) {
@@ -191,6 +211,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<void> cancelReservationByIdModular(String reservationId) async {
     final reservation = await getReservationByIdWithRelations(reservationId);
     if (reservation == null) throw Exception('Reserva não encontrada');
@@ -212,6 +233,7 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<void> updateInterestStatusIfExists(
     ParseObject student,
     ParseObject republic,
@@ -225,15 +247,18 @@ class StudentHomeRepository {
     }
   }
 
+  @override
   Future<void> saveInterestModel(InterestedStudentModel model, RepublicModel republic) async {
     final parseObj = model.toParse(republic: getRepublicPointer(republic));
     await saveInterest(parseObj);
   }
 
+  @override
   ParseObject getRepublicPointer(RepublicModel republic) {
     return ParseObject('Republic')..objectId = republic.objectId;
   }
 
+  @override
   Future<void> resendReservationByIdModular(String reservationId) async {
     final reservation = await getReservationByIdWithRelations(reservationId);
     if (reservation == null) throw Exception('Reserva não encontrada');
