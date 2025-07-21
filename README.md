@@ -28,7 +28,13 @@ O aplicativo **Loca Student** oferece as seguintes funcionalidades:
 Pesquise por cidade e visualize detalhes completos como endereço, valor do aluguel, vagas disponíveis e contatos.
 
 ✅ **Gerenciamento de Reservas**  
-Acompanhe suas reservas **pendentes** ou **aceitas** diretamente no app, podendo também cancelar ou reativar quando necessário.
+Acompanhe suas reservas pendentes ou aceitas diretamente no app, podendo também cancelar ou reativar quando necessário.
+
+✅ **Permissão de Estudantes**  
+Visualize as solicitações de estudantes interessados e aceite ou não suas entradas na república.
+
+✅ **Controle de Locatários**  
+Acesse a relação de locatários da república e desligue sua locação caso necessário. 
 
 ---
 
