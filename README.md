@@ -46,8 +46,7 @@ Acompanhe suas reservas **pendentes** ou **aceitas** diretamente no app, podendo
   - Tabela `Reservations`: reservas criadas e seus status.  
   - Tabela `InterestedStudents`: controle de interesse dos estudantes e seus status.
   - Tabela `Tenants`: lista de estudantes aceitos como inquilinos na república.
-- **Consultas em Tempo Real**: Dados atualizados a cada ação do usuário.
-
+  - 
 ---
 
 ## 🎨 Telas do Aplicativo
