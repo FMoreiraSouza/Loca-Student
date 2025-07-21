@@ -1,16 +1,17 @@
 ﻿import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loca_student/bloc/student-home/student_reservation_list_state.dart';
-import 'package:loca_student/data/repositories/student_home_repository.dart';
+import 'package:loca_student/data/repositories/interfaces/i_student_home_repository.dart';
 
 class StudentReservationListCubit extends Cubit<StudentReservationListState> {
-  final StudentHomeRepository _repository;
+  final IStudentHomeRepository studentHomeRepository;
 
-  StudentReservationListCubit(this._repository) : super(const StudentReservationListState());
+  StudentReservationListCubit(this.studentHomeRepository)
+    : super(const StudentReservationListState());
 
   Future<void> fetchReservations() async {
     emit(state.copyWith(status: ReservationListStatus.loading));
     try {
-      final results = await _repository.fetchReservations();
+      final results = await studentHomeRepository.fetchReservations();
       if (results.isEmpty) {
         emit(state.copyWith(status: ReservationListStatus.empty, reservations: []));
       } else {
@@ -23,7 +24,7 @@ class StudentReservationListCubit extends Cubit<StudentReservationListState> {
 
   Future<void> cancelReservation(String reservationId) async {
     try {
-      await _repository.cancelReservationByIdModular(reservationId);
+      await studentHomeRepository.cancelReservationByIdModular(reservationId);
       await fetchReservations();
     } catch (e) {
       emit(state.copyWith(status: ReservationListStatus.empty, error: e.toString()));
@@ -32,7 +33,7 @@ class StudentReservationListCubit extends Cubit<StudentReservationListState> {
 
   Future<void> resendReserve(String reservationId) async {
     try {
-      await _repository.resendReservationByIdModular(reservationId);
+      await studentHomeRepository.resendReservationByIdModular(reservationId);
       await fetchReservations();
     } catch (e) {
       emit(state.copyWith(status: ReservationListStatus.empty, error: e.toString()));

@@ -1,8 +1,10 @@
 ﻿import 'package:loca_student/data/models/interested_student_model.dart';
 import 'package:loca_student/data/models/tenant_model.dart';
+import 'package:loca_student/data/repositories/interfaces/i_republic_home_repository.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
-class RepublicHomeRepository {
+class RepublicHomeRepository implements IRepublicHomeRepository {
+  @override
   Future<List<InterestedStudentModel>> fetchInterestedStudents(ParseUser currentUser) async {
     final republicQuery = QueryBuilder<ParseObject>(ParseObject('Republic'))
       ..whereEqualTo('user', currentUser);
@@ -28,6 +30,7 @@ class RepublicHomeRepository {
     }
   }
 
+  @override
   Future<List<TenantModel>> fetchTenants(ParseUser currentUser) async {
     final republicQuery = QueryBuilder<ParseObject>(ParseObject('Republic'))
       ..whereEqualTo('user', currentUser);
@@ -50,6 +53,7 @@ class RepublicHomeRepository {
     }
   }
 
+  @override
   Future<void> updateReservationStatus({
     required String studentId,
     required String republicId,
@@ -74,6 +78,7 @@ class RepublicHomeRepository {
     }
   }
 
+  @override
   Future<void> updateVacancy(String republicId) async {
     final query = QueryBuilder<ParseObject>(ParseObject('Republic'))
       ..whereEqualTo('objectId', republicId);
@@ -94,6 +99,7 @@ class RepublicHomeRepository {
     }
   }
 
+  @override
   Future<void> acceptInterestStudent(InterestedStudentModel interested) async {
     final interestObj = interested.toParse(
       republic: ParseObject('Republic')..objectId = interested.republicId,
@@ -105,6 +111,7 @@ class RepublicHomeRepository {
     }
   }
 
+  @override
   Future<TenantModel?> getTenantByStudentAndRepublic(String studentId, String republicId) async {
     final tenantQuery = QueryBuilder<ParseObject>(ParseObject('Tenants'))
       ..whereEqualTo('student', (ParseObject('Student')..objectId = studentId))
@@ -117,6 +124,7 @@ class RepublicHomeRepository {
     return null;
   }
 
+  @override
   Future<void> createTenant(TenantModel tenant) async {
     final resp = await tenant.toParse().save();
     if (!resp.success) {
@@ -124,6 +132,7 @@ class RepublicHomeRepository {
     }
   }
 
+  @override
   Future<void> updateTenantBelongs(String tenantObjectId, bool belongs) async {
     final tenantObj = ParseObject('Tenants')
       ..objectId = tenantObjectId
@@ -135,6 +144,7 @@ class RepublicHomeRepository {
     }
   }
 
+  @override
   Future<void> updateInterestedStudentStatusAndReservation({
     required InterestedStudentModel interested,
   }) async {
@@ -154,6 +164,7 @@ class RepublicHomeRepository {
     );
   }
 
+  @override
   Future<void> updateInterestStatus(String studentId, String republicId, String newStatus) async {
     final interestQuery = QueryBuilder<ParseObject>(ParseObject('InterestedStudents'))
       ..whereEqualTo('student', ParseObject('Student')..objectId = studentId)
@@ -171,6 +182,7 @@ class RepublicHomeRepository {
     }
   }
 
+  @override
   Future<void> incrementVacancy(String republicId) async {
     final republicQuery = QueryBuilder<ParseObject>(ParseObject('Republic'))
       ..whereEqualTo('objectId', republicId);

@@ -5,11 +5,11 @@ import 'package:loca_student/bloc/auth/user-register/user_register_event.dart';
 import 'package:loca_student/bloc/auth/user-register/user_register_state.dart';
 import 'package:loca_student/data/models/republic_model.dart';
 import 'package:loca_student/data/models/student_model.dart';
-import 'package:loca_student/data/repositories/auth_repository.dart';
+import 'package:loca_student/data/repositories/interfaces/i_auth_repository.dart';
 import 'package:loca_student/data/services/geocoding_service.dart';
 
 class UserRegisterBloc extends Bloc<UserRegisterEvent, UserRegisterState> {
-  final AuthRepository authRepository;
+  final IAuthRepository authRepository;
   final GeocodingService geocodingService;
 
   UserRegisterBloc({required this.authRepository, required this.geocodingService})
