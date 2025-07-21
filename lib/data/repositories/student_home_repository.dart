@@ -81,8 +81,11 @@ class StudentHomeRepository implements IStudentHomeRepository {
   }
 
   @override
-  Future<List<ReservationModel>> fetchReservations() async {
+  Future<List<ReservationModel>> fetchReservations(ParseUser user) async {
+    final studentPtr = await getStudentForUser(user);
+
     final query = QueryBuilder<ParseObject>(ParseObject('Reservations'))
+      ..whereEqualTo('student', studentPtr)
       ..whereContainedIn('status', ['pendente', 'aceita', 'recusada'])
       ..includeObject(['republic', 'republic.user', 'student'])
       ..orderByDescending('createdAt');
@@ -93,7 +96,7 @@ class StudentHomeRepository implements IStudentHomeRepository {
           .map((obj) => ReservationModel.fromParse(obj as ParseObject))
           .toList();
     } else {
-      throw Exception(response.error?.message ?? 'Erro ao buscar reservas');
+      throw Exception(response.error?.message ?? 'Erro ao buscar reservas do usuário atual');
     }
   }
 

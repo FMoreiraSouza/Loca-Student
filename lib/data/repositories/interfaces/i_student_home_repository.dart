@@ -11,7 +11,7 @@ abstract class IStudentHomeRepository {
   Future<void> updateReservationStatus(ParseObject reservationObj, String status);
   Future<List<ParseObject>> findInterest(ParseObject student, ParseObject republic);
   Future<void> saveInterest(ParseObject interestObj);
-  Future<List<ReservationModel>> fetchReservations();
+  Future<List<ReservationModel>> fetchReservations(ParseUser currentUser);
   Future<ParseObject?> getReservationById(String reservationId);
   Future<void> saveGeneric(ParseObject obj);
   Future<void> updateReservation(ParseObject reservation);

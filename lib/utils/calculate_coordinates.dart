@@ -6,7 +6,7 @@ class CalculateCoordinates {
     required double latitude,
     required double longitude,
     required List<UniversityModel> universities,
-    double maxDistanceKm = 50.0,
+    double maxDistanceKm = 10.0,
   }) {
     final nearby = universities
         .map((university) {
