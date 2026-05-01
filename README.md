@@ -76,14 +76,6 @@ Acesse a relação de locatários da república e desligue sua locação caso ne
 
 ---
 
-## 🎥 Apresentação
-
-Vídeo que apresenta o funcionamento do aplicativo e explica como cada requisito foi implementado no código:
-
-[Assistir](https://youtu.be/r2aBu6VeumI)
-
----
-
 ## 🛠️ Ambiente de Desenvolvimento
 
 - **IDE:** Visual Studio Code  
@@ -98,8 +90,15 @@ Vídeo que apresenta o funcionamento do aplicativo e explica como cada requisito
 - Dispositivo físico ou emulador configurado
 
 ### ▶️ Rodando o projeto
-```bash
-git clone https://github.com/{seu_usuario}/loca_student.git
-cd loca_student
-flutter pub get
-flutter run
+- Etapas:
+  ```bash
+  git clone https://github.com/{seu_usuario}/loca_student.git
+  cd loca_student
+  flutter pub get
+  flutter run
+
+---
+
+## 🎥 Apresentação
+
+[Apresentação](https://youtu.be/r2aBu6VeumI)
