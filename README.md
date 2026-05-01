@@ -9,7 +9,7 @@
 
 ## 📃 Descrição
 
-O Loca Student é um aplicativo pensado para a comunidade estudantil. Ele foi desenvolvido para facilitar a conexão entre estudantes e repúblicas, agilizando a busca por moradia com um processo de locação direto e eficiente. Com um design moderno e foco em simplicidade, o app garante uma experiência agradável para encontrar a república ideal.
+O Loca Student é um aplicativo pensado para a comunidade estudantil. Ele foi desenvolvido para facilitar a conexão entre estudantes e repúblicas para agilizar a busca por moradia com um processo de locação direto e eficiente. Com um design moderno e foco em simplicidade, o app garante uma experiência agradável para encontrar a república ideal.
 
 ---
 
